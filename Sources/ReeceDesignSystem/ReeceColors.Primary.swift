@@ -19,6 +19,11 @@ public enum LightBlueTone: Int, CaseIterable, Sendable {
     case t5 = 5
 }
 
+public enum DarkTextGrayTone: Int, CaseIterable, Sendable {
+    case t100 = 100, t90 = 90, t80 = 80, t70 = 70, t60 = 60
+    case t50 = 50, t40 = 40, t30 = 30, t20 = 20, t10 = 10
+}
+
 public enum ReeceColors {
     public static let primary = PrimaryNamespace()
 }
@@ -45,6 +50,18 @@ public struct PrimaryNamespace {
             let dark  = Palette.Primary.LightBlue.dark[tone]
         else {
             preconditionFailure("Missing LightBlue tone \(tone)")
+        }
+        return ReeceColorSupport.pick(light: light, dark: dark, using: scheme)
+    }
+    
+    /// Raw palette access for the "Dark Text Gray" family by tone.
+    /// For now, dark == light until design provides dark-specific values.
+    public func darkTextGray(_ tone: DarkTextGrayTone, using scheme: ColorScheme) -> Color {
+        guard
+            let light = Palette.Primary.DarkTextGray.light[tone],
+            let dark  = Palette.Primary.DarkTextGray.dark[tone]
+        else {
+            preconditionFailure("Missing DarkTextGray tone \(tone)")
         }
         return ReeceColorSupport.pick(light: light, dark: dark, using: scheme)
     }
@@ -84,6 +101,22 @@ private enum Palette {
                 .t5:   Color(hex: "#F4F9FF")
             ]
             static let dark: [LightBlueTone: Color] = light
+        }
+        
+        enum DarkTextGray {
+            static let light: [DarkTextGrayTone: Color] = [
+                .t100: Color(hex: "#000000"), // TODO: replace with Figma HEX
+                .t90:  Color(hex: "#000000"),
+                .t80:  Color(hex: "#000000"),
+                .t70:  Color(hex: "#000000"),
+                .t60:  Color(hex: "#000000"),
+                .t50:  Color(hex: "#000000"),
+                .t40:  Color(hex: "#000000"),
+                .t30:  Color(hex: "#000000"),
+                .t20:  Color(hex: "#000000"),
+                .t10:  Color(hex: "#000000")
+            ]
+            static let dark: [DarkTextGrayTone: Color] = light
         }
     }
 }
