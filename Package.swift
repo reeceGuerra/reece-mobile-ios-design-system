@@ -7,7 +7,8 @@ let package = Package(
     name: "ReeceDesignSystem",
     defaultLocalization: "en",
     platforms: [
-        .iOS(.v15)
+        .iOS(.v15),
+        .macOS(.v10_15)
     ],
     products: [
         .library(
