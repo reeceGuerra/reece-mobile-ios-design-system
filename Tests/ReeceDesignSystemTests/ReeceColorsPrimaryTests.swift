@@ -33,5 +33,13 @@ final class ReeceColorsPrimaryTests: XCTestCase {
             XCTAssertNotNil(color, "Missing color for Light Blue \(tone)")
         }
     }
-
+    
+    func testAllDarkTextGrayTonesHaveValues() {
+        for tone in DarkTextGrayTone.allCases {
+            let light = ReeceColors.primary.darkTextGray(tone, using: .light)
+            let dark  = ReeceColors.primary.darkTextGray(tone, using: .dark)
+            XCTAssertEqual(light.description, dark.description,
+                           "DarkTextGray dark should fallback to light until design provides dark palette")
+        }
+    }
 }
