@@ -11,7 +11,6 @@ final class ReeceColorsPrimaryTests: XCTestCase {
     }
 
     func testDarkBlueDarkToneFallback() {
-        // Since dark == light for now, both should resolve to the same value
         let lightColor = ReeceColors.primary.darkBlue(.t100, using: .light)
         let darkColor  = ReeceColors.primary.darkBlue(.t100, using: .dark)
 
