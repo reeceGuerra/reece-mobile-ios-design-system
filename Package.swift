@@ -5,20 +5,31 @@ import PackageDescription
 
 let package = Package(
     name: "ReeceDesignSystem",
+    defaultLocalization: "en",
+    platforms: [
+        .iOS(.v15)
+    ],
     products: [
-        // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
             name: "ReeceDesignSystem",
-            targets: ["ReeceDesignSystem"]),
+            targets: ["ReeceDesignSystem"]
+        )
     ],
     targets: [
-        // Targets are the basic building blocks of a package, defining a module or a test suite.
-        // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "ReeceDesignSystem"),
+            name: "ReeceDesignSystem",
+            path: "Sources/ReeceDesignSystem",
+            swiftSettings: [
+                .swiftLanguageMode(.v6)
+            ]
+        ),
         .testTarget(
             name: "ReeceDesignSystemTests",
-            dependencies: ["ReeceDesignSystem"]
-        ),
+            dependencies: ["ReeceDesignSystem"],
+            path: "Tests/ReeceDesignSystemTests",
+            swiftSettings: [
+                .swiftLanguageMode(.v6)
+            ]
+        )
     ]
 )
