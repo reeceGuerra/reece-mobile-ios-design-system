@@ -7,27 +7,11 @@
 
 import SwiftUI
 
-/// Numeric scale for a single hue (e.g., Dark Blue).
-public enum DarkBlueTone: Int, CaseIterable, Sendable {
-    case t100 = 100, t90 = 90, t80 = 80, t70 = 70, t60 = 60
-    case t50 = 50, t40 = 40, t30 = 30, t20 = 20, t10 = 10
+public extension ReeceColors {
+    static let primary = PrimaryNamespace()
 }
 
-public enum LightBlueTone: Int, CaseIterable, Sendable {
-    case t100 = 100, t90 = 90, t80 = 80, t70 = 70, t60 = 60
-    case t50 = 50, t40 = 40, t30 = 30, t20 = 20, t10 = 10
-    case t5 = 5
-}
-
-public enum DarkTextGrayTone: Int, CaseIterable, Sendable {
-    case t100 = 100, t90 = 90, t80 = 80, t70 = 70, t60 = 60
-    case t50 = 50, t40 = 40, t30 = 30, t20 = 20, t10 = 10
-}
-
-public enum ReeceColors {
-    public static let primary = PrimaryNamespace()
-}
-
+// MARK: - Primary namespace
 @MainActor
 public struct PrimaryNamespace {
     /// Raw palette access for the "Dark Blue" family by tone.
@@ -65,6 +49,24 @@ public struct PrimaryNamespace {
         }
         return ReeceColorSupport.pick(light: light, dark: dark, using: scheme)
     }
+}
+
+// MARK: - Tone enums (Primary → DarkBlue)
+
+public enum DarkBlueTone: Int, CaseIterable, Sendable {
+    case t100 = 100, t90 = 90, t80 = 80, t70 = 70, t60 = 60
+    case t50 = 50, t40 = 40, t30 = 30, t20 = 20, t10 = 10
+}
+
+public enum LightBlueTone: Int, CaseIterable, Sendable {
+    case t100 = 100, t90 = 90, t80 = 80, t70 = 70, t60 = 60
+    case t50 = 50, t40 = 40, t30 = 30, t20 = 20, t10 = 10
+    case t5 = 5
+}
+
+public enum DarkTextGrayTone: Int, CaseIterable, Sendable {
+    case t100 = 100, t90 = 90, t80 = 80, t70 = 70, t60 = 60
+    case t50 = 50, t40 = 40, t30 = 30, t20 = 20, t10 = 10
 }
 
 // MARK: - Internal palette storage
