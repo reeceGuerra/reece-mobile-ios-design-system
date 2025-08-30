@@ -20,9 +20,18 @@ final class ReeceColorsPrimaryTests: XCTestCase {
     }
     
     func testAllDarkBlueTonesHaveValues() {
-        for tone in ReeceTone.allCases {
-            let color = ReeceColors.primary.darkBlue(tone, using: .light)
-            XCTAssertNotNil(color, "Missing color for Dark Blue \(tone)")
+        for tone in DarkBlueTone.allCases {
+            let colorLight = ReeceColors.primary.darkBlue(tone, using: ColorScheme.light)
+            let colorDark  = ReeceColors.primary.darkBlue(tone, using: ColorScheme.dark)
+            XCTAssertEqual(colorLight.description, colorDark.description)
         }
     }
+
+    func testAllLightBlueTonesHaveValues() {
+        for tone in LightBlueTone.allCases {
+            let color = ReeceColors.primary.lightBlue(tone, using: ColorScheme.light)
+            XCTAssertNotNil(color, "Missing color for Light Blue \(tone)")
+        }
+    }
+
 }
