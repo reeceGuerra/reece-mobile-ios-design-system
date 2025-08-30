@@ -105,16 +105,16 @@ private enum Palette {
         
         enum DarkTextGray {
             static let light: [DarkTextGrayTone: Color] = [
-                .t100: Color(hex: "#000000"), // TODO: replace with Figma HEX
-                .t90:  Color(hex: "#000000"),
-                .t80:  Color(hex: "#000000"),
-                .t70:  Color(hex: "#000000"),
-                .t60:  Color(hex: "#000000"),
-                .t50:  Color(hex: "#000000"),
-                .t40:  Color(hex: "#000000"),
-                .t30:  Color(hex: "#000000"),
-                .t20:  Color(hex: "#000000"),
-                .t10:  Color(hex: "#000000")
+                .t100: Color(hex: "#404040"),
+                .t90:  Color(hex: "#545454"),
+                .t80:  Color(hex: "#666666"),
+                .t70:  Color(hex: "#7A7A7A"),
+                .t60:  Color(hex: "#8C8C8C"),
+                .t50:  Color(hex: "#9F9F9F"),
+                .t40:  Color(hex: "#B3B3B3"),
+                .t30:  Color(hex: "#C6C6C6"),
+                .t20:  Color(hex: "#D9D9D9"),
+                .t10:  Color(hex: "#ECECEC")
             ]
             static let dark: [DarkTextGrayTone: Color] = light
         }
