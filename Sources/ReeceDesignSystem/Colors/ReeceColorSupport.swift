@@ -7,10 +7,24 @@
 
 import SwiftUI
 
-/// Shared helpers for color resolution across all ReeceColors.* files.
+/// Shared helpers for color resolution across all `ReeceColors` families.
+///
+/// These utilities are isolated to the **MainActor** because color resolution
+/// reads the global theme (`ReeceTheme.mode`) and is intended to be used from UI code.
+///
+/// Usage:
+/// ```swift
+/// // Internal use only:
+/// // ReeceColorSupport.pick(light: .red, dark: .blue, using: scheme)
+/// ```
+///
+/// - Important: Keep these helpers lightweight; they are called frequently during view rendering.
 @MainActor
 enum ReeceColorSupport {
-    /// Computes the effective scheme considering the global ReeceTheme.mode.
+    /// Computes the effective `ColorScheme` honoring the global `ReeceTheme.mode`.
+    ///
+    /// - Parameter viewScheme: The SwiftUI `ColorScheme` from the environment.
+    /// - Returns: The scheme that should be used to resolve tokens (system/light/dark).
     static func effectiveScheme(from viewScheme: ColorScheme) -> ColorScheme {
         switch ReeceTheme.mode {
         case .system: return viewScheme
@@ -18,8 +32,14 @@ enum ReeceColorSupport {
         case .dark:   return .dark
         }
     }
-
-    /// Picks light/dark variant based on the effective scheme.
+    
+    /// Picks the light/dark variant based on the effective scheme.
+    ///
+    /// - Parameters:
+    ///   - light: Color used when the effective scheme is `.light`.
+    ///   - dark:  Color used when the effective scheme is `.dark`.
+    ///   - viewScheme: The caller’s environment `ColorScheme`.
+    /// - Returns: `dark` if the effective scheme resolves to `.dark`; otherwise `light`.
     static func pick(light: Color, dark: Color, using viewScheme: ColorScheme) -> Color {
         let scheme = effectiveScheme(from: viewScheme)
         return scheme == .dark ? dark : light
