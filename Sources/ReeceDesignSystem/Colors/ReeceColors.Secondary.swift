@@ -44,12 +44,97 @@ public struct SecondaryNamespace {
         }
         return ReeceColorSupport.pick(light: light, dark: dark, using: scheme)
     }
+    
+    /// Raw palette access for the **Text Gray** family by tone.
+    ///
+    /// - Parameters:
+    ///   - tone: One of the `SecondaryTextGrayTone` steps (`t100 … t10`).
+    ///   - scheme: Caller’s environment `ColorScheme`.
+    /// - Returns: The resolved color for the effective scheme.
+    /// - Precondition: Crashes in debug if the requested tone is not present.
+    public func textGray(_ tone: SecondaryTextGrayTone, using scheme: ColorScheme) -> Color {
+        guard
+            let light = Palette.Secondary.TextGray.light[tone],
+            let dark  = Palette.Secondary.TextGray.dark[tone]
+        else {
+            preconditionFailure("Missing Text Gray tone \(tone)")
+        }
+        return ReeceColorSupport.pick(light: light, dark: dark, using: scheme)
+    }
+    
+    /// Raw palette access for the **Medium Grey** family by tone.
+    ///
+    /// - Parameters:
+    ///   - tone: One of the `MediumGreyTone` steps (`t100 … t10`).
+    ///   - scheme: Caller’s environment `ColorScheme`.
+    /// - Returns: The resolved color for the effective scheme.
+    public func mediumGrey(_ tone: MediumGreyTone, using scheme: ColorScheme) -> Color {
+        guard
+            let light = Palette.Secondary.MediumGrey.light[tone],
+            let dark  = Palette.Secondary.MediumGrey.dark[tone]
+        else {
+            preconditionFailure("Missing Medium Grey tone \(tone)")
+        }
+        return ReeceColorSupport.pick(light: light, dark: dark, using: scheme)
+    }
+    /// Raw palette access for the **Light Gray** family by tone.
+    ///
+    /// - Parameters:
+    ///   - tone: One of the `LightGrayTone` steps (`t100 … t10`).
+    ///   - scheme: Caller’s environment `ColorScheme`.
+    /// - Returns: The resolved color for the effective scheme.
+    public func lightGray(_ tone: LightGrayTone, using scheme: ColorScheme) -> Color {
+        guard
+            let light = Palette.Secondary.LightGray.light[tone],
+            let dark  = Palette.Secondary.LightGray.dark[tone]
+        else {
+            preconditionFailure("Missing Light Gray tone \(tone)")
+        }
+        return ReeceColorSupport.pick(light: light, dark: dark, using: scheme)
+    }
+    
+    /// Single-tone color for **White**.
+    /// - Returns: The same value for light/dark until design provides a separate dark token.
+    public func white(using scheme: ColorScheme) -> Color {
+        let base = Palette.Secondary.White.base
+        return ReeceColorSupport.pick(light: base, dark: base, using: scheme)
+    }
+
+    /// Single-tone color for **Off-White**.
+    public func offWhite(using scheme: ColorScheme) -> Color {
+        let base = Palette.Secondary.OffWhite.base
+        return ReeceColorSupport.pick(light: base, dark: base, using: scheme)
+    }
+
+    /// Single-tone color for **Black**.
+    public func black(using scheme: ColorScheme) -> Color {
+        let base = Palette.Secondary.Black.base
+        return ReeceColorSupport.pick(light: base, dark: base, using: scheme)
+    }
+
 }
 
 // MARK: - Tone enums (Secondary)
 
 /// Tone scale for **Orange** (`100 → 10`).
 public enum OrangeTone: Int, CaseIterable, Sendable {
+    case t100 = 100, t90 = 90, t80 = 80, t70 = 70, t60 = 60
+    case t50 = 50,  t40 = 40, t30 = 30, t20 = 20, t10 = 10
+}
+
+/// Tone scale for **Text Gray** (`100 → 10`).
+public enum SecondaryTextGrayTone: Int, CaseIterable, Sendable {
+    case t100 = 100, t90 = 90, t80 = 80, t70 = 70, t60 = 60
+    case t50 = 50,  t40 = 40, t30 = 30, t20 = 20, t10 = 10
+}
+
+/// Tone scale for **Medium Grey** (`100 → 10`).
+public enum MediumGreyTone: Int, CaseIterable, Sendable {
+    case t100 = 100, t90 = 90, t80 = 80, t70 = 70, t60 = 60
+    case t50 = 50,  t40 = 40, t30 = 30, t20 = 20, t10 = 10
+}
+/// Tone scale for **Light Gray** (`100 → 10`).
+public enum LightGrayTone: Int, CaseIterable, Sendable {
     case t100 = 100, t90 = 90, t80 = 80, t70 = 70, t60 = 60
     case t50 = 50,  t40 = 40, t30 = 30, t20 = 20, t10 = 10
 }
@@ -75,5 +160,63 @@ private enum Palette {
             // Temporary: dark uses light until design delivers a dedicated dark palette.
             static let dark: [OrangeTone: Color] = light
         }
+        
+        enum TextGray {
+            static let light: [SecondaryTextGrayTone: Color] = [
+                .t100: Color(hex: "#606060"),
+                .t90:  Color(hex: "#717171"),
+                .t80:  Color(hex: "#808080"),
+                .t70:  Color(hex: "#909090"),
+                .t60:  Color(hex: "#A0A0A0"),
+                .t50:  Color(hex: "#AFAFAF"),
+                .t40:  Color(hex: "#C0C0C0"),
+                .t30:  Color(hex: "#D0D0D0"),
+                .t20:  Color(hex: "#DFDFDF"),
+                .t10:  Color(hex: "#F0F0F0")
+            ]
+            static let dark: [SecondaryTextGrayTone: Color] = light
+        }
+        
+        enum MediumGrey {
+            static let light: [MediumGreyTone: Color] = [
+                .t100: Color(hex: "#CBCBCB"),
+                .t90:  Color(hex: "#D1D1D1"),
+                .t80:  Color(hex: "#D5D5D5"),
+                .t70:  Color(hex: "#DBDBDB"),
+                .t60:  Color(hex: "#E0E0E0"),
+                .t50:  Color(hex: "#E4E4E4"),
+                .t40:  Color(hex: "#EAEAEA"),
+                .t30:  Color(hex: "#F0F0F0"),
+                .t20:  Color(hex: "#F5F5F5"),
+                .t10:  Color(hex: "#FAFAFA")
+            ]
+            static let dark: [MediumGreyTone: Color] = light
+        }
+        enum LightGray {
+            static let light: [LightGrayTone: Color] = [
+                .t100: Color(hex: "#F2F2F2"),
+                .t90:  Color(hex: "#F4F4F4"),
+                .t80:  Color(hex: "#F5F5F5"),
+                .t70:  Color(hex: "#F6F6F6"),
+                .t60:  Color(hex: "#F7F7F7"),
+                .t50:  Color(hex: "#F8F8F8"),
+                .t40:  Color(hex: "#FAFAFA"),
+                .t30:  Color(hex: "#FCFCFC"),
+                .t20:  Color(hex: "#FDFDFD"),
+                .t10:  Color(hex: "#FEFEFE")
+            ]
+            static let dark: [LightGrayTone: Color] = light
+        }
+        
+        enum White {
+            static let base: Color = Color(hex: "#FFFFFF")
+        }
+        enum OffWhite {
+            static let base: Color = Color(hex: "#F5F1ED")
+        }
+        enum Black {
+            static let base: Color = Color(hex: "#000000")
+        }
+
     }
 }
