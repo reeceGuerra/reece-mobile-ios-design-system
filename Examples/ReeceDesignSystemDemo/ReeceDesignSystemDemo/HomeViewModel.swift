@@ -10,7 +10,7 @@ import SwiftUI
 import ReeceDesignSystem
 
 @MainActor
-final class HomeViewModel: ObservableObject, Observable {
+final class HomeViewModel: ObservableObject {
     @Published var themeMode: ReeceThemeMode = .system
     @Published var isToolbarVisible: Bool = true
 

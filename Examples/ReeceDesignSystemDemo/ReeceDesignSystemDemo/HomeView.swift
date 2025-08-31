@@ -24,6 +24,7 @@ struct HomeView: View {
                 Section("FAMILIES") {
                     NavigationLink("Primary") {
                         PrimaryView(mode: $vm.themeMode, systemScheme: systemScheme)
+                            .environmentObject(vm)
                     }
                 }
                 .listRowBackground(cellBg)
@@ -35,7 +36,7 @@ struct HomeView: View {
             .scrollContentBackground(.hidden)
             .background(background)
         }
-        .environment(vm)
+        .environmentObject(vm)
         .preferredColorScheme(effective)
         .toolbarBackground(background, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
