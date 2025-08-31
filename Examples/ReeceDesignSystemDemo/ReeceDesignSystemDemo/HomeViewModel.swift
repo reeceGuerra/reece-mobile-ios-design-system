@@ -12,6 +12,7 @@ import ReeceDesignSystem
 @MainActor
 final class HomeViewModel: ObservableObject {
     @Published var themeMode: ReeceThemeMode = .system
+    @Published var isToolbarVisible: Bool = true
 
     // El systemScheme debe venir de la vista
     func effectiveScheme(using systemScheme: ColorScheme) -> ColorScheme {
