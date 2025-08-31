@@ -11,6 +11,7 @@ import SwiftUI
 /// Rutas de la demo.
 enum ReeceRoute: Hashable {
     case primary
+    case secondary
     case colorDetail(name: String, hex: String)
 }
 

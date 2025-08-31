@@ -66,8 +66,24 @@ struct SecondaryView: View {
                 
                 ColorPaletteCard(
                     title: "White",
-                    tones: [],
-                    maxBands: LightGrayTone.allCases.count,
+                    tones: [.init(ReeceColorExport.hexString(for: ReeceColors.secondary.white(using: systemScheme)) ?? "#N/A", name: "White")],
+                    maxBands: 1,
+                ) { tapped in
+                    onSelect(tapped)
+                }
+                
+                ColorPaletteCard(
+                    title: "OffWhite",
+                    tones: [.init(ReeceColorExport.hexString(for: ReeceColors.secondary.offWhite(using: systemScheme)) ?? "#N/A", name: "OffWhite")],
+                    maxBands: 1,
+                ) { tapped in
+                    onSelect(tapped)
+                }
+                
+                ColorPaletteCard(
+                    title: "Black",
+                    tones: [.init(ReeceColorExport.hexString(for: ReeceColors.secondary.black(using: systemScheme)) ?? "#N/A", name: "Black")],
+                    maxBands: 1,
                 ) { tapped in
                     onSelect(tapped)
                 }
@@ -77,5 +93,3 @@ struct SecondaryView: View {
         .applyThemedBackground()
     }
 }
-
-var tone: PaletteTone = .init(ReeceColorExport.hexString(for: ReeceColors.secondary.white(using: )), name: <#T##String#>)
