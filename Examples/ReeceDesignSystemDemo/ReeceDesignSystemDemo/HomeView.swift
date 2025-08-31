@@ -65,15 +65,15 @@ struct HomeView: View {
                     )
                     .environmentObject(vm)
                     .onAppear {
-                        toolbarTitle   = ""
+                        toolbarTitle   = "dffdf"
                         toolbarShowBack = true
                     }
                 }
             }
-            .onAppear {
-                toolbarTitle   = "Reece DS"
-                toolbarShowBack = false
-            }
+        }
+        .onAppear {
+            toolbarTitle   = "Reece DS"
+            toolbarShowBack = false
         }
         // Environments compartidos
         .environmentObject(vm)
