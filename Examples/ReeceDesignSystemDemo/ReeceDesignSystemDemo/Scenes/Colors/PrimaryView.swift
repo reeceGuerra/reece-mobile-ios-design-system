@@ -1,3 +1,10 @@
+//
+//  PrimaryView.swift
+//  ReeceDesignSystemDemo
+//
+//  Created by Carlos Lopez on 30/08/25.
+//
+
 import SwiftUI
 import ReeceDesignSystem
 
@@ -5,36 +12,30 @@ struct PrimaryView: View {
     @Binding var mode: ReeceThemeMode
     let systemScheme: ColorScheme
 
-    // TODO: reemplaza por tus arrays reales de Figma
-    private let darkBlueHEX = ["#EDF3F6", "#D8E2EB", "#C5D3E1", "#B0C2D6",
-                               "#9BB1CB", "#869FBE", "#6E8AAE", "#576E94",
-                               "#3E5479", "#2A3D5D"] // 10 → 100 (ejemplo)
-
-    private var darkBlueTones: [PaletteTone] {
-        darkBlueHEX.reversed().map(PaletteTone.init) // ↑ oscuro abajo
-    }
-
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
+
+                // Dark Blue como Card
                 ColorPaletteCard(
                     title: "Dark Blue",
-                    tones: darkBlueTones,
-                    maxBands: 10,                      // muestra 4 bandas
-                    bandHeight: 36
+                    tones: DarkBlueTone.allCases.map { tone in
+                        let c = ReeceColors.primary.darkBlue(tone, using: systemScheme)
+                        let hex = ReeceColorExport.hexString(for: c, scheme: systemScheme) ?? "#N/A"
+                        return PaletteTone(hex) // tu struct de la card
+                    },
                 ) { tapped in
-                    // Navegación futura: por ahora sólo log
-                    print("Tapped tone:", tapped.hex)
+                    print("Tapped Dark Blue tone:", tapped.hex)
                 }
 
-                // Repite una card para Light Blue y Dark Text Gray (pasando sus HEX)
-                // ColorPaletteCard(title: "Light Blue", tones: lightBlueTones) { ... }
-                // ColorPaletteCard(title: "Dark Text Gray", tones: grayTones) { ... }
+                // Light Blue y Dark Text Gray igual, solo cambias el enum
+                // ColorPaletteCard(title: "Light Blue", tones: LightBlueTone.allCases.map { ... }) { ... }
+                // ColorPaletteCard(title: "Dark Text Gray", tones: DarkTextGrayTone.allCases.map { ... }) { ... }
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 20)
+            .padding()
         }
-        .applyThemedBackground()                // fondo heredado del Home
+        .applyThemedBackground()
         .reeceToolbar(title: "Primary", showBack: true)
     }
 }
+
