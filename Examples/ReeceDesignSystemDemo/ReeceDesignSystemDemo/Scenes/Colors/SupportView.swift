@@ -15,6 +15,8 @@ struct SupportView: View {
 
     var body: some View {
         ScrollView {
+            Spacer()
+                .frame(height: 55)
             VStack(alignment: .leading, spacing: 24) {
                 ColorPaletteCard(
                     title: "Green",
@@ -99,5 +101,6 @@ struct SupportView: View {
             .padding()
         }
         .applyThemedBackground()
+        .toolbarVisibility(.hidden, for: .navigationBar)
     }
 }

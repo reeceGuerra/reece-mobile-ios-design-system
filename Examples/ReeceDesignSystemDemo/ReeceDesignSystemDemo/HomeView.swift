@@ -11,17 +11,18 @@ struct HomeView: View {
     @Environment(\.colorScheme) private var systemScheme
     @StateObject private var vm = HomeViewModel()
     @StateObject private var router = NavRouter()
-
+    
     // Estado central del título del top bar
     @State private var topTitle: String = "Reece DS"
-
+    @State private var topBarColor: Color? = nil
+    
     var body: some View {
         let effective = vm.effectiveScheme(using: systemScheme)
         let background = vm.backgroundColor(using: systemScheme)
         let cellBg = vm.cellBackgroundColor(using: systemScheme)
         let textColor = vm.primaryTextColor(using: systemScheme)
         let tintColor = vm.accentColor(using: systemScheme)
-
+        
         NavigationStack(path: $router.path) {
             List {
                 Section("FAMILIES") {
@@ -36,7 +37,7 @@ struct HomeView: View {
             .tint(tintColor)
             .scrollContentBackground(.hidden)
             .background(background)
-            
+            .padding(.top, 55)
             .navigationDestination(for: ReeceRoute.self) { route in
                 switch route {
                 case .primary:
@@ -47,7 +48,10 @@ struct HomeView: View {
                         router.push(.colorDetail(name: tapped.name, hex: tapped.hex))
                     }
                     .environmentObject(vm)
-                    .onAppear { topTitle = "Primary" }
+                    .onAppear {
+                        topTitle = "Primary"
+                        topBarColor = nil
+                    }
                     
                 case .secondary:
                     
@@ -61,6 +65,7 @@ struct HomeView: View {
                     .environmentObject(vm)
                     .onAppear {
                         topTitle = "Secondary"
+                        topBarColor = nil
                     }
                     
                 case .support:
@@ -70,35 +75,35 @@ struct HomeView: View {
                     .environmentObject(vm)
                     .onAppear() {
                         topTitle = "Support"
+                        topBarColor = nil
                     }
-
+                    
                 case let .colorDetail(name, hex):
                     ColorDetailView(
                         title: name,
                         color: Color(hex: hex)
                     )
                     .environmentObject(vm)
-                    .onAppear { topTitle = "Primary" } // o name si prefieres
+                    .onAppear {
+                        topTitle = ""
+                        topBarColor = Color(hex: hex)
+                    }
                 }
             }
         }
-        // Ocultar barra nativa del sistema
         .toolbar(.hidden, for: .navigationBar)
-
-        // Insertar nuestro top bar SIEMPRE arriba
         .safeAreaInset(edge: .top) {
-            ReeceTopBar(title: topTitle)
+            ReeceTopBar(title: topTitle, overrideBackground: topBarColor)
                 .environmentObject(vm)
                 .environmentObject(router)
         }
-
-        // Theming global (restaura estado al volver al root)
         .environmentObject(vm)
         .environmentObject(router)
         .preferredColorScheme(effective)
         .onAppear {
             vm.applyThemeSideEffects()
             topTitle = "Reece DS"
+            topBarColor = nil
         }
         .onChange(of: vm.themeMode) { vm.applyThemeSideEffects() }
         .reeceBackground(background)

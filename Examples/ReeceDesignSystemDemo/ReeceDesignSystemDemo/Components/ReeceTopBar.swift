@@ -20,6 +20,7 @@ struct ReeceTopBar: View {
     @EnvironmentObject private var router: NavRouter
 
     let title: String
+    var overrideBackground: Color? = nil
 
     // Derivados de UI (idénticos a tu toolbar previo)
     private var textColor: Color { vm.primaryTextColor(using: systemScheme) }
@@ -68,12 +69,11 @@ struct ReeceTopBar: View {
             }
         }
         .padding(.horizontal, 16)
-        .padding(.top, 8)    // respiración extra bajo la barra de estado
+        .padding(.top, 8)
         .padding(.bottom, 10)
         .background(
-            // Fondo del top bar: usa el background del tema
-            vm.backgroundColor(using: systemScheme)
-                .overlay(Divider(), alignment: .bottom)
+            (overrideBackground ?? vm.backgroundColor(using: systemScheme))
+                           .overlay(Divider(), alignment: .bottom)
         )
     }
 }
