@@ -16,7 +16,9 @@ struct HomeView: View {
     @Environment(\.colorScheme) private var systemScheme
     @StateObject private var vm = HomeViewModel()
     @StateObject private var router = NavRouter() // ← ruta compartida
-
+    @State private var toolbarTitle: String = "Reece DS"
+    @State private var toolbarShowBack: Bool = false
+    
     var body: some View {
         // Derivados de theme (como los tenías)
         let effective: ColorScheme = vm.effectiveScheme(using: systemScheme)
@@ -24,7 +26,7 @@ struct HomeView: View {
         let cellBg: Color         = vm.cellBackgroundColor(using: systemScheme)
         let textColor: Color      = vm.primaryTextColor(using: systemScheme)
         let tintColor: Color      = vm.accentColor(using: systemScheme)
-
+        
         NavigationStack(path: $router.path) {
             List {
                 Section("FAMILIES") {
@@ -36,7 +38,7 @@ struct HomeView: View {
             .listStyle(.insetGrouped)
             .foregroundStyle(textColor)
             .tint(tintColor)
-            .reeceToolbar(title: "Reece DS") // root: sin back
+            .reeceToolbar(title: toolbarTitle, showBack: toolbarShowBack, backBehavior: .pop)
             .scrollContentBackground(.hidden)
             .background(background)
             // Destinos centralizados por ruta
@@ -51,16 +53,26 @@ struct HomeView: View {
                         router.push(.colorDetail(name: tapped.name, hex: tapped.hex))
                     }
                     .environmentObject(vm)
-
+                    .onAppear {
+                        toolbarTitle   = "Primary"
+                        toolbarShowBack = true
+                    }
+                    
                 case let .colorDetail(name, hex):
                     ColorDetailView(
                         title: name,
                         color: Color(hex: hex) // respeta scheme si es dinámico
                     )
                     .environmentObject(vm)
-                    // En detalle queremos back tipo "pop" (no dismiss al root)
-                    .reeceToolbar(title: "Primary", showBack: true, backBehavior: .pop)
+                    .onAppear {
+                        toolbarTitle   = ""
+                        toolbarShowBack = true
+                    }
                 }
+            }
+            .onAppear {
+                toolbarTitle   = "Reece DS"
+                toolbarShowBack = false
             }
         }
         // Environments compartidos
