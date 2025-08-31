@@ -40,6 +40,7 @@ public struct PaletteTone: Identifiable, Sendable {
 /// - Las bandas se redondean arriba/abajo para parecer una paleta compacta.
 /// - Cada banda muestra el HEX centrado y dispara `onTapTone` al tocarla.
 public struct ColorPaletteCard: View {
+    @Environment(\.colorScheme) private var systemScheme
     public let title: String
     public let tones: [PaletteTone]
     public var maxBands: Int = 4           // cuántas bandas mostrar (ej. 4 como en el mock)
@@ -72,7 +73,7 @@ public struct ColorPaletteCard: View {
                 ForEach(Array(show.enumerated()), id: \.element.id) { idx, tone in
                     ZStack {
                         tone.color
-                        Text(ReeceColorExport.hexString(for: tone.color, scheme: nil, includeAlpha: false) ?? tone.hex.uppercased())
+                        Text(ReeceColorExport.hexString(for: tone.color, scheme: systemScheme, includeAlpha: false) ?? tone.hex.uppercased())
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(tone.labelColor)
                             .shadow(radius: 0.5)
