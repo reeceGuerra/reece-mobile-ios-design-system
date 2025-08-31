@@ -21,7 +21,7 @@ private extension ReeceThemeMode {
 struct HomeView: View {
     @Environment(\.colorScheme) private var systemScheme
     @State private var themeMode: ReeceThemeMode = .system
-
+    
     // scheme efectivo (lo que realmente verá la UI)
     private var effectiveScheme: ColorScheme {
         switch themeMode {
@@ -30,7 +30,7 @@ struct HomeView: View {
         case .dark:   return .dark
         }
     }
-
+    
     // fondo según el scheme efectivo (bien contrastado y “de app de catálogo”)
     private var backgroundColor: Color {
         effectiveScheme == .dark
@@ -54,23 +54,22 @@ struct HomeView: View {
     private var primaryTextColor: Color {
         effectiveScheme == .dark ? Color.white.opacity(0.92) : Color.black.opacity(0.9)
     }
-
+    
     // Color de acento (enlaces, toggles, etc.)
     private var accentColor: Color {
         effectiveScheme == .dark ? Color.white.opacity(0.95) : Color.black.opacity(0.95)
     }
-
+    
     // Fondo del "botón" del menú (la etiqueta visible en toolbar)
     private var menuLabelBackground: Color {
         effectiveScheme == .dark ? Color.white.opacity(0.12) : Color.black.opacity(0.08)
     }
-
+    
     // Borde sutil del botón del menú
     private var menuLabelBorder: Color {
         effectiveScheme == .dark ? Color.white.opacity(0.22) : Color.black.opacity(0.18)
     }
-
-
+    
     var body: some View {
         NavigationStack {
             List {
@@ -84,40 +83,53 @@ struct HomeView: View {
             .listStyle(.insetGrouped)
             .foregroundStyle(effectiveScheme == .dark ? Color.white : Color.black)
             .tint(effectiveScheme == .dark ? .white : .black)
-            .navigationTitle("Reece Design System")
             .toolbar {
-                Menu {
-                    Button {
-                        themeMode = .system
-                    } label: { Label("System", systemImage: themeMode == .system ? "checkmark" : "") }
-
-                    Button {
-                        themeMode = .light
-                    } label: { Label("Light", systemImage: themeMode == .light ? "checkmark" : "") }
-
-                    Button {
-                        themeMode = .dark
-                    } label: { Label("Dark", systemImage: themeMode == .dark ? "checkmark" : "") }
-                } label: {
-                    HStack(spacing: 6) {
-                        Image(systemName: imageThemeSystem)
-                        Text(themeMode.title)
-                            .font(.callout.weight(.semibold))
+                
+                
+                ToolbarItem(placement: .topBarLeading) {
+                    VStack(spacing: 2) {
+                        Text("Reece DS")
+                            .font(.title)
+                            .foregroundStyle(primaryTextColor)
                     }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .foregroundStyle(primaryTextColor)
-                    .background(menuLabelBackground)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(menuLabelBorder, lineWidth: 1)
-                    )
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                }
+                
+                // Right-aligned button
+                ToolbarItem(placement: .topBarTrailing) {
+                    Menu {
+                        Button {
+                            themeMode = .system
+                        } label: { Label("System", systemImage: themeMode == .system ? "checkmark" : "") }
+                        
+                        Button {
+                            themeMode = .light
+                        } label: { Label("Light", systemImage: themeMode == .light ? "checkmark" : "") }
+                        
+                        Button {
+                            themeMode = .dark
+                        } label: { Label("Dark", systemImage: themeMode == .dark ? "checkmark" : "") }
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: imageThemeSystem)
+                            Text(themeMode.title)
+                                .font(.callout.weight(.semibold))
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .foregroundStyle(primaryTextColor)
+                        .background(menuLabelBackground)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(menuLabelBorder, lineWidth: 1)
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
                 }
             }
             .scrollContentBackground(.hidden)
             .background(backgroundColor)
         }
+        .preferredColorScheme(effectiveScheme)
         .toolbarBackground(backgroundColor, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .toolbarColorScheme(effectiveScheme, for: .navigationBar)
