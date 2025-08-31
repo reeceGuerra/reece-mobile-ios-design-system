@@ -72,7 +72,7 @@ public struct ColorPaletteCard: View {
                 ForEach(Array(show.enumerated()), id: \.element.id) { idx, tone in
                     ZStack {
                         tone.color
-                        Text(tone.hex.uppercased())
+                        Text(ReeceColorExport.hexString(for: tone.color, scheme: nil, includeAlpha: false) ?? tone.hex.uppercased())
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(tone.labelColor)
                             .shadow(radius: 0.5)

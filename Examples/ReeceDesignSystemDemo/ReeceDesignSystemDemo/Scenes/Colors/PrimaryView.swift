@@ -1,11 +1,3 @@
-//
-//  PrimaryView.swift
-//  ReeceDesignSystemDemo
-//
-//  Created by Carlos Lopez on 30/08/25.
-//
-
-
 import SwiftUI
 import ReeceDesignSystem
 
@@ -13,43 +5,36 @@ struct PrimaryView: View {
     @Binding var mode: ReeceThemeMode
     let systemScheme: ColorScheme
 
+    // TODO: reemplaza por tus arrays reales de Figma
+    private let darkBlueHEX = ["#EDF3F6", "#D8E2EB", "#C5D3E1", "#B0C2D6",
+                               "#9BB1CB", "#869FBE", "#6E8AAE", "#576E94",
+                               "#3E5479", "#2A3D5D"] // 10 → 100 (ejemplo)
+
+    private var darkBlueTones: [PaletteTone] {
+        darkBlueHEX.reversed().map(PaletteTone.init) // ↑ oscuro abajo
+    }
+
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                Text("Dark Blue").font(.headline)
-                ColorRowView(tones: DarkBlueTone.allCases) { tone in
-                    ReeceColors.primary.darkBlue(tone, using: systemScheme)
+            VStack(alignment: .leading, spacing: 24) {
+                ColorPaletteCard(
+                    title: "Dark Blue",
+                    tones: darkBlueTones,
+                    maxBands: 10,                      // muestra 4 bandas
+                    bandHeight: 36
+                ) { tapped in
+                    // Navegación futura: por ahora sólo log
+                    print("Tapped tone:", tapped.hex)
                 }
 
-                Text("Light Blue").font(.headline)
-                ColorRowView(tones: LightBlueTone.allCases) { tone in
-                    ReeceColors.primary.lightBlue(tone, using: systemScheme)
-                }
-
-                Text("Dark Text Gray").font(.headline)
-                ColorRowView(tones: DarkTextGrayTone.allCases) { tone in
-                    ReeceColors.primary.darkTextGray(tone, using: systemScheme)
-                }
+                // Repite una card para Light Blue y Dark Text Gray (pasando sus HEX)
+                // ColorPaletteCard(title: "Light Blue", tones: lightBlueTones) { ... }
+                // ColorPaletteCard(title: "Dark Text Gray", tones: grayTones) { ... }
             }
-            .padding()
+            .padding(.horizontal, 16)
+            .padding(.vertical, 20)
         }
-        .applyThemedBackground()
+        .applyThemedBackground()                // fondo heredado del Home
         .reeceToolbar(title: "Primary", showBack: true)
-    }
-}
-
-struct ColorRowView<T: CaseIterable & RawRepresentable>: View where T.RawValue == Int {
-    let tones: [T]
-    let colorForTone: (T) -> Color
-
-    var body: some View {
-        HStack(spacing: 8) {
-            ForEach(tones, id: \.rawValue) { tone in
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(colorForTone(tone))
-                    .frame(width: 30, height: 30)
-                    .overlay(Text("\(tone.rawValue)").font(.caption2).foregroundColor(.white))
-            }
-        }
     }
 }
