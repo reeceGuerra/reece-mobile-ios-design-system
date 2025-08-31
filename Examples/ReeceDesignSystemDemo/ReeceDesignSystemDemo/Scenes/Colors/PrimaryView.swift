@@ -33,7 +33,7 @@ struct PrimaryView: View {
             }
             .padding()
         }
-        .navigationTitle("Primary")
+        .reeceToolbar(title: "Primary")
     }
 }
 

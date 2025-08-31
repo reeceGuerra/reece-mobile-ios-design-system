@@ -18,10 +18,6 @@ struct HomeView: View {
         let cellBg: Color = vm.cellBackgroundColor(using: systemScheme)
         let textColor: Color  = vm.primaryTextColor(using: systemScheme)
         let tintColor: Color  = vm.accentColor(using: systemScheme)
-        let menuBg: Color = vm.menuLabelBackground(using: systemScheme)
-        let menuBorder: Color = vm.menuLabelBorder(using: systemScheme)
-        let menuIcon: String = vm.imageThemeSystem(using: systemScheme)
-        
         
         NavigationStack {
             List {
