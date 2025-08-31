@@ -18,7 +18,7 @@ private extension ReeceThemeMode {
     }
 }
 
-struct ContentView: View {
+struct HomeView: View {
     @Environment(\.colorScheme) private var systemScheme
     @State private var themeMode: ReeceThemeMode = .system
 
@@ -86,9 +86,7 @@ struct ContentView: View {
             .tint(effectiveScheme == .dark ? .white : .black)
             .navigationTitle("Reece Design System")
             .toolbar {
-                // Muestra el modo actual EN LA BARRA: "🎨 Light" / "🎨 Dark" / "🎨 System"
                 Menu {
-                    // Opciones del selector
                     Button {
                         themeMode = .system
                     } label: { Label("System", systemImage: themeMode == .system ? "checkmark" : "") }
@@ -108,8 +106,8 @@ struct ContentView: View {
                     }
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
-                    .foregroundStyle(primaryTextColor)     // texto/icono según tema
-                    .background(menuLabelBackground)       // fondo reactivo
+                    .foregroundStyle(primaryTextColor)
+                    .background(menuLabelBackground)
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
                             .stroke(menuLabelBorder, lineWidth: 1)
@@ -120,10 +118,9 @@ struct ContentView: View {
             .scrollContentBackground(.hidden)
             .background(backgroundColor)
         }
-        .toolbarColorScheme(effectiveScheme, for: .navigationBar)
         .toolbarBackground(backgroundColor, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
-        // sincroniza el modo global del paquete (por si lo usas en pickers de color)
+        .toolbarColorScheme(effectiveScheme, for: .navigationBar)
         .onChange(of: themeMode) { _, newValue in
             ReeceTheme.mode = newValue
         }
@@ -133,5 +130,5 @@ struct ContentView: View {
 
 
 #Preview {
-    ContentView()
+    HomeView()
 }
