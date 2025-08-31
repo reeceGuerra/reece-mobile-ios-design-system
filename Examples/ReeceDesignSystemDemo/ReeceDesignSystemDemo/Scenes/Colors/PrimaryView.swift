@@ -22,16 +22,36 @@ struct PrimaryView: View {
                     tones: DarkBlueTone.allCases.map { tone in
                         let c = ReeceColors.primary.darkBlue(tone, using: systemScheme)
                         let hex = ReeceColorExport.hexString(for: c, scheme: systemScheme) ?? "#N/A"
-                        return PaletteTone(hex) // tu struct de la card
+                        return PaletteTone(hex)
                     },
                     maxBands: DarkBlueTone.allCases.count,
                 ) { tapped in
                     print("Tapped Dark Blue tone:", tapped.hex)
                 }
-
-                // Light Blue y Dark Text Gray igual, solo cambias el enum
-                // ColorPaletteCard(title: "Light Blue", tones: LightBlueTone.allCases.map { ... }) { ... }
-                // ColorPaletteCard(title: "Dark Text Gray", tones: DarkTextGrayTone.allCases.map { ... }) { ... }
+                
+                ColorPaletteCard(
+                    title: "Light Blue",
+                    tones: LightBlueTone.allCases.map { tone in
+                        let c = ReeceColors.primary.lightBlue(tone, using: systemScheme)
+                        let hex = ReeceColorExport.hexString(for: c, scheme: systemScheme) ?? "#N/A"
+                        return PaletteTone(hex)
+                    },
+                    maxBands: LightBlueTone.allCases.count,
+                ) { tapped in
+                    print("Tapped Light Blue tone:", tapped.hex)
+                }
+                
+                ColorPaletteCard(
+                    title: "Dark Text Gray",
+                    tones: DarkTextGrayTone.allCases.map { tone in
+                        let c = ReeceColors.primary.darkTextGray(tone, using: systemScheme)
+                        let hex = ReeceColorExport.hexString(for: c, scheme: systemScheme) ?? "#N/A"
+                        return PaletteTone(hex)
+                    },
+                    maxBands: DarkTextGrayTone.allCases.count,
+                ) { tapped in
+                    print("Tapped Dark Text Gray tone:", tapped.hex)
+                }
             }
             .padding()
         }

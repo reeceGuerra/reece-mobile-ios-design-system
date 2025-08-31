@@ -1,0 +1,51 @@
+//
+//  ColorDetailView.swift
+//  ReeceDesignSystemDemo
+//
+//  Created by Carlos Lopez on 31/08/25.
+//
+
+
+import SwiftUI
+import ReeceDesignSystem
+
+/// Vista detalle tipo "Pantone card".
+/// Muestra un bloque de color a pantalla completa con:
+/// - Encabezado "ReeceDS COLORS"
+/// - HEX del color (resuelto por scheme)
+/// - Nombre + tono (e.g. "DarkBlue Tone 10")
+
+struct ColorDetailView: View {
+    @Environment(\.colorScheme) private var systemScheme
+    @EnvironmentObject private var vm: HomeViewModel
+
+    let title: String
+    let color: Color
+    private var labelColor: Color {
+        ReeceColorContrast.preferredLabelColor(over: color, scheme: systemScheme)
+    }
+    private var hexText: String {
+        ReeceColorExport.hexString(for: color, scheme: systemScheme, includeAlpha: false) ?? "#N/A"
+    }
+
+    var body: some View {
+        ZStack(alignment: .bottomLeading) {
+            color.ignoresSafeArea() // fondo sólido (dinámico si lo es)
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text("ReeceDS COLORS")
+                    .font(.title2.weight(.bold))
+                    .kerning(0.5)
+                Text(hexText)                 // HEX
+                    .font(.headline)
+                Text(title)                   // Nombre + tono
+                    .font(.subheadline.weight(.semibold))
+                    .opacity(0.9)
+            }
+            .foregroundStyle(labelColor)
+            .padding(.horizontal, 20)
+            .padding(.bottom, 28)
+        }
+        .reeceToolbar(title: "", showBack: true)
+    }
+}
