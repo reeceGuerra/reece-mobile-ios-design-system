@@ -5,18 +5,22 @@ import ReeceDesignSystem
 struct ReeceToolbarModifier: ViewModifier {
     @Environment(\.colorScheme) private var systemScheme
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var router: NavRouter
     @EnvironmentObject private var vm: HomeViewModel
-
+    
+    enum BackBehavior { case autoDismiss, pop }
     let title: String
     let showBack: Bool
     let hideSystemBackButton: Bool
+    let backBehavior: BackBehavior
     let visible: Bool
-
+    
+    
     private var textColor: Color { vm.primaryTextColor(using: systemScheme) }
     private var menuBg: Color { vm.menuLabelBackground(using: systemScheme) }
     private var menuBorder: Color { vm.menuLabelBorder(using: systemScheme) }
     private var menuIcon: String { vm.imageThemeSystem(using: systemScheme) }
-
+    
     func body(content: Content) -> some View {
         content
             .navigationBarBackButtonHidden(hideSystemBackButton && showBack)
@@ -25,7 +29,10 @@ struct ReeceToolbarModifier: ViewModifier {
                     if showBack {
                         ToolbarItem(placement: .topBarLeading) {
                             Button {
-                                dismiss()
+                                switch backBehavior {
+                                case .autoDismiss: dismiss()
+                                case .pop: router.pop()
+                                }
                             } label: {
                                 Image(systemName: "chevron.backward")
                                     .font(.body.weight(.semibold))
@@ -33,13 +40,13 @@ struct ReeceToolbarModifier: ViewModifier {
                             }
                         }
                     }
-
+                    
                     ToolbarItem(placement: .topBarLeading) {
                         Text(title)
                             .font(.title)
                             .foregroundStyle(textColor)
                     }
-
+                    
                     ToolbarItem(placement: .topBarTrailing) {
                         Menu {
                             ForEach(ReeceThemeMode.allCases, id: \.self) { theme in
@@ -73,14 +80,15 @@ struct ReeceToolbarModifier: ViewModifier {
 extension View {
     func reeceToolbar(
         title: String,
-        showBack: Bool = false,                // en Home se queda false
-        hideSystemBackButton: Bool = true,     // oculta back del sistema si usas el tuyo
+        showBack: Bool = false,
+        hideSystemBackButton: Bool = true,
+        backBehavior: ReeceToolbarModifier.BackBehavior = .autoDismiss,
         visible: Bool = true
     ) -> some View {
         modifier(ReeceToolbarModifier(
             title: title,
-            showBack: showBack,
-            hideSystemBackButton: hideSystemBackButton,
+            showBack: showBack, hideSystemBackButton: hideSystemBackButton,
+            backBehavior: backBehavior,
             visible: visible
         ))
     }
