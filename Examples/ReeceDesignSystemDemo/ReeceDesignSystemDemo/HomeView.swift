@@ -32,13 +32,13 @@ struct HomeView: View {
                 Section("FAMILIES") {
                     // Navegación declarativa por valor
                     NavigationLink("Primary", value: ReeceRoute.primary)
+                    NavigationLink("Secondary", value: ReeceRoute.secondary)
                 }
                 .listRowBackground(cellBg)
             }
             .listStyle(.insetGrouped)
             .foregroundStyle(textColor)
             .tint(tintColor)
-            .reeceToolbar(title: toolbarTitle, showBack: toolbarShowBack, backBehavior: .pop)
             .scrollContentBackground(.hidden)
             .background(background)
             // Destinos centralizados por ruta
@@ -58,6 +58,20 @@ struct HomeView: View {
                         toolbarShowBack = true
                     }
                     
+                case .secondary:
+                    
+                    SecondaryView(
+                        mode: $vm.themeMode,
+                        systemScheme: systemScheme
+                    ) { tapped in
+                        // Empuja detalle con nombre + hex
+                        router.push(.colorDetail(name: tapped.name, hex: tapped.hex))
+                    }
+                    .environmentObject(vm)
+                    .onAppear {
+                        toolbarTitle   = "Secondary"
+                        toolbarShowBack = true
+                    }
                 case let .colorDetail(name, hex):
                     ColorDetailView(
                         title: name,
@@ -71,19 +85,20 @@ struct HomeView: View {
                 }
             }
         }
-        .onAppear {
-            toolbarTitle   = "Reece DS"
-            toolbarShowBack = false
-        }
-        // Environments compartidos
+        .reeceToolbar(title: toolbarTitle,
+                      showBack: toolbarShowBack,
+                      backBehavior: .pop)
         .environmentObject(vm)
         .environmentObject(router)
-        // Themado global (como ya tenías)
         .preferredColorScheme(effective)
         .toolbarBackground(background, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .toolbarColorScheme(effective, for: .navigationBar)
-        .onAppear { vm.applyThemeSideEffects() }
+        .onAppear {
+            vm.applyThemeSideEffects()
+            toolbarTitle = "Reece DS"
+            toolbarShowBack = false
+        }
         .onChange(of: vm.themeMode) { vm.applyThemeSideEffects() }
         .reeceBackground(background)
         .reeceCellBackground(cellBg)
