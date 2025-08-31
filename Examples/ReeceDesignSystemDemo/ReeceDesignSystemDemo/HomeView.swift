@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  HomeView.swift
 //  ReeceDesignSystemDemo
 //
 //  Created by Carlos Lopez on 30/08/25.
@@ -8,54 +8,71 @@
 import SwiftUI
 import ReeceDesignSystem
 
+// Asegúrate de tener estos tipos en tu proyecto:
+// enum ReeceRoute: Hashable { case primary, colorDetail(name: String, hex: String) }
+// final class NavRouter: ObservableObject { @Published var path = NavigationPath(); func push(_ r: ReeceRoute){ path.append(r) }; func pop(){ if !path.isEmpty { path.removeLast() } } }
+
 struct HomeView: View {
     @Environment(\.colorScheme) private var systemScheme
     @StateObject private var vm = HomeViewModel()
-    @State private var selectedTone: PaletteTone?
-    
+    @StateObject private var router = NavRouter() // ← ruta compartida
+
     var body: some View {
-        let effective: ColorScheme =  vm.effectiveScheme(using: systemScheme)
-        let background: Color = vm.backgroundColor(using: systemScheme)
-        let cellBg: Color = vm.cellBackgroundColor(using: systemScheme)
-        let textColor: Color  = vm.primaryTextColor(using: systemScheme)
-        let tintColor: Color  = vm.accentColor(using: systemScheme)
-        
-        NavigationStack {
+        // Derivados de theme (como los tenías)
+        let effective: ColorScheme = vm.effectiveScheme(using: systemScheme)
+        let background: Color     = vm.backgroundColor(using: systemScheme)
+        let cellBg: Color         = vm.cellBackgroundColor(using: systemScheme)
+        let textColor: Color      = vm.primaryTextColor(using: systemScheme)
+        let tintColor: Color      = vm.accentColor(using: systemScheme)
+
+        NavigationStack(path: $router.path) {
             List {
                 Section("FAMILIES") {
-                    NavigationLink("Primary") {
-                        PrimaryView(mode: $vm.themeMode, systemScheme: systemScheme,
-                                    onSelect: { tapped in
-                            selectedTone = tapped
-                        })
-                        .environmentObject(vm)
-                    }
+                    // Navegación declarativa por valor
+                    NavigationLink("Primary", value: ReeceRoute.primary)
                 }
                 .listRowBackground(cellBg)
             }
             .listStyle(.insetGrouped)
             .foregroundStyle(textColor)
             .tint(tintColor)
-            .reeceToolbar(title: "Reece DS")
+            .reeceToolbar(title: "Reece DS") // root: sin back
             .scrollContentBackground(.hidden)
             .background(background)
-            .navigationDestination(item: $selectedTone) { tapped in
-                ColorDetailView(
-                    title: tapped.name,
-                    color: Color(hex: tapped.hex),
-                )
-                .environmentObject(vm)
+            // Destinos centralizados por ruta
+            .navigationDestination(for: ReeceRoute.self) { route in
+                switch route {
+                case .primary:
+                    PrimaryView(
+                        mode: $vm.themeMode,
+                        systemScheme: systemScheme
+                    ) { tapped in
+                        // Empuja detalle con nombre + hex
+                        router.push(.colorDetail(name: tapped.name, hex: tapped.hex))
+                    }
+                    .environmentObject(vm)
+
+                case let .colorDetail(name, hex):
+                    ColorDetailView(
+                        title: name,
+                        color: Color(hex: hex) // respeta scheme si es dinámico
+                    )
+                    .environmentObject(vm)
+                    // En detalle queremos back tipo "pop" (no dismiss al root)
+                    .reeceToolbar(title: "Primary", showBack: true, backBehavior: .pop)
+                }
             }
         }
+        // Environments compartidos
         .environmentObject(vm)
+        .environmentObject(router)
+        // Themado global (como ya tenías)
         .preferredColorScheme(effective)
         .toolbarBackground(background, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .toolbarColorScheme(effective, for: .navigationBar)
         .onAppear { vm.applyThemeSideEffects() }
-        .onChange(of: vm.themeMode) {
-            vm.applyThemeSideEffects()
-        }
+        .onChange(of: vm.themeMode) { vm.applyThemeSideEffects() }
         .reeceBackground(background)
         .reeceCellBackground(cellBg)
     }
