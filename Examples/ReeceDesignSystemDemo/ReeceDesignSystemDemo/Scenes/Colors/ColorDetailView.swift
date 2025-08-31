@@ -34,7 +34,7 @@ struct ColorDetailView: View {
             color.ignoresSafeArea()
 
             VStack(alignment: .leading, spacing: 8) {
-                Text("ReeceDS COLORS")
+                Text("REECE DS COLORS")
                     .font(.title2.weight(.bold))
                     .kerning(0.5)
                 Text(hexText)
