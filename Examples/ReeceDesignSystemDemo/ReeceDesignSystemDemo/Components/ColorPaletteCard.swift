@@ -9,7 +9,7 @@ import SwiftUI
 import ReeceDesignSystem // para Color(hex:)
 
 /// Modelo simple de un tono a renderizar en la card.
-public struct PaletteTone: Identifiable, Sendable {
+public struct PaletteTone: Identifiable, Hashable, Sendable {
     public let id = UUID()
     public let hex: String
 

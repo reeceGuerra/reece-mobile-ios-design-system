@@ -4,7 +4,6 @@
 //
 //  Created by Carlos Lopez on 30/08/25.
 //
-
 import SwiftUI
 import ReeceDesignSystem
 
@@ -12,51 +11,61 @@ struct PrimaryView: View {
     @Binding var mode: ReeceThemeMode
     let systemScheme: ColorScheme
 
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
+    @State private var selected: PaletteTone?    // ← para navegación
 
-                // Dark Blue como Card
-                ColorPaletteCard(
-                    title: "Dark Blue",
-                    tones: DarkBlueTone.allCases.map { tone in
-                        let c = ReeceColors.primary.darkBlue(tone, using: systemScheme)
-                        let hex = ReeceColorExport.hexString(for: c, scheme: systemScheme) ?? "#N/A"
-                        return PaletteTone(hex)
-                    },
-                    maxBands: DarkBlueTone.allCases.count,
-                ) { tapped in
-                    print("Tapped Dark Blue tone:", tapped.hex)
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 24) {
+                    ColorPaletteCard(
+                        title: "Dark Blue",
+                        tones: DarkBlueTone.allCases.map { tone in
+                            let c = ReeceColors.primary.darkBlue(tone, using: systemScheme)
+                            let hex = ReeceColorExport.hexString(for: c, scheme: systemScheme) ?? "#N/A"
+                            return PaletteTone(hex)
+                        },
+                        maxBands: DarkBlueTone.allCases.count,
+                    ) { tapped in
+                        selected = tapped
+                    }
+                    
+                    ColorPaletteCard(
+                        title: "Light Blue",
+                        tones: LightBlueTone.allCases.map { tone in
+                            let c = ReeceColors.primary.lightBlue(tone, using: systemScheme)
+                            let hex = ReeceColorExport.hexString(for: c, scheme: systemScheme) ?? "#N/A"
+                            return PaletteTone(hex)
+                        },
+                        maxBands: LightBlueTone.allCases.count,
+                    ) { tapped in
+                        selected = tapped
+                    }
+                    
+                    ColorPaletteCard(
+                        title: "Dark Text Gray",
+                        tones: DarkTextGrayTone.allCases.map { tone in
+                            let c = ReeceColors.primary.darkTextGray(tone, using: systemScheme)
+                            let hex = ReeceColorExport.hexString(for: c, scheme: systemScheme) ?? "#N/A"
+                            return PaletteTone(hex)
+                        },
+                        maxBands: DarkTextGrayTone.allCases.count,
+                    ) { tapped in
+                        selected = tapped
+                    }
                 }
-                
-                ColorPaletteCard(
-                    title: "Light Blue",
-                    tones: LightBlueTone.allCases.map { tone in
-                        let c = ReeceColors.primary.lightBlue(tone, using: systemScheme)
-                        let hex = ReeceColorExport.hexString(for: c, scheme: systemScheme) ?? "#N/A"
-                        return PaletteTone(hex)
-                    },
-                    maxBands: LightBlueTone.allCases.count,
-                ) { tapped in
-                    print("Tapped Light Blue tone:", tapped.hex)
-                }
-                
-                ColorPaletteCard(
-                    title: "Dark Text Gray",
-                    tones: DarkTextGrayTone.allCases.map { tone in
-                        let c = ReeceColors.primary.darkTextGray(tone, using: systemScheme)
-                        let hex = ReeceColorExport.hexString(for: c, scheme: systemScheme) ?? "#N/A"
-                        return PaletteTone(hex)
-                    },
-                    maxBands: DarkTextGrayTone.allCases.count,
-                ) { tapped in
-                    print("Tapped Dark Text Gray tone:", tapped.hex)
-                }
+                .padding()
             }
-            .padding()
+            .applyThemedBackground()
+            .navigationDestination(item: $selected) { tapped in
+                // Resolver Color desde el HEX del tono tocado
+                let toneColor = Color(hex: tapped.hex)
+                ColorDetailView(
+                    title: "DarkBlue Tone \(10)",     // <- puedes formarlo con el enum si lo pasas
+                    color: toneColor
+                )
+                .environmentObject(HomeViewModel()) // usa tu VM compartido si lo tienes aquí
+            }
+            .reeceToolbar(title: "Primary", showBack: true)
         }
-        .applyThemedBackground()
-        .reeceToolbar(title: "Primary", showBack: true)
     }
 }
-
