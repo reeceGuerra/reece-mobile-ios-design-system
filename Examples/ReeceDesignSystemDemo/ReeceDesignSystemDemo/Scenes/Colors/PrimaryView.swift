@@ -24,6 +24,7 @@ struct PrimaryView: View {
                         let hex = ReeceColorExport.hexString(for: c, scheme: systemScheme) ?? "#N/A"
                         return PaletteTone(hex) // tu struct de la card
                     },
+                    maxBands: DarkBlueTone.allCases.count,
                 ) { tapped in
                     print("Tapped Dark Blue tone:", tapped.hex)
                 }
