@@ -11,17 +11,18 @@ import ReeceDesignSystem
 struct HomeView: View {
     @Environment(\.colorScheme) private var systemScheme
     @StateObject private var vm = HomeViewModel()
-    
-    private var effective: ColorScheme { vm.effectiveScheme(using: systemScheme) }
-    private var background: Color { vm.backgroundColor(using: systemScheme) }
-    private var cellBg: Color { vm.cellBackgroundColor(using: systemScheme) }
-    private var textColor: Color  { vm.primaryTextColor(using: systemScheme) }
-    private var tintColor: Color  { vm.accentColor(using: systemScheme) }
-    private var menuBg: Color { vm.menuLabelBackground(using: systemScheme) }
-    private var menuBorder: Color { vm.menuLabelBorder(using: systemScheme) }
-    private var menuIcon: String { vm.imageThemeSystem(using: systemScheme) }
 
     var body: some View {
+        let effective: ColorScheme =  vm.effectiveScheme(using: systemScheme)
+        let background: Color = vm.backgroundColor(using: systemScheme)
+        let cellBg: Color = vm.cellBackgroundColor(using: systemScheme)
+        let textColor: Color  = vm.primaryTextColor(using: systemScheme)
+        let tintColor: Color  = vm.accentColor(using: systemScheme)
+        let menuBg: Color = vm.menuLabelBackground(using: systemScheme)
+        let menuBorder: Color = vm.menuLabelBorder(using: systemScheme)
+        let menuIcon: String = vm.imageThemeSystem(using: systemScheme)
+        
+        
         NavigationStack {
             List {
                 Section("FAMILIES") {
@@ -65,6 +66,7 @@ struct HomeView: View {
         .toolbarBackground(background, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .toolbarColorScheme(effective, for: .navigationBar)
+        .onAppear { vm.applyThemeSideEffects() }
         .onChange(of: vm.themeMode) {
             vm.applyThemeSideEffects()
         }
