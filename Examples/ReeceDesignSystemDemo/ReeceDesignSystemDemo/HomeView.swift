@@ -33,6 +33,7 @@ struct HomeView: View {
                     // Navegación declarativa por valor
                     NavigationLink("Primary", value: ReeceRoute.primary)
                     NavigationLink("Secondary", value: ReeceRoute.secondary)
+                    NavigationLink("Support", value: ReeceRoute.support)
                 }
                 .listRowBackground(cellBg)
             }
@@ -70,6 +71,15 @@ struct HomeView: View {
                     .environmentObject(vm)
                     .onAppear {
                         toolbarTitle   = "Secondary"
+                        toolbarShowBack = true
+                    }
+                case .support:
+                    SupportView(mode: $vm.themeMode, systemScheme: systemScheme) { tapped in
+                        router.push(.colorDetail(name: tapped.name, hex: tapped.hex))
+                    }
+                    .environmentObject(vm)
+                    .onAppear() {
+                        toolbarTitle   = "Support"
                         toolbarShowBack = true
                     }
                 case let .colorDetail(name, hex):
