@@ -34,6 +34,7 @@ struct PrimaryView: View {
             .padding()
         }
         .navigationTitle("Primary")
+        .applyThemedBackground()
     }
 }
 

@@ -70,6 +70,8 @@ struct HomeView: View {
         .onChange(of: vm.themeMode) {
             vm.applyThemeSideEffects()
         }
+        .reeceBackground(background)
+        .reeceCellBackground(cellBg)
     }
 }
 
