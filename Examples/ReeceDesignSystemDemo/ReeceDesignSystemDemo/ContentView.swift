@@ -38,6 +38,12 @@ struct ContentView: View {
         : Color(white: 0.90)        // gris muy claro
     }
     
+    private var cellBackgroundColor: Color {
+        effectiveScheme == .dark
+        ? Color(white: 0.50)        // casi negro
+        : Color(white: 1)        // gris muy claro
+    }
+    
     private var imageThemeSystem: String {
         effectiveScheme == .dark
         ? "moon.stars.fill"
@@ -73,10 +79,11 @@ struct ContentView: View {
                         PrimaryView(mode: $themeMode, systemScheme: systemScheme)
                     }
                 }
+                .listRowBackground(cellBackgroundColor)
             }
             .listStyle(.insetGrouped)
-            .foregroundStyle(primaryTextColor)
-            .tint(accentColor)
+            .foregroundStyle(effectiveScheme == .dark ? Color.white : Color.black)
+            .tint(effectiveScheme == .dark ? .white : .black)
             .navigationTitle("Reece Design System")
             .toolbar {
                 // Muestra el modo actual EN LA BARRA: "🎨 Light" / "🎨 Dark" / "🎨 System"
