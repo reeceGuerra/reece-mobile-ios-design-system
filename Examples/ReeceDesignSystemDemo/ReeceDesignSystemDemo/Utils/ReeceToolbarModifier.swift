@@ -1,22 +1,15 @@
-//
-//  ReeceToolbarModifier.swift
-//  ReeceDesignSystemDemo
-//
-//  Created by Carlos Lopez on 31/08/25.
-//
-
-
+// ReeceToolbarModifier.swift
 import SwiftUI
 import ReeceDesignSystem
 
-/// Toolbar reutilizable con título a la izquierda y menú de tema a la derecha.
-/// - Usa el HomeViewModel para colores, iconos e integración de theme.
-/// - Se puede ocultar con visible=false.
 struct ReeceToolbarModifier: ViewModifier {
     @Environment(\.colorScheme) private var systemScheme
+    @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var vm: HomeViewModel
 
     let title: String
+    let showBack: Bool
+    let hideSystemBackButton: Bool
     let visible: Bool
 
     private var textColor: Color { vm.primaryTextColor(using: systemScheme) }
@@ -26,13 +19,27 @@ struct ReeceToolbarModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         content
+            .navigationBarBackButtonHidden(hideSystemBackButton && showBack)
             .toolbar {
                 if visible {
+                    if showBack {
+                        ToolbarItem(placement: .topBarLeading) {
+                            Button {
+                                dismiss()
+                            } label: {
+                                Image(systemName: "chevron.backward")
+                                    .font(.body.weight(.semibold))
+                                    .foregroundStyle(textColor)
+                            }
+                        }
+                    }
+
                     ToolbarItem(placement: .topBarLeading) {
                         Text(title)
                             .font(.title)
                             .foregroundStyle(textColor)
                     }
+
                     ToolbarItem(placement: .topBarTrailing) {
                         Menu {
                             ForEach(ReeceThemeMode.allCases, id: \.self) { theme in
@@ -64,8 +71,17 @@ struct ReeceToolbarModifier: ViewModifier {
 }
 
 extension View {
-    /// Aplica el toolbar compartido con título y visibilidad opcional.
-    func reeceToolbar(title: String, visible: Bool = true) -> some View {
-        modifier(ReeceToolbarModifier(title: title, visible: visible))
+    func reeceToolbar(
+        title: String,
+        showBack: Bool = false,                // en Home se queda false
+        hideSystemBackButton: Bool = true,     // oculta back del sistema si usas el tuyo
+        visible: Bool = true
+    ) -> some View {
+        modifier(ReeceToolbarModifier(
+            title: title,
+            showBack: showBack,
+            hideSystemBackButton: hideSystemBackButton,
+            visible: visible
+        ))
     }
 }
