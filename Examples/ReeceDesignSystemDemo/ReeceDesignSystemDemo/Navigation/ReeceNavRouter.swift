@@ -10,6 +10,7 @@ import SwiftUI
 
 /// Rutas de la demo.
 enum ReeceRoute: Hashable {
+    case home
     case primary
     case secondary
     case support
@@ -17,10 +18,22 @@ enum ReeceRoute: Hashable {
 }
 
 /// Router observable con un `NavigationPath` compartido.
-final class NavRouter: ObservableObject {
+@MainActor
+final class ReeceNavRouter: ObservableObject {
     @Published var path = NavigationPath()
-
-    func push(_ route: ReeceRoute) { path.append(route) }
-    func pop() { if !path.isEmpty { path.removeLast() } }
-    func popToRoot() { path = NavigationPath() }
+    
+    var canGoBack: Bool { !path.isEmpty }
+    
+    func push(_ route: ReeceRoute) {
+        path.append(route)
+    }
+    
+    func pop() {
+        guard !path.isEmpty else { return }
+        path.removeLast()
+    }
+    
+    func popToRoot() {
+        path.removeLast(path.count)
+    }
 }

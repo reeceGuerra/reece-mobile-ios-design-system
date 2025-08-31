@@ -17,7 +17,6 @@ import ReeceDesignSystem
 
 struct ColorDetailView: View {
     @Environment(\.colorScheme) private var systemScheme
-    @EnvironmentObject private var vm: HomeViewModel
     @State private var appeared = false
 
     let title: String
@@ -50,5 +49,6 @@ struct ColorDetailView: View {
             .animation(.easeInOut(duration: 0.40), value: appeared)
         }
         .onAppear { appeared = true }
+        .toolbarVisibility(.hidden, for: .navigationBar)
     }
 }

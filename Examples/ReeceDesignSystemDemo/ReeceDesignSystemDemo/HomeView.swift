@@ -9,21 +9,21 @@ import ReeceDesignSystem
 
 struct HomeView: View {
     @Environment(\.colorScheme) private var systemScheme
+    @Environment(\.reeceTheme) private var themeMode: Binding<ReeceThemeMode>
+    @EnvironmentObject private var router: ReeceNavRouter
     @StateObject private var vm = HomeViewModel()
-    @StateObject private var router = NavRouter()
-    
-    // Estado central del título del top bar
-    @State private var topTitle: String = "Reece DS"
-    @State private var topBarColor: Color? = nil
     
     var body: some View {
-        let effective = vm.effectiveScheme(using: systemScheme)
-        let background = vm.backgroundColor(using: systemScheme)
-        let cellBg = vm.cellBackgroundColor(using: systemScheme)
-        let textColor = vm.primaryTextColor(using: systemScheme)
-        let tintColor = vm.accentColor(using: systemScheme)
         
-        NavigationStack(path: $router.path) {
+        let background = vm.backgroundColor(using: systemScheme,
+                                            andThemeMode: themeMode.wrappedValue)
+        let cellBg = vm.cellBackgroundColor(using: systemScheme,
+                                            andThemeMode: themeMode.wrappedValue)
+        let textColor = vm.primaryTextColor(using: systemScheme,
+                                            andThemeMode: themeMode.wrappedValue)
+        let tintColor = vm.accentColor(using: systemScheme,
+                                       andThemeMode: themeMode.wrappedValue)
+        ZStack {
             List {
                 Section("FAMILIES") {
                     NavigationLink("Primary", value: ReeceRoute.primary)
@@ -35,80 +35,64 @@ struct HomeView: View {
             .listStyle(.insetGrouped)
             .foregroundStyle(textColor)
             .tint(tintColor)
-            .scrollContentBackground(.hidden)
             .background(background)
-            .padding(.top, 55)
-            .navigationDestination(for: ReeceRoute.self) { route in
-                switch route {
-                case .primary:
-                    PrimaryView(
-                        mode: $vm.themeMode,
-                        systemScheme: systemScheme
-                    ) { tapped in
-                        router.push(.colorDetail(name: tapped.name, hex: tapped.hex))
-                    }
-                    .environmentObject(vm)
-                    .onAppear {
-                        topTitle = "Primary"
-                        topBarColor = nil
-                    }
-                    
-                case .secondary:
-                    
-                    SecondaryView(
-                        mode: $vm.themeMode,
-                        systemScheme: systemScheme
-                    ) { tapped in
-                        // Empuja detalle con nombre + hex
-                        router.push(.colorDetail(name: tapped.name, hex: tapped.hex))
-                    }
-                    .environmentObject(vm)
-                    .onAppear {
-                        topTitle = "Secondary"
-                        topBarColor = nil
-                    }
-                    
-                case .support:
-                    SupportView(mode: $vm.themeMode, systemScheme: systemScheme) { tapped in
-                        router.push(.colorDetail(name: tapped.name, hex: tapped.hex))
-                    }
-                    .environmentObject(vm)
-                    .onAppear() {
-                        topTitle = "Support"
-                        topBarColor = nil
-                    }
-                    
-                case let .colorDetail(name, hex):
-                    ColorDetailView(
-                        title: name,
-                        color: Color(hex: hex)
-                    )
-                    .environmentObject(vm)
-                    .onAppear {
-                        topTitle = ""
-                        topBarColor = Color(hex: hex)
-                    }
-                }
-            }
+            .reeceBackground(background)
+            .reeceCellBackground(cellBg)
         }
-        .toolbar(.hidden, for: .navigationBar)
-        .safeAreaInset(edge: .top) {
-            ReeceTopBar(title: topTitle, overrideBackground: topBarColor)
-                .environmentObject(vm)
-                .environmentObject(router)
-        }
-        .environmentObject(vm)
-        .environmentObject(router)
-        .preferredColorScheme(effective)
-        .onAppear {
-            vm.applyThemeSideEffects()
-            topTitle = "Reece DS"
-            topBarColor = nil
-        }
-        .onChange(of: vm.themeMode) { vm.applyThemeSideEffects() }
-        .reeceBackground(background)
-        .reeceCellBackground(cellBg)
+        .reeceNavigationBar(title: "Reece DS II", trailing: {
+            MenuView()
+        })
     }
 }
 
-#Preview { HomeView() }
+struct MenuView: View {
+    @Environment(\.reeceTheme) private var themeMode: Binding<ReeceThemeMode>
+    @Environment(\.colorScheme) private var systemScheme
+    
+    var body: some View {
+        let menuBg: Color =  ReeceThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode.wrappedValue) == .dark
+        ? Color.white.opacity(0.12)
+        : Color.black.opacity(0.08)
+        
+        let menuBorder: Color = ReeceThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode.wrappedValue) == .dark
+        ? Color.white.opacity(0.22)
+        : Color.black.opacity(0.18)
+        
+        let menuIcon: String = ReeceThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode.wrappedValue) == .dark
+        ? "moon.stars.fill"
+        : "sun.max.fill"
+        let textColor = ReeceThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode.wrappedValue) == .dark
+        ? Color.white.opacity(0.92)
+        : Color.black.opacity(0.9)
+        
+        Menu {
+            ForEach(ReeceThemeMode.allCases, id: \.self) { theme in
+                Button {
+                    themeMode.wrappedValue = theme
+                } label: {
+                    if themeMode.wrappedValue == theme {
+                        Label(theme.title, systemImage: "checkmark")
+                    } else {
+                        Text(theme.title)
+                    }
+                }
+            }
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: menuIcon)
+                Text(themeMode.wrappedValue.title).font(.callout.weight(.semibold))
+            }
+            .padding(.horizontal, 12).padding(.vertical, 8)
+            .foregroundStyle(textColor)
+            .background(menuBg)
+            .overlay(RoundedRectangle(cornerRadius: 12).stroke(menuBorder, lineWidth: 1))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+    }
+}
+
+#Preview {
+    HomeView()
+        .environmentObject(ReeceNavRouter())
+        .environment(\.reeceTheme, .constant(.system))
+}

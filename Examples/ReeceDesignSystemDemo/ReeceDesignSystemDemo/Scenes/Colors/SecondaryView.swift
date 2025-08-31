@@ -9,8 +9,8 @@ import SwiftUI
 import ReeceDesignSystem
 
 struct SecondaryView: View {
-    @Binding var mode: ReeceThemeMode
-    let systemScheme: ColorScheme
+    @Environment(\.reeceTheme) private var themeMode: Binding<ReeceThemeMode>
+    @Environment(\.colorScheme) private var systemScheme
     let onSelect: (PaletteTone) -> Void
 
     var body: some View {

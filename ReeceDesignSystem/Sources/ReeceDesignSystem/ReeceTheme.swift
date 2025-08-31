@@ -25,6 +25,14 @@ public enum ReeceThemeMode: CaseIterable, Identifiable, Sendable {
     }
     
     public var id: String { self.title }
+    
+    public static func effectiveScheme(using systemScheme: ColorScheme, themeMode: ReeceThemeMode) -> ColorScheme {
+        switch themeMode {
+        case .system: return systemScheme
+        case .light:  return .light
+        case .dark:   return .dark
+        }
+    }
 }
 
 /// Global theme configuration for the package.
