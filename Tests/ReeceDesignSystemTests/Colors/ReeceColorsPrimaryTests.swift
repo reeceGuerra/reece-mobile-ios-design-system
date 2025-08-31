@@ -41,4 +41,21 @@ final class ReeceColorsPrimaryTests: XCTestCase {
                            "DarkTextGray dark should fallback to light until design provides dark palette")
         }
     }
+
+    // Primary: cubrir más tonos
+    func testDarkBlueAdditionalTones() {
+        _ = ReeceColors.primary.darkBlue(.t50, using: .light)
+        _ = ReeceColors.primary.darkBlue(.t10, using: .dark)
+    }
+
+    func testLightBlueAdditionalTones() {
+        _ = ReeceColors.primary.lightBlue(.t50, using: .light)
+        _ = ReeceColors.primary.lightBlue(.t5,  using: .dark)
+    }
+
+    func testDarkTextGrayAdditionalTones() {
+        _ = ReeceColors.primary.darkTextGray(.t50, using: .light)
+        _ = ReeceColors.primary.darkTextGray(.t10, using: .dark)
+    }
+
 }

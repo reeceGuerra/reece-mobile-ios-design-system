@@ -1,3 +1,11 @@
+//
+//  ReeceColorHexTests.swift
+//  ReeceDesignSystem
+//
+//  Created by Carlos Lopez on 30/08/25.
+//
+
+
 import XCTest
 @testable import ReeceDesignSystem
 
