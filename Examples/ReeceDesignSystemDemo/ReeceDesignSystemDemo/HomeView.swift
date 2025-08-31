@@ -11,7 +11,8 @@ import ReeceDesignSystem
 struct HomeView: View {
     @Environment(\.colorScheme) private var systemScheme
     @StateObject private var vm = HomeViewModel()
-
+    @State private var selectedTone: PaletteTone?
+    
     var body: some View {
         let effective: ColorScheme =  vm.effectiveScheme(using: systemScheme)
         let background: Color = vm.backgroundColor(using: systemScheme)
@@ -23,8 +24,11 @@ struct HomeView: View {
             List {
                 Section("FAMILIES") {
                     NavigationLink("Primary") {
-                        PrimaryView(mode: $vm.themeMode, systemScheme: systemScheme)
-                            .environmentObject(vm)
+                        PrimaryView(mode: $vm.themeMode, systemScheme: systemScheme,
+                                    onSelect: { tapped in
+                            selectedTone = tapped
+                        })
+                        .environmentObject(vm)
                     }
                 }
                 .listRowBackground(cellBg)
@@ -35,6 +39,13 @@ struct HomeView: View {
             .reeceToolbar(title: "Reece DS")
             .scrollContentBackground(.hidden)
             .background(background)
+            .navigationDestination(item: $selectedTone) { tapped in
+                ColorDetailView(
+                    title: tapped.name,
+                    color: Color(hex: tapped.hex),
+                )
+                .environmentObject(vm)
+            }
         }
         .environmentObject(vm)
         .preferredColorScheme(effective)
