@@ -33,8 +33,8 @@ struct PrimaryView: View {
             }
             .padding()
         }
-        .reeceToolbar(title: "Primary")
         .applyThemedBackground()
+        .reeceToolbar(title: "Primary")
     }
 }
 
