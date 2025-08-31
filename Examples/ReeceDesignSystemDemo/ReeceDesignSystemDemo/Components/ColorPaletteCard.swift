@@ -12,8 +12,12 @@ import ReeceDesignSystem // para Color(hex:)
 public struct PaletteTone: Identifiable, Hashable, Sendable {
     public let id = UUID()
     public let hex: String
+    public let name: String
 
-    public init(_ hex: String) { self.hex = hex }
+    public init(_ hex: String, name: String) {
+        self.hex = hex
+        self.name = name
+    }
 
     /// Color SwiftUI derivado del HEX (usa tu extensión `Color(hex:)` del package).
     public var color: Color { Color(hex: hex) }

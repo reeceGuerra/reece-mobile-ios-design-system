@@ -22,7 +22,7 @@ struct PrimaryView: View {
                         tones: DarkBlueTone.allCases.map { tone in
                             let c = ReeceColors.primary.darkBlue(tone, using: systemScheme)
                             let hex = ReeceColorExport.hexString(for: c, scheme: systemScheme) ?? "#N/A"
-                            return PaletteTone(hex)
+                            return PaletteTone(hex, name: "DarkBlue Tone \(tone.rawValue)")
                         },
                         maxBands: DarkBlueTone.allCases.count,
                     ) { tapped in
@@ -34,7 +34,7 @@ struct PrimaryView: View {
                         tones: LightBlueTone.allCases.map { tone in
                             let c = ReeceColors.primary.lightBlue(tone, using: systemScheme)
                             let hex = ReeceColorExport.hexString(for: c, scheme: systemScheme) ?? "#N/A"
-                            return PaletteTone(hex)
+                            return PaletteTone(hex, name: "LightBlue Tone \(tone.rawValue)")
                         },
                         maxBands: LightBlueTone.allCases.count,
                     ) { tapped in
@@ -46,7 +46,7 @@ struct PrimaryView: View {
                         tones: DarkTextGrayTone.allCases.map { tone in
                             let c = ReeceColors.primary.darkTextGray(tone, using: systemScheme)
                             let hex = ReeceColorExport.hexString(for: c, scheme: systemScheme) ?? "#N/A"
-                            return PaletteTone(hex)
+                            return PaletteTone(hex, name: "Dark Text Gray Tone \(tone.rawValue)")
                         },
                         maxBands: DarkTextGrayTone.allCases.count,
                     ) { tapped in
@@ -60,7 +60,7 @@ struct PrimaryView: View {
                 // Resolver Color desde el HEX del tono tocado
                 let toneColor = Color(hex: tapped.hex)
                 ColorDetailView(
-                    title: "DarkBlue Tone \(10)",     // <- puedes formarlo con el enum si lo pasas
+                    title: tapped.name,
                     color: toneColor
                 )
                 .environmentObject(HomeViewModel()) // usa tu VM compartido si lo tienes aquí
