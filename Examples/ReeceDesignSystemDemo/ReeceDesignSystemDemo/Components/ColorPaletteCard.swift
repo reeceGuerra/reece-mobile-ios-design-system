@@ -17,23 +17,6 @@ public struct PaletteTone: Identifiable, Sendable {
 
     /// Color SwiftUI derivado del HEX (usa tu extensión `Color(hex:)` del package).
     public var color: Color { Color(hex: hex) }
-
-    /// Texto blanco/negro según luminancia percibida (regla simple y performante).
-    public var labelColor: Color {
-        // Extrae RGB [0,1] desde el HEX de 6 u 8 dígitos (#RRGGBB[AA])
-        var r: Double = 0, g: Double = 0, b: Double = 0
-        let c = color.resolve(in: .init()) // Color -> UIColor-like for current env
-        #if canImport(UIKit)
-        if let ui = UIColor(cgColor: c.cgColor) as UIColor? {
-            var rr: CGFloat = 0, gg: CGFloat = 0, bb: CGFloat = 0, aa: CGFloat = 0
-            ui.getRed(&rr, green: &gg, blue: &bb, alpha: &aa)
-            r = Double(rr); g = Double(gg); b = Double(bb)
-        }
-        #endif
-        // Luminancia sRGB aproximada
-        let luminance = 0.2126*r + 0.7152*g + 0.0722*b
-        return luminance > 0.57 ? .black : .white
-    }
 }
 
 /// Card que muestra un título y una pila de bandas con los tonos.
@@ -65,7 +48,7 @@ public struct ColorPaletteCard: View {
         VStack(alignment: .leading, spacing: 12) {
             Text(title)
                 .font(.headline)
-                .foregroundStyle(.primary)
+                .foregroundStyle(.black)
 
             // Paleta apilada
             VStack(spacing: 0) {
@@ -75,7 +58,7 @@ public struct ColorPaletteCard: View {
                         tone.color
                         Text(ReeceColorExport.hexString(for: tone.color, scheme: systemScheme, includeAlpha: false) ?? tone.hex.uppercased())
                             .font(.caption.weight(.semibold))
-                            .foregroundStyle(tone.labelColor)
+                            .foregroundStyle(ReeceColorContrast.preferredLabelColor(over: tone.color, scheme: systemScheme))
                             .shadow(radius: 0.5)
                     }
                     .frame(height: bandHeight)
@@ -95,7 +78,6 @@ public struct ColorPaletteCard: View {
                 }
             }
             .background(
-                // Sombra suave alrededor del conjunto
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
                     .fill(.clear)
                     .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 4)
