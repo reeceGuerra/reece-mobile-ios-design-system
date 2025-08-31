@@ -4,33 +4,27 @@
 //
 //  Created by Carlos Lopez on 30/08/25.
 //
-
 import SwiftUI
 import ReeceDesignSystem
-
-// Asegúrate de tener estos tipos en tu proyecto:
-// enum ReeceRoute: Hashable { case primary, colorDetail(name: String, hex: String) }
-// final class NavRouter: ObservableObject { @Published var path = NavigationPath(); func push(_ r: ReeceRoute){ path.append(r) }; func pop(){ if !path.isEmpty { path.removeLast() } } }
 
 struct HomeView: View {
     @Environment(\.colorScheme) private var systemScheme
     @StateObject private var vm = HomeViewModel()
-    @StateObject private var router = NavRouter() // ← ruta compartida
-    @State private var toolbarTitle: String = "Reece DS"
-    @State private var toolbarShowBack: Bool = false
-    
+    @StateObject private var router = NavRouter()
+
+    // Estado central del título del top bar
+    @State private var topTitle: String = "Reece DS"
+
     var body: some View {
-        // Derivados de theme (como los tenías)
-        let effective: ColorScheme = vm.effectiveScheme(using: systemScheme)
-        let background: Color     = vm.backgroundColor(using: systemScheme)
-        let cellBg: Color         = vm.cellBackgroundColor(using: systemScheme)
-        let textColor: Color      = vm.primaryTextColor(using: systemScheme)
-        let tintColor: Color      = vm.accentColor(using: systemScheme)
-        
+        let effective = vm.effectiveScheme(using: systemScheme)
+        let background = vm.backgroundColor(using: systemScheme)
+        let cellBg = vm.cellBackgroundColor(using: systemScheme)
+        let textColor = vm.primaryTextColor(using: systemScheme)
+        let tintColor = vm.accentColor(using: systemScheme)
+
         NavigationStack(path: $router.path) {
             List {
                 Section("FAMILIES") {
-                    // Navegación declarativa por valor
                     NavigationLink("Primary", value: ReeceRoute.primary)
                     NavigationLink("Secondary", value: ReeceRoute.secondary)
                     NavigationLink("Support", value: ReeceRoute.support)
@@ -42,7 +36,7 @@ struct HomeView: View {
             .tint(tintColor)
             .scrollContentBackground(.hidden)
             .background(background)
-            // Destinos centralizados por ruta
+            
             .navigationDestination(for: ReeceRoute.self) { route in
                 switch route {
                 case .primary:
@@ -50,14 +44,10 @@ struct HomeView: View {
                         mode: $vm.themeMode,
                         systemScheme: systemScheme
                     ) { tapped in
-                        // Empuja detalle con nombre + hex
                         router.push(.colorDetail(name: tapped.name, hex: tapped.hex))
                     }
                     .environmentObject(vm)
-                    .onAppear {
-                        toolbarTitle   = "Primary"
-                        toolbarShowBack = true
-                    }
+                    .onAppear { topTitle = "Primary" }
                     
                 case .secondary:
                     
@@ -70,44 +60,45 @@ struct HomeView: View {
                     }
                     .environmentObject(vm)
                     .onAppear {
-                        toolbarTitle   = "Secondary"
-                        toolbarShowBack = true
+                        topTitle = "Secondary"
                     }
+                    
                 case .support:
                     SupportView(mode: $vm.themeMode, systemScheme: systemScheme) { tapped in
                         router.push(.colorDetail(name: tapped.name, hex: tapped.hex))
                     }
                     .environmentObject(vm)
                     .onAppear() {
-                        toolbarTitle   = "Support"
-                        toolbarShowBack = true
+                        topTitle = "Support"
                     }
+
                 case let .colorDetail(name, hex):
                     ColorDetailView(
                         title: name,
-                        color: Color(hex: hex) // respeta scheme si es dinámico
+                        color: Color(hex: hex)
                     )
                     .environmentObject(vm)
-                    .onAppear {
-                        toolbarTitle   = "dffdf"
-                        toolbarShowBack = true
-                    }
+                    .onAppear { topTitle = "Primary" } // o name si prefieres
                 }
             }
         }
-        .reeceToolbar(title: toolbarTitle,
-                      showBack: toolbarShowBack,
-                      backBehavior: .pop)
+        // Ocultar barra nativa del sistema
+        .toolbar(.hidden, for: .navigationBar)
+
+        // Insertar nuestro top bar SIEMPRE arriba
+        .safeAreaInset(edge: .top) {
+            ReeceTopBar(title: topTitle)
+                .environmentObject(vm)
+                .environmentObject(router)
+        }
+
+        // Theming global (restaura estado al volver al root)
         .environmentObject(vm)
         .environmentObject(router)
         .preferredColorScheme(effective)
-        .toolbarBackground(background, for: .navigationBar)
-        .toolbarBackground(.visible, for: .navigationBar)
-        .toolbarColorScheme(effective, for: .navigationBar)
         .onAppear {
             vm.applyThemeSideEffects()
-            toolbarTitle = "Reece DS"
-            toolbarShowBack = false
+            topTitle = "Reece DS"
         }
         .onChange(of: vm.themeMode) { vm.applyThemeSideEffects() }
         .reeceBackground(background)
