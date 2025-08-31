@@ -48,7 +48,7 @@ public struct PrimaryNamespace {
         else {
             preconditionFailure("Missing DarkBlue tone \(tone)")
         }
-        return ReeceColorSupport.pick(light: light, dark: dark, using: scheme)
+        return ReeceColorEngine.pick(light: light, dark: dark, using: scheme)
     }
     
     /// Raw palette access for the **Light Blue** family by tone.
@@ -67,7 +67,7 @@ public struct PrimaryNamespace {
         else {
             preconditionFailure("Missing LightBlue tone \(tone)")
         }
-        return ReeceColorSupport.pick(light: light, dark: dark, using: scheme)
+        return ReeceColorEngine.pick(light: light, dark: dark, using: scheme)
     }
     
     /// Raw palette access for the **Dark Text Gray** family by tone.
@@ -84,7 +84,7 @@ public struct PrimaryNamespace {
         else {
             preconditionFailure("Missing DarkTextGray tone \(tone)")
         }
-        return ReeceColorSupport.pick(light: light, dark: dark, using: scheme)
+        return ReeceColorEngine.pick(light: light, dark: dark, using: scheme)
     }
 }
 

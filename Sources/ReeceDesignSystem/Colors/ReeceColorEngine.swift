@@ -1,5 +1,5 @@
 //
-//  ReeceColorSupport.swift
+//  ReeceColorEngine.swift
 //  ReeceDesignSystem
 //
 //  Created by Carlos Lopez on 29/08/25.
@@ -15,12 +15,12 @@ import SwiftUI
 /// Usage:
 /// ```swift
 /// // Internal use only:
-/// // ReeceColorSupport.pick(light: .red, dark: .blue, using: scheme)
+/// // ReeceColorEngine.pick(light: .red, dark: .blue, using: scheme)
 /// ```
 ///
 /// - Important: Keep these helpers lightweight; they are called frequently during view rendering.
 @MainActor
-enum ReeceColorSupport {
+enum ReeceColorEngine {
     /// Computes the effective `ColorScheme` honoring the global `ReeceTheme.mode`.
     ///
     /// - Parameter viewScheme: The SwiftUI `ColorScheme` from the environment.

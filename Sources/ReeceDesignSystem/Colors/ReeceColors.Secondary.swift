@@ -42,7 +42,7 @@ public struct SecondaryNamespace {
         else {
             preconditionFailure("Missing Orange tone \(tone)")
         }
-        return ReeceColorSupport.pick(light: light, dark: dark, using: scheme)
+        return ReeceColorEngine.pick(light: light, dark: dark, using: scheme)
     }
     
     /// Raw palette access for the **Text Gray** family by tone.
@@ -59,7 +59,7 @@ public struct SecondaryNamespace {
         else {
             preconditionFailure("Missing Text Gray tone \(tone)")
         }
-        return ReeceColorSupport.pick(light: light, dark: dark, using: scheme)
+        return ReeceColorEngine.pick(light: light, dark: dark, using: scheme)
     }
     
     /// Raw palette access for the **Medium Grey** family by tone.
@@ -75,7 +75,7 @@ public struct SecondaryNamespace {
         else {
             preconditionFailure("Missing Medium Grey tone \(tone)")
         }
-        return ReeceColorSupport.pick(light: light, dark: dark, using: scheme)
+        return ReeceColorEngine.pick(light: light, dark: dark, using: scheme)
     }
     /// Raw palette access for the **Light Gray** family by tone.
     ///
@@ -90,26 +90,26 @@ public struct SecondaryNamespace {
         else {
             preconditionFailure("Missing Light Gray tone \(tone)")
         }
-        return ReeceColorSupport.pick(light: light, dark: dark, using: scheme)
+        return ReeceColorEngine.pick(light: light, dark: dark, using: scheme)
     }
     
     /// Single-tone color for **White**.
     /// - Returns: The same value for light/dark until design provides a separate dark token.
     public func white(using scheme: ColorScheme) -> Color {
         let base = Palette.Secondary.White.base
-        return ReeceColorSupport.pick(light: base, dark: base, using: scheme)
+        return ReeceColorEngine.pick(light: base, dark: base, using: scheme)
     }
 
     /// Single-tone color for **Off-White**.
     public func offWhite(using scheme: ColorScheme) -> Color {
         let base = Palette.Secondary.OffWhite.base
-        return ReeceColorSupport.pick(light: base, dark: base, using: scheme)
+        return ReeceColorEngine.pick(light: base, dark: base, using: scheme)
     }
 
     /// Single-tone color for **Black**.
     public func black(using scheme: ColorScheme) -> Color {
         let base = Palette.Secondary.Black.base
-        return ReeceColorSupport.pick(light: base, dark: base, using: scheme)
+        return ReeceColorEngine.pick(light: base, dark: base, using: scheme)
     }
 
 }
