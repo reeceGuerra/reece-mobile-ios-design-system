@@ -18,6 +18,7 @@ import ReeceDesignSystem
 struct ColorDetailView: View {
     @Environment(\.colorScheme) private var systemScheme
     @EnvironmentObject private var vm: HomeViewModel
+    @State private var appeared = false
 
     let title: String
     let color: Color
@@ -30,22 +31,25 @@ struct ColorDetailView: View {
 
     var body: some View {
         ZStack(alignment: .bottomLeading) {
-            color.ignoresSafeArea() // fondo sólido (dinámico si lo es)
+            color.ignoresSafeArea()
 
             VStack(alignment: .leading, spacing: 8) {
                 Text("ReeceDS COLORS")
                     .font(.title2.weight(.bold))
                     .kerning(0.5)
-                Text(hexText)                 // HEX
+                Text(hexText)
                     .font(.headline)
-                Text(title)                   // Nombre + tono
+                Text(title)
                     .font(.subheadline.weight(.semibold))
                     .opacity(0.9)
             }
             .foregroundStyle(labelColor)
             .padding(.horizontal, 20)
             .padding(.bottom, 28)
+            .opacity(appeared ? 1 : 0)
+            .animation(.easeInOut(duration: 0.40), value: appeared)
         }
+        .onAppear { appeared = true }
         .reeceToolbar(title: "", showBack: true)
     }
 }
