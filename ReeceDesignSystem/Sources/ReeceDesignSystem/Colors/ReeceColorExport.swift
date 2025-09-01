@@ -5,7 +5,6 @@
 //  Created by Carlos Lopez on 31/08/25.
 //
 
-// Sources/ReeceDesignSystem/Colors/ReeceColorExport.swift
 #if canImport(UIKit)
 import UIKit
 #endif
@@ -16,8 +15,12 @@ import AppKit
 
 import SwiftUI
 
+/// Utilities for exporting colors from SwiftUI to HEX strings, and resolving
+/// platform-specific RGBA components (sRGB) respecting Light/Dark scheme.
 public enum ReeceColorExport {
-    /// Returns "#RRGGBB" or "#RRGGBBAA" for a `SwiftUI.Color`.
+
+    /// Returns "#RRGGBB" or "#RRGGBBAA" for a `SwiftUI.Color` by delegating to `ReeceColorHex`.
+    ///
     /// - Parameters:
     ///   - color: A SwiftUI color (may be dynamic with Light/Dark variants).
     ///   - scheme: If provided, resolves the color using the given Light/Dark scheme; if `nil`, uses the system setting.
@@ -31,9 +34,14 @@ public enum ReeceColorExport {
         return ReeceColorHex.string(from: color, scheme: scheme, includeAlpha: includeAlpha)
     }
 
-    /// Resolves a `SwiftUI.Color` into RGBA (sRGB) honoring the provided color scheme if specified.
-    /// - Note: `internal` so it can be reused by other modules (e.g., contrast helpers).
-    static func resolvedPlatformColor(
+    // MARK: - Shared RGBA resolver
+
+    /// Resolves a `SwiftUI.Color` into RGBA components (sRGB), honoring the provided color scheme if specified.
+    /// - Parameters:
+    ///   - color: The input SwiftUI color.
+    ///   - scheme: If provided, forces Light/Dark resolution; otherwise uses current system settings.
+    /// - Returns: `(red, green, blue, alpha)` in `[0, 1]`, or `nil` if conversion fails.
+    internal static func resolvedPlatformColor(
         from color: Color,
         scheme: ColorScheme?
     ) -> (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat)? {
@@ -50,7 +58,8 @@ public enum ReeceColorExport {
         #elseif canImport(AppKit)
         // macOS
         let ns = NSColor(color)
-        // If you want to emulate Light/Dark explicitly on macOS, map `scheme` to an NSAppearance and resolve with it.
+        // If you need to explicitly emulate Light/Dark on macOS,
+        // map `scheme` to an NSAppearance and resolve with it.
         guard let rgb = ns.usingColorSpace(.sRGB) else { return nil }
         return (rgb.redComponent, rgb.greenComponent, rgb.blueComponent, rgb.alphaComponent)
 
