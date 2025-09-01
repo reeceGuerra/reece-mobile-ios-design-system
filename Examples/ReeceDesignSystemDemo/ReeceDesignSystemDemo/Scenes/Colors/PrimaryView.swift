@@ -55,7 +55,7 @@ struct PrimaryView: View {
         }
         .applyThemedBackground()
         .reeceNavigationBar(title: "Primary Family", trailing: {
-            MenuView()
+            ReeceThemeMenuView()
         })
     }
 }

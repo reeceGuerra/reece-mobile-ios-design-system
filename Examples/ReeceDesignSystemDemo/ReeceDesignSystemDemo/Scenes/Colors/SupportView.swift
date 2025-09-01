@@ -100,7 +100,7 @@ struct SupportView: View {
         }
         .applyThemedBackground()
         .reeceNavigationBar(title: "Support Familty", trailing: {
-            MenuView()
+            ReeceThemeMenuView()
         })
     }
 }

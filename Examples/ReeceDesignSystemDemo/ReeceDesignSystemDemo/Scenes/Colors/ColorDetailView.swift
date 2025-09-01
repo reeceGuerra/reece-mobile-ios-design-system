@@ -50,7 +50,7 @@ struct ColorDetailView: View {
         }
         .onAppear { appeared = true }
         .reeceNavigationBar(title: "", overrideBackground: color, trailing: {
-            MenuView()
+            ReeceThemeMenuView()
         })
     }
 }

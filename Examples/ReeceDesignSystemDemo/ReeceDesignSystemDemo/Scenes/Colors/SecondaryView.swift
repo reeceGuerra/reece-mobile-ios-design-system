@@ -92,7 +92,7 @@ struct SecondaryView: View {
         }
         .applyThemedBackground()
         .reeceNavigationBar(title: "Secondary Family", trailing: {
-            MenuView()
+            ReeceThemeMenuView()
         })
     }
 }

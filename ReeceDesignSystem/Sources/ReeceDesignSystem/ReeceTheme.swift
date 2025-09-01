@@ -24,6 +24,14 @@ public enum ReeceThemeMode: CaseIterable, Identifiable, Sendable {
         }
     }
     
+    public var preferredOverride: ColorScheme? {
+        switch self {
+        case .system: return nil
+        case .light:  return .light
+        case .dark:   return .dark
+        }
+    }
+    
     public var id: String { self.title }
     
     public static func effectiveScheme(using systemScheme: ColorScheme, themeMode: ReeceThemeMode) -> ColorScheme {

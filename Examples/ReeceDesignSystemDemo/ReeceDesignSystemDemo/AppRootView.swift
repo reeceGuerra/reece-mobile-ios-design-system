@@ -13,7 +13,6 @@ struct AppRootView: View {
     @State private var themeMode: ReeceThemeMode = .system
 
     var body: some View {
-        let effective = ReeceThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode)
         let background = ReeceThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode) == .dark
         ? Color(white: 0.30)
         : Color(white: 0.90)
@@ -46,7 +45,7 @@ struct AppRootView: View {
             .reeceNavigationBar(
                 title: "Reece DS",
                 showBack: false, trailing:  {
-                    MenuView()
+                    ReeceThemeMenuView()
             })
                 .navigationDestination(for: ReeceRoute.self) { route in
                     switch route {
@@ -74,7 +73,7 @@ struct AppRootView: View {
         }
         .toolbar(.hidden, for: .navigationBar)
         .toolbarVisibility(.hidden, for: .navigationBar)
-        .preferredColorScheme(effective)
+        .preferredColorScheme(themeMode.preferredOverride)
         .environmentObject(router)
         .environment(\.reeceTheme, $themeMode)
     }
