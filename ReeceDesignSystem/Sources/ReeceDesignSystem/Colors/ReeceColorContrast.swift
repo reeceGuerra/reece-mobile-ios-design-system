@@ -4,6 +4,13 @@
 //
 //  Created by Carlos Lopez on 31/08/25.
 //
+#if canImport(UIKit)
+import UIKit
+#endif
+
+#if canImport(AppKit) && !targetEnvironment(macCatalyst)
+import AppKit
+#endif
 import SwiftUI
 
 public enum ReeceColorContrast {

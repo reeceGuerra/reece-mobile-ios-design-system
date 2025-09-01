@@ -7,6 +7,14 @@
 
 
 // Sources/ReeceDesignSystem/Colors/ReeceColorExport.swift
+#if canImport(UIKit)
+import UIKit
+#endif
+
+#if canImport(AppKit) && !targetEnvironment(macCatalyst)
+import AppKit
+#endif
+
 import SwiftUI
 
 public enum ReeceColorExport {
