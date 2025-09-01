@@ -66,7 +66,7 @@ public enum ReeceColorHex {
         scheme: ColorScheme? = nil,
         includeAlpha: Bool = false
     ) -> String? {
-        // Delegate to the shared platform resolver from ReeceColorExport
+        // Delegate component resolution to the shared platform resolver.
         guard let c = ReeceColorExport.resolvedPlatformColor(from: color, scheme: scheme) else {
             return nil
         }
