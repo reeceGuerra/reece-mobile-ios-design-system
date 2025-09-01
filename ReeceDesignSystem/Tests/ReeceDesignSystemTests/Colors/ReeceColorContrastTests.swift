@@ -17,22 +17,22 @@ final class ReeceColorContrastTests: XCTestCase {
     }
     
     func testPreferredLabelColor_onWhiteBackground_returnsBlack() {
-        let label = ReeceColorContrast.preferredLabelColor(over: Color(hex: "#FFFFFF"))
+        let label = ReeceColorContrast.onColor(for: Color(hex: "#FFFFFF"))
         XCTAssertEqual(hex(label), "#000000", "Sobre blanco debe escoger negro")
     }
     
     func testPreferredLabelColor_onBlackBackground_returnsWhite() {
-        let label = ReeceColorContrast.preferredLabelColor(over: Color(hex: "#000000"))
+        let label = ReeceColorContrast.onColor(for: Color(hex: "#000000"))
         XCTAssertEqual(hex(label), "#FFFFFF", "Sobre negro debe escoger blanco")
     }
     
     func testPreferredLabelColor_thresholdOverridesDecision() {
         // Gris medio; por defecto debería dar negro
         let gray = Color(hex: "#BBBBBB")
-        XCTAssertEqual(hex(ReeceColorContrast.preferredLabelColor(over: gray)), "#000000")
+        XCTAssertEqual(hex(ReeceColorContrast.onColor(for: gray)), "#000000")
         
         // Con threshold alto, forzamos blanco
-        let forcedWhite = ReeceColorContrast.preferredLabelColor(over: gray, threshold: 0.90)
+        let forcedWhite = ReeceColorContrast.onColor(for: gray, threshold: 0.90)
         XCTAssertEqual(hex(forcedWhite), "#FFFFFF")
     }
     
@@ -40,8 +40,8 @@ final class ReeceColorContrastTests: XCTestCase {
         // Mismo color con alpha distinto → mismo label
         let solid = Color(hex: "#407A26FF")
         let translucent = Color(hex: "#407A2680")
-        let l1 = ReeceColorContrast.preferredLabelColor(over: solid)
-        let l2 = ReeceColorContrast.preferredLabelColor(over: translucent)
+        let l1 = ReeceColorContrast.onColor(for: solid)
+        let l2 = ReeceColorContrast.onColor(for: translucent)
         XCTAssertEqual(hex(l1), hex(l2))
     }
     
@@ -51,7 +51,7 @@ final class ReeceColorContrastTests: XCTestCase {
         
         for s in samples {
             let bg = Color(hex: s)
-            let label = ReeceColorContrast.preferredLabelColor(over: bg)
+            let label = ReeceColorContrast.onColor(for: bg)
             XCTAssertNotEqual(
                 hex(label), s.uppercased(),
                 "El label no debería ser idéntico al background \(s)"
@@ -63,8 +63,8 @@ final class ReeceColorContrastTests: XCTestCase {
         // Un color cualquiera; el objetivo es cubrir la ruta con scheme .light/.dark
         let bg = Color(hex: "#3E5479")
         
-        let labelDark  = ReeceColorContrast.preferredLabelColor(over: bg, scheme: .dark)
-        let labelLight = ReeceColorContrast.preferredLabelColor(over: bg, scheme: .light)
+        let labelDark  = ReeceColorContrast.onColor(for: bg, scheme: .dark)
+        let labelLight = ReeceColorContrast.onColor(for: bg, scheme: .light)
         
         // Afirmaciones suaves: que devuelva HEX válido
         XCTAssertNotEqual(hex(labelDark), "NIL")
