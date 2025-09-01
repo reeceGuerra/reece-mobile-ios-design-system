@@ -10,7 +10,7 @@ import SwiftUI
 import ReeceDesignSystem
 
 @MainActor
-final class HomeViewModel: ObservableObject {
+final class ColorsViewModel: ObservableObject {
     func backgroundColor(using systemScheme: ColorScheme, andThemeMode themeMode: ReeceThemeMode) -> Color {
         ReeceThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode) == .dark ? Color(white: 0.30) : Color(white: 0.90)
     }

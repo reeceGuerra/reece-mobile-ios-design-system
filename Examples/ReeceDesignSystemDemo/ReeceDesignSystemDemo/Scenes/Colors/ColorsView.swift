@@ -7,11 +7,11 @@
 import SwiftUI
 import ReeceDesignSystem
 
-struct HomeView: View {
+struct ColorsView: View {
     @Environment(\.colorScheme) private var systemScheme
     @Environment(\.reeceTheme) private var themeMode: Binding<ReeceThemeMode>
     @EnvironmentObject private var router: ReeceNavRouter
-    @StateObject private var vm = HomeViewModel()
+    @StateObject private var vm = ColorsViewModel()
     
     var body: some View {
         
@@ -41,8 +41,7 @@ struct HomeView: View {
             .reeceCellBackground(cellBg)
         }
         .reeceNavigationBar(
-            title: "Reece DS",
-            showBack: false, trailing:  {
+            title: "Reece DS - Colors", trailing:  {
                 MenuView()
         })
     }
@@ -95,7 +94,7 @@ struct MenuView: View {
 }
 
 #Preview {
-    HomeView()
+    ColorsView()
         .environmentObject(ReeceNavRouter())
         .environment(\.reeceTheme, .constant(.system))
 }

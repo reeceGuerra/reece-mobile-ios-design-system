@@ -14,12 +14,44 @@ struct AppRootView: View {
 
     var body: some View {
         let effective = ReeceThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode)
+        let background = ReeceThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode) == .dark
+        ? Color(white: 0.30)
+        : Color(white: 0.90)
+        let cellBg = ReeceThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode) == .dark
+        ? Color(white: 0.50)
+        : Color.white
+        let textColor = ReeceThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode) == .dark
+        ? Color.white.opacity(0.92)
+        : Color.black.opacity(0.9)
+        let tintColor = ReeceThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode) == .dark
+        ? Color.white.opacity(0.95)
+        : Color.black.opacity(0.95)
+        
         NavigationStack(path: $router.path) {
-            HomeView()
+            ZStack {
+                List {
+                    Section("Assets") {
+                        NavigationLink("Colors", value: ReeceRoute.home)
+                    }
+                    .listRowBackground(cellBg)
+                }
+                .listStyle(.insetGrouped)
+                .foregroundStyle(textColor)
+                .tint(tintColor)
+                .scrollContentBackground(.hidden)
+                .background(background)
+                .reeceBackground(background)
+                .reeceCellBackground(cellBg)
+            }
+            .reeceNavigationBar(
+                title: "Reece DS",
+                showBack: false, trailing:  {
+                    MenuView()
+            })
                 .navigationDestination(for: ReeceRoute.self) { route in
                     switch route {
                     case .home:
-                        HomeView()
+                        ColorsView()
                     case .primary:
                         PrimaryView() { tapped in
                             router.push(.colorDetail(name: tapped.name, hex: tapped.hex))
@@ -46,4 +78,8 @@ struct AppRootView: View {
         .environmentObject(router)
         .environment(\.reeceTheme, $themeMode)
     }
+}
+
+#Preview {
+    AppRootView()
 }
