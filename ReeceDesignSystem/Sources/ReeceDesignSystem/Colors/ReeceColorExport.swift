@@ -28,16 +28,7 @@ public enum ReeceColorExport {
         scheme: ColorScheme? = nil,
         includeAlpha: Bool = false
     ) -> String? {
-        guard let c = resolvedPlatformColor(from: color, scheme: scheme) else { return nil }
-        let R = Int(round(c.red   * 255))
-        let G = Int(round(c.green * 255))
-        let B = Int(round(c.blue  * 255))
-        let A = Int(round(c.alpha * 255))
-        if includeAlpha {
-            return String(format: "#%02X%02X%02X%02X", R, G, B, A)
-        } else {
-            return String(format: "#%02X%02%02X", R, G, B)
-        }
+        return ReeceColorHex.string(from: color, scheme: scheme, includeAlpha: includeAlpha)
     }
 
     /// Resolves a `SwiftUI.Color` into RGBA (sRGB) honoring the provided color scheme if specified.
