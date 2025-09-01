@@ -6,37 +6,37 @@ import SwiftUI
 final class ReeceColorsPrimaryTests: XCTestCase {
 
     func testDarkBlueLightTone() {
-        let color = ReeceColors.primary.darkBlue(.t100, using: .light)
+        let color = ReeceColors.primary.DarkBlue.color(.t100, using: ColorScheme.light)
         XCTAssertNotNil(color, "Expected a valid Color for Dark Blue t100 (light)")
     }
 
     func testDarkBlueDarkToneFallback() {
-        let lightColor = ReeceColors.primary.darkBlue(.t100, using: .light)
-        let darkColor  = ReeceColors.primary.darkBlue(.t100, using: .dark)
+        let lightColor = ReeceColors.primary.DarkBlue.color(.t100, using: .light)
+        let darkColor  = ReeceColors.primary.DarkBlue.color(.t100, using: .dark)
 
         XCTAssertEqual(lightColor.description, darkColor.description,
                        "Dark mode should fallback to light until design provides dark palette")
     }
     
     func testAllDarkBlueTonesHaveValues() {
-        for tone in DarkBlueTone.allCases {
-            let colorLight = ReeceColors.primary.darkBlue(tone, using: ColorScheme.light)
-            let colorDark  = ReeceColors.primary.darkBlue(tone, using: ColorScheme.dark)
+        for tone in ReeceColors.primary.DarkBlue.Tone.allCases {
+            let colorLight = ReeceColors.primary.DarkBlue.color(tone, using: ColorScheme.light)
+            let colorDark  = ReeceColors.primary.DarkBlue.color(tone, using: ColorScheme.dark)
             XCTAssertEqual(colorLight.description, colorDark.description)
         }
     }
 
     func testAllLightBlueTonesHaveValues() {
-        for tone in LightBlueTone.allCases {
-            let color = ReeceColors.primary.lightBlue(tone, using: ColorScheme.light)
+        for tone in ReeceColors.primary.LightBlue.Tone.allCases {
+            let color = ReeceColors.primary.LightBlue.color(tone, using: ColorScheme.light)
             XCTAssertNotNil(color, "Missing color for Light Blue \(tone)")
         }
     }
     
     func testAllDarkTextGrayTonesHaveValues() {
-        for tone in DarkTextGrayTone.allCases {
-            let light = ReeceColors.primary.darkTextGray(tone, using: .light)
-            let dark  = ReeceColors.primary.darkTextGray(tone, using: .dark)
+        for tone in ReeceColors.primary.DarkTextGray.Tone.allCases {
+            let light = ReeceColors.primary.DarkTextGray.color(tone, using: .light)
+            let dark  = ReeceColors.primary.DarkTextGray.color(tone, using: .dark)
             XCTAssertEqual(light.description, dark.description,
                            "DarkTextGray dark should fallback to light until design provides dark palette")
         }
@@ -44,18 +44,18 @@ final class ReeceColorsPrimaryTests: XCTestCase {
 
     // Primary: cubrir más tonos
     func testDarkBlueAdditionalTones() {
-        _ = ReeceColors.primary.darkBlue(.t50, using: .light)
-        _ = ReeceColors.primary.darkBlue(.t10, using: .dark)
+        _ = ReeceColors.primary.DarkBlue.color(.t50, using: .light)
+        _ = ReeceColors.primary.DarkBlue.color(.t10, using: .dark)
     }
 
     func testLightBlueAdditionalTones() {
-        _ = ReeceColors.primary.lightBlue(.t50, using: .light)
-        _ = ReeceColors.primary.lightBlue(.t5,  using: .dark)
+        _ = ReeceColors.primary.LightBlue.color(.t50, using: .light)
+        _ = ReeceColors.primary.LightBlue.color(.t5,  using: .dark)
     }
 
     func testDarkTextGrayAdditionalTones() {
-        _ = ReeceColors.primary.darkTextGray(.t50, using: .light)
-        _ = ReeceColors.primary.darkTextGray(.t10, using: .dark)
+        _ = ReeceColors.primary.DarkTextGray.color(.t50, using: .light)
+        _ = ReeceColors.primary.DarkTextGray.color(.t10, using: .dark)
     }
 
 }

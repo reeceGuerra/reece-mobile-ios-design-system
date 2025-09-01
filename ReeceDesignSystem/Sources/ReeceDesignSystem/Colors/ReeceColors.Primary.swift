@@ -2,166 +2,102 @@
 //  ReeceColors.Primary.swift
 //  ReeceDesignSystem
 //
-//  Created by Carlos Lopez on 29/08/25.
+//  Refactor: Families nested inside PrimaryNamespace for hierarchical access.
+//  Created by Carlos Lopez on 29/08/25
+//  Updated by ChatGPT on 01/09/25
 //
 
 import SwiftUI
 
+// MARK: - Public Entry Point
 public extension ReeceColors {
     /// Value-namespace for the **Primary** color family.
     ///
-    /// Access raw palettes (by tone) using:
+    /// Access example:
     /// ```swift
-    /// // Dark Blue tones (100 → 10)
-    /// let primaryButton = ReeceColors.primary.darkBlue(.t80, using: scheme)
-    ///
-    /// // Light Blue tones (includes t5)
-    /// let infoBadge = ReeceColors.primary.lightBlue(.t30, using: scheme)
-    ///
-    /// // Dark Text Gray tones (100 → 10)
-    /// let bodyText = ReeceColors.primary.darkTextGray(.t80, using: scheme)
+    /// let button = ReeceColors.primary.DarkBlue.color(.t80, using: scheme)
+    /// let info   = ReeceColors.primary.LightBlue.color(.t30, using: scheme)
+    /// let text   = ReeceColors.primary.DarkTextGray.color(.t60, using: scheme)
     /// ```
-    ///
-    /// - Important: Dark variants currently fallback to light until design provides a dedicated dark palette.
-    static let primary = PrimaryNamespace()
+    typealias primary = Primary
 }
-
-// MARK: - Primary namespace
-
+// MARK: - Primary namespace (SwiftUI)
 /// Public API for **Primary** color tokens (SwiftUI).
-///
-/// All methods are **MainActor**-isolated to align with UI rendering and the global theme state.
+/// Families are nested for explicit hierarchical access.
 @MainActor
-public struct PrimaryNamespace {
-    
-    /// Raw palette access for the **Dark Blue** family by tone.
-    ///
-    /// - Parameters:
-    ///   - tone: One of the `DarkBlueTone` steps (`t100 … t10`).
-    ///   - scheme: Caller’s environment `ColorScheme`.
-    /// - Returns: The resolved color for the effective scheme (system/light/dark).
-    /// - Precondition: Crashes in debug if the requested tone is not present in the palette.
-    public func darkBlue(_ tone: DarkBlueTone, using scheme: ColorScheme) -> Color {
-        guard
-            let light = Palette.Primary.DarkBlue.light[tone],
-            let dark  = Palette.Primary.DarkBlue.dark[tone]
-        else {
-            preconditionFailure("Missing DarkBlue tone \(tone)")
+public enum Primary {
+    // MARK: - Families
+    public enum DarkBlue: ReecePaletteFamily {
+        /// Tone scale for **Dark Blue** (`100 → 10`).
+        public enum Tone: Int, CaseIterable, Sendable {
+            case t100 = 100, t90 = 90, t80 = 80, t70 = 70, t60 = 60
+            case t50 = 50,  t40 = 40, t30 = 30, t20 = 20, t10 = 10
         }
-        return ReeceColorEngine.pick(light: light, dark: dark, using: scheme)
+
+        public static let light: [Tone: Color] = [
+            .t100: Color(hex: "#003766"),
+            .t90:  Color(hex: "#1A4B76"),
+            .t80:  Color(hex: "#335F85"),
+            .t70:  Color(hex: "#4D7394"),
+            .t60:  Color(hex: "#6687A3"),
+            .t50:  Color(hex: "#7F9AB2"),
+            .t40:  Color(hex: "#99AFC2"),
+            .t30:  Color(hex: "#B3C3D2"),
+            .t20:  Color(hex: "#CCD7E0"),
+            .t10:  Color(hex: "#E6EBF0")
+        ]
+
+        #warning("Replace dark palette when design provides dedicated values for Primary.DarkBlue")
+        public static let dark: [Tone: Color] = light
     }
-    
-    /// Raw palette access for the **Light Blue** family by tone.
-    ///
-    /// This family includes an extra `t5` tone as provided by design.
-    ///
-    /// - Parameters:
-    ///   - tone: One of the `LightBlueTone` steps (`t100 … t10`, plus `t5`).
-    ///   - scheme: Caller’s environment `ColorScheme`.
-    /// - Returns: The resolved color for the effective scheme.
-    /// - Precondition: Crashes in debug if the requested tone is not present.
-    public func lightBlue(_ tone: LightBlueTone, using scheme: ColorScheme) -> Color {
-        guard
-            let light = Palette.Primary.LightBlue.light[tone],
-            let dark  = Palette.Primary.LightBlue.dark[tone]
-        else {
-            preconditionFailure("Missing LightBlue tone \(tone)")
+
+    public enum LightBlue: ReecePaletteFamily {
+        /// Tone scale for **Light Blue** (`100 → 10`) plus **`t5`**.
+        public enum Tone: Int, CaseIterable, Sendable {
+            case t100 = 100, t90 = 90, t80 = 80, t70 = 70, t60 = 60
+            case t50 = 50,  t40 = 40, t30 = 30, t20 = 20, t10 = 10
+            case t5 = 5
         }
-        return ReeceColorEngine.pick(light: light, dark: dark, using: scheme)
+
+        public static let light: [Tone: Color] = [
+            .t100: Color(hex: "#0B66EC"),
+            .t90:  Color(hex: "#2476EE"),
+            .t80:  Color(hex: "#3C85F0"),
+            .t70:  Color(hex: "#5594F2"),
+            .t60:  Color(hex: "#6DA3F4"),
+            .t50:  Color(hex: "#84B2F5"),
+            .t40:  Color(hex: "#9DC2F7"),
+            .t30:  Color(hex: "#B6D2FA"),
+            .t20:  Color(hex: "#CEE0FB"),
+            .t10:  Color(hex: "#E7F0FE"),
+            .t5:   Color(hex: "#F4F9FF")
+        ]
+
+        #warning("Replace dark palette when design provides dedicated values for Primary.LightBlue")
+        public static let dark: [Tone: Color] = light
     }
-    
-    /// Raw palette access for the **Dark Text Gray** family by tone.
-    ///
-    /// - Parameters:
-    ///   - tone: One of the `DarkTextGrayTone` steps (`t100 … t10`).
-    ///   - scheme: Caller’s environment `ColorScheme`.
-    /// - Returns: The resolved color for the effective scheme.
-    /// - Precondition: Crashes in debug if the requested tone is not present.
-    public func darkTextGray(_ tone: DarkTextGrayTone, using scheme: ColorScheme) -> Color {
-        guard
-            let light = Palette.Primary.DarkTextGray.light[tone],
-            let dark  = Palette.Primary.DarkTextGray.dark[tone]
-        else {
-            preconditionFailure("Missing DarkTextGray tone \(tone)")
+
+    public enum DarkTextGray: ReecePaletteFamily {
+        /// Tone scale for **Dark Text Gray** (`100 → 10`).
+        public enum Tone: Int, CaseIterable, Sendable {
+            case t100 = 100, t90 = 90, t80 = 80, t70 = 70, t60 = 60
+            case t50 = 50,  t40 = 40, t30 = 30, t20 = 20, t10 = 10
         }
-        return ReeceColorEngine.pick(light: light, dark: dark, using: scheme)
-    }
-}
 
-// MARK: - Tone enums (Primary)
+        public static let light: [Tone: Color] = [
+            .t100: Color(hex: "#404040"),
+            .t90:  Color(hex: "#545454"),
+            .t80:  Color(hex: "#666666"),
+            .t70:  Color(hex: "#7A7A7A"),
+            .t60:  Color(hex: "#8C8C8C"),
+            .t50:  Color(hex: "#9F9F9F"),
+            .t40:  Color(hex: "#B3B3B3"),
+            .t30:  Color(hex: "#C6C6C6"),
+            .t20:  Color(hex: "#D9D9D9"),
+            .t10:  Color(hex: "#ECECEC")
+        ]
 
-/// Tone scale for **Dark Blue** (`100 → 10`).
-///
-/// Higher values (e.g., `t100`) are typically darker; lower values (e.g., `t10`) lighter.
-/// Use `CaseIterable` to iterate tones in tests or previews.
-public enum DarkBlueTone: Int, CaseIterable, Sendable {
-    case t100 = 100, t90 = 90, t80 = 80, t70 = 70, t60 = 60
-    case t50 = 50, t40 = 40, t30 = 30, t20 = 20, t10 = 10
-}
-
-/// Tone scale for **Light Blue** (`100 → 10`) plus **`t5`** as defined by design.
-public enum LightBlueTone: Int, CaseIterable, Sendable {
-    case t100 = 100, t90 = 90, t80 = 80, t70 = 70, t60 = 60
-    case t50 = 50, t40 = 40, t30 = 30, t20 = 20, t10 = 10
-    case t5 = 5
-}
-
-/// Tone scale for **Dark Text Gray** (`100 → 10`).
-public enum DarkTextGrayTone: Int, CaseIterable, Sendable {
-    case t100 = 100, t90 = 90, t80 = 80, t70 = 70, t60 = 60
-    case t50 = 50, t40 = 40, t30 = 30, t20 = 20, t10 = 10
-}
-
-// MARK: - Internal palette storage
-private enum Palette {
-    enum Primary {
-        enum DarkBlue {
-            static let light: [DarkBlueTone: Color] = [
-                .t100: Color(hex: "#003766"),
-                .t90:  Color(hex: "#1A4B76"),
-                .t80:  Color(hex: "#335F85"),
-                .t70:  Color(hex: "#4D7394"),
-                .t60:  Color(hex: "#6687A3"),
-                .t50:  Color(hex: "#7F9AB2"),
-                .t40:  Color(hex: "#99AFC2"),
-                .t30:  Color(hex: "#B3C3D2"),
-                .t20:  Color(hex: "#CCD7E0"),
-                .t10:  Color(hex: "#E6EBF0")
-            ]
-            static let dark: [DarkBlueTone: Color] = light
-        }
-        
-        enum LightBlue {
-            static let light: [LightBlueTone: Color] = [
-                .t100: Color(hex: "#0B66EC"),
-                .t90:  Color(hex: "#2476EE"),
-                .t80:  Color(hex: "#3C85F0"),
-                .t70:  Color(hex: "#5594F2"),
-                .t60:  Color(hex: "#6DA3F4"),
-                .t50:  Color(hex: "#84B2F5"),
-                .t40:  Color(hex: "#9DC2F7"),
-                .t30:  Color(hex: "#B6D2FA"),
-                .t20:  Color(hex: "#CEE0FB"),
-                .t10:  Color(hex: "#E7F0FE"),
-                .t5:   Color(hex: "#F4F9FF")
-            ]
-            static let dark: [LightBlueTone: Color] = light
-        }
-        
-        enum DarkTextGray {
-            static let light: [DarkTextGrayTone: Color] = [
-                .t100: Color(hex: "#404040"),
-                .t90:  Color(hex: "#545454"),
-                .t80:  Color(hex: "#666666"),
-                .t70:  Color(hex: "#7A7A7A"),
-                .t60:  Color(hex: "#8C8C8C"),
-                .t50:  Color(hex: "#9F9F9F"),
-                .t40:  Color(hex: "#B3B3B3"),
-                .t30:  Color(hex: "#C6C6C6"),
-                .t20:  Color(hex: "#D9D9D9"),
-                .t10:  Color(hex: "#ECECEC")
-            ]
-            static let dark: [DarkTextGrayTone: Color] = light
-        }
+        #warning("Replace dark palette when design provides dedicated values for Primary.DarkTextGray")
+        public static let dark: [Tone: Color] = light
     }
 }

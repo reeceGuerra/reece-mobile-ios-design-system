@@ -20,4 +20,6 @@
 /// ```
 ///
 /// - Note: Resolution honors `ReeceTheme.mode` (system / light / dark).
+
+@MainActor
 public enum ReeceColors {}
