@@ -6,10 +6,6 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		AEC804D42E66129900ED8B62 /* ReeceDesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = AEC804D32E66129900ED8B62 /* ReeceDesignSystem */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXFileReference section */
 		AE9E84B22E63FD6B003EF140 /* ReeceDesignSystemDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ReeceDesignSystemDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -27,7 +23,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AEC804D42E66129900ED8B62 /* ReeceDesignSystem in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,7 +65,6 @@
 			);
 			name = ReeceDesignSystemDemo;
 			packageProductDependencies = (
-				AEC804D32E66129900ED8B62 /* ReeceDesignSystem */,
 			);
 			productName = ReeceDesignSystemDemo;
 			productReference = AE9E84B22E63FD6B003EF140 /* ReeceDesignSystemDemo.app */;
@@ -101,7 +95,6 @@
 			mainGroup = AE9E84A92E63FD6B003EF140;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				AEC804D22E66129900ED8B62 /* XCLocalSwiftPackageReference "../../../ReeceDesignSystem" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = AE9E84B32E63FD6B003EF140 /* Products */;
@@ -333,20 +326,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCLocalSwiftPackageReference section */
-		AEC804D22E66129900ED8B62 /* XCLocalSwiftPackageReference "../../../ReeceDesignSystem" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../../../ReeceDesignSystem;
-		};
-/* End XCLocalSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		AEC804D32E66129900ED8B62 /* ReeceDesignSystem */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = ReeceDesignSystem;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = AE9E84AA2E63FD6B003EF140 /* Project object */;
 }
