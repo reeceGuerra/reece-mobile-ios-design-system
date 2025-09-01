@@ -4,8 +4,6 @@
 //
 //  Created by Carlos Lopez on 31/08/25.
 //
-
-
 import SwiftUI
 
 public enum ReeceColorContrast {

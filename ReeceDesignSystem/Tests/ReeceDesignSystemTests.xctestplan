@@ -1,20 +1,15 @@
 {
   "configurations" : [
     {
-      "id" : "5125B643-6BB5-4A56-BF0B-553D80E71D0A",
-      "name" : "Configuration 1",
+      "id" : "025E6952-906E-40FD-87B6-F7F46D25F773",
+      "name" : "Test Scheme Action",
       "options" : {
 
       }
     }
   ],
   "defaultOptions" : {
-    "targetForVariableExpansion" : {
-      "containerPath" : "container:",
-      "identifier" : "ReeceDesignSystem",
-      "name" : "ReeceDesignSystem"
-    },
-    "testTimeoutsEnabled" : true
+
   },
   "testTargets" : [
     {

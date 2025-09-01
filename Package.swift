@@ -19,7 +19,7 @@ let package = Package(
     targets: [
         .target(
             name: "ReeceDesignSystem",
-            path: "Sources/ReeceDesignSystem",
+            path: "ReeceDesignSystem/Sources/ReeceDesignSystem",
             swiftSettings: [
                 .swiftLanguageMode(.v6)
             ]
@@ -27,7 +27,7 @@ let package = Package(
         .testTarget(
             name: "ReeceDesignSystemTests",
             dependencies: ["ReeceDesignSystem"],
-            path: "Tests/ReeceDesignSystemTests",
+            path: "ReeceDesignSystem/Tests/ReeceDesignSystemTests",
             swiftSettings: [
                 .swiftLanguageMode(.v6)
             ]

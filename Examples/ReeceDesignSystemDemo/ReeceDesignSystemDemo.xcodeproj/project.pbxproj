@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		AE6186102E64004B00515CE2 /* ReeceDesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = AE61860F2E64004B00515CE2 /* ReeceDesignSystem */; };
+		AEC804D42E66129900ED8B62 /* ReeceDesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = AEC804D32E66129900ED8B62 /* ReeceDesignSystem */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,7 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AE6186102E64004B00515CE2 /* ReeceDesignSystem in Frameworks */,
+				AEC804D42E66129900ED8B62 /* ReeceDesignSystem in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,7 +70,7 @@
 			);
 			name = ReeceDesignSystemDemo;
 			packageProductDependencies = (
-				AE61860F2E64004B00515CE2 /* ReeceDesignSystem */,
+				AEC804D32E66129900ED8B62 /* ReeceDesignSystem */,
 			);
 			productName = ReeceDesignSystemDemo;
 			productReference = AE9E84B22E63FD6B003EF140 /* ReeceDesignSystemDemo.app */;
@@ -101,7 +101,7 @@
 			mainGroup = AE9E84A92E63FD6B003EF140;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				AE61860E2E64004B00515CE2 /* XCLocalSwiftPackageReference "../../ReeceDesignSystem" */,
+				AEC804D22E66129900ED8B62 /* XCLocalSwiftPackageReference "../../../ReeceDesignSystem" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = AE9E84B32E63FD6B003EF140 /* Products */;
@@ -335,14 +335,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		AE61860E2E64004B00515CE2 /* XCLocalSwiftPackageReference "../../ReeceDesignSystem" */ = {
+		AEC804D22E66129900ED8B62 /* XCLocalSwiftPackageReference "../../../ReeceDesignSystem" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ../../ReeceDesignSystem;
+			relativePath = ../../../ReeceDesignSystem;
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		AE61860F2E64004B00515CE2 /* ReeceDesignSystem */ = {
+		AEC804D32E66129900ED8B62 /* ReeceDesignSystem */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = ReeceDesignSystem;
 		};

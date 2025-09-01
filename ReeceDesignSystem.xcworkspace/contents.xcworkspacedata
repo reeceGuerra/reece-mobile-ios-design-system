@@ -2,9 +2,85 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:Examples/ReeceDesignSystemDemo/ReeceDesignSystemDemo.xcodeproj">
+      location = "group:Package.swift">
    </FileRef>
+   <Group
+      location = "group:ReeceDesignSystem"
+      name = "ReeceDesignSystem">
+      <Group
+         location = "group:Tests"
+         name = "Tests">
+         <Group
+            location = "group:ReeceDesignSystemTests"
+            name = "ReeceDesignSystemTests">
+            <Group
+               location = "group:Colors"
+               name = "Colors">
+               <FileRef
+                  location = "group:ReeceColorsPrimaryTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ReeceColorsSupportTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ReeceColorHexTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ReeceColorsSecondaryTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ReeceColorContrastTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ReeceColorExportTests.swift">
+               </FileRef>
+            </Group>
+         </Group>
+         <FileRef
+            location = "group:ReeceDesignSystemTests.xctestplan">
+         </FileRef>
+      </Group>
+      <Group
+         location = "group:Sources"
+         name = "Sources">
+         <Group
+            location = "group:ReeceDesignSystem"
+            name = "ReeceDesignSystem">
+            <FileRef
+               location = "group:ReeceTheme.swift">
+            </FileRef>
+            <Group
+               location = "group:Colors"
+               name = "Colors">
+               <FileRef
+                  location = "group:ReeceColorEngine.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ReeceColorContrast.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ReeceColors.Primary.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ReeceColorExport.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ReeceColors.Root.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ReeceColors.Secondary.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ReeceColors.Support.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ReeceColorHex.swift">
+               </FileRef>
+            </Group>
+         </Group>
+      </Group>
+   </Group>
    <FileRef
-      location = "group:ReeceDesignSystem">
+      location = "group:Examples/ReeceDesignSystemDemo/ReeceDesignSystemDemo.xcodeproj">
    </FileRef>
 </Workspace>
