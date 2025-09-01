@@ -20,6 +20,9 @@ let package = Package(
         .target(
             name: "ReeceDesignSystem",
             path: "ReeceDesignSystem/Sources/ReeceDesignSystem",
+            resources: [
+                .process("Resources/Assets.xcassets")
+            ],
             swiftSettings: [
                 .swiftLanguageMode(.v6)
             ]
