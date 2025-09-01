@@ -15,18 +15,18 @@ import AppKit
 
 import SwiftUI
 
-/// Utilities for determining appropriate foreground (text/icon) color
-/// to ensure contrast over a given background.
+/// Utilities for determining an appropriate foreground (text/icon) color
+/// that ensures sufficient contrast over a given background.
 public enum ReeceColorContrast {
 
-    /// Returns `.black` or `.white` depending on the luminance of the background.
+    /// Returns `.black` or `.white` depending on the background luminance.
     ///
     /// - Parameters:
-    ///   - background: The background color (may be dynamic depending on Light/Dark).
-    ///   - scheme: If provided, forces resolution with Light/Dark; if `nil`, uses the system setting.
-    ///   - threshold: Luminance threshold [0,1]. Default is `0.57`.
-    /// - Returns: `.black` if background is light; `.white` if background is dark
-    ///   (or if conversion to sRGB fails).
+    ///   - background: The background color (may be dynamic for Light/Dark).
+    ///   - scheme: If provided, resolves the color using the given Light/Dark scheme; if `nil`, uses the system setting.
+    ///   - threshold: Luminance threshold in `[0, 1]`. Defaults to `0.57`.
+    /// - Returns: `.black` if background is light; `.white` if background is dark,
+    ///   or `.white` if conversion to sRGB fails.
     public static func onColor(
         for background: Color,
         scheme: ColorScheme? = nil,
@@ -40,5 +40,17 @@ public enum ReeceColorContrast {
         let r = Double(c.red), g = Double(c.green), b = Double(c.blue)
         let luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b
         return luminance > threshold ? .black : .white
+    }
+
+    // MARK: - Backward compatibility (deprecated)
+
+    /// Deprecated alias. Use `onColor(for:scheme:threshold:)` instead.
+    @available(*, deprecated, message: "Use onColor(for:scheme:threshold:) instead.")
+    public static func preferredLabelColor(
+        over background: Color,
+        scheme: ColorScheme? = nil,
+        threshold: Double = 0.57
+    ) -> Color {
+        onColor(for: background, scheme: scheme, threshold: threshold)
     }
 }
