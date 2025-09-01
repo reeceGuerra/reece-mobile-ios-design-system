@@ -49,6 +49,8 @@ struct ColorDetailView: View {
             .animation(.easeInOut(duration: 0.40), value: appeared)
         }
         .onAppear { appeared = true }
-        .toolbarVisibility(.hidden, for: .navigationBar)
+        .reeceNavigationBar(title: "", overrideBackground: color, trailing: {
+            MenuView()
+        })
     }
 }

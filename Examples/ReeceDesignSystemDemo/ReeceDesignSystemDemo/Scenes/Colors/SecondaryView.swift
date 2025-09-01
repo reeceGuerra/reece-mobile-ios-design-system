@@ -15,8 +15,6 @@ struct SecondaryView: View {
 
     var body: some View {
         ScrollView {
-            Spacer()
-                .frame(height: 55)
             VStack(alignment: .leading, spacing: 24) {
                 ColorPaletteCard(
                     title: "Orange",
@@ -93,6 +91,8 @@ struct SecondaryView: View {
             .padding()
         }
         .applyThemedBackground()
-        .toolbarVisibility(.hidden, for: .navigationBar)
+        .reeceNavigationBar(title: "Secondary Family", trailing: {
+            MenuView()
+        })
     }
 }

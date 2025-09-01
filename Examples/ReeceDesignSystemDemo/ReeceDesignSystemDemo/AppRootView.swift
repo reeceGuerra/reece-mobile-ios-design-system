@@ -23,30 +23,20 @@ struct AppRootView: View {
                     case .primary:
                         PrimaryView() { tapped in
                             router.push(.colorDetail(name: tapped.name, hex: tapped.hex))
-                        }.reeceNavigationBar(title: "Primary Family", trailing: {
-                            MenuView()
-                        })
+                        }
                     case .secondary:
                         SecondaryView() { tapped in
                             router.push(.colorDetail(name: tapped.name, hex: tapped.hex))
                         }
-                        .reeceNavigationBar(title: "Secondary Family", trailing: {
-                            MenuView()
-                        })
                     case .support:
                         SupportView() { tapped in
                             router.push(.colorDetail(name: tapped.name, hex: tapped.hex))
                         }
-                        .reeceNavigationBar(title: "Support Familty", trailing: {
-                            MenuView()
-                        })
                     case let .colorDetail(name, hex):
                         ColorDetailView(
                             title: name,
                             color: Color(hex: hex)
-                        ).reeceNavigationBar(title: "", overrideBackground: Color(hex: hex), trailing: {
-                            MenuView()
-                        })
+                        )
                     }
                 }
         }

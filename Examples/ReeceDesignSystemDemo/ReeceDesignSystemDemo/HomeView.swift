@@ -40,9 +40,6 @@ struct HomeView: View {
             .reeceBackground(background)
             .reeceCellBackground(cellBg)
         }
-        .toolbar(.hidden, for: .navigationBar)
-        .toolbarVisibility(.hidden, for: .navigationBar)
-        .navigationBarBackButtonHidden(true)
         .reeceNavigationBar(
             title: "Reece DS",
             showBack: false, trailing:  {

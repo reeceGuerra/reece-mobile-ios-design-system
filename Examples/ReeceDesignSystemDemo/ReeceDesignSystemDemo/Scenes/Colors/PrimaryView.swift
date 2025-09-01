@@ -14,8 +14,6 @@ struct PrimaryView: View {
 
     var body: some View {
         ScrollView {
-            Spacer()
-                .frame(height: 55)
             VStack(alignment: .leading, spacing: 24) {
                 ColorPaletteCard(
                     title: "Dark Blue",
@@ -56,6 +54,8 @@ struct PrimaryView: View {
             .padding()
         }
         .applyThemedBackground()
-        .toolbarVisibility(.hidden, for: .navigationBar)
+        .reeceNavigationBar(title: "Primary Family", trailing: {
+            MenuView()
+        })
     }
 }
