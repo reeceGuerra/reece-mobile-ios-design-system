@@ -35,12 +35,18 @@ struct HomeView: View {
             .listStyle(.insetGrouped)
             .foregroundStyle(textColor)
             .tint(tintColor)
+            .scrollContentBackground(.hidden)
             .background(background)
             .reeceBackground(background)
             .reeceCellBackground(cellBg)
         }
-        .reeceNavigationBar(title: "Reece DS II", trailing: {
-            MenuView()
+        .toolbar(.hidden, for: .navigationBar)
+        .toolbarVisibility(.hidden, for: .navigationBar)
+        .navigationBarBackButtonHidden(true)
+        .reeceNavigationBar(
+            title: "Reece DS",
+            showBack: false, trailing:  {
+                MenuView()
         })
     }
 }

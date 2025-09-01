@@ -88,6 +88,7 @@ struct ReeceNavBar<Leading: View, Trailing: View>: View {
                     Button(action: onBack) {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 17, weight: .semibold))
+                            .foregroundStyle(textColor)
                     }
                 }
                 

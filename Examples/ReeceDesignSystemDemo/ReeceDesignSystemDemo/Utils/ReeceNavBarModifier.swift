@@ -10,26 +10,18 @@ struct ReeceNavBarConfig {
     var trailing: () -> any View = { EmptyView() }
 }
 
-private struct ReeceNavBarKey: EnvironmentKey {
-    static let defaultValue = ReeceNavBarConfig()
-}
-extension EnvironmentValues {
-    var reeceNavBarConfig: ReeceNavBarConfig {
-        get { self[ReeceNavBarKey.self] }
-        set { self[ReeceNavBarKey.self] = newValue }
-    }
-}
-
 struct ReeceNavBarModifier: ViewModifier {
     @EnvironmentObject private var router: ReeceNavRouter
-    @Environment(\.reeceNavBarConfig) private var cfg
-
+    let cfg: ReeceNavBarConfig
+    private let barHeight: CGFloat = 56
+    
     func body(content: Content) -> some View {
         content
+            .padding(.top, barHeight)
             .toolbar(.hidden, for: .navigationBar)
             .toolbarVisibility(.hidden, for: .navigationBar)
             .navigationBarBackButtonHidden(true)
-            .safeAreaInset(edge: .top) {
+            .overlay(alignment: .top) {
                 ReeceNavBar(
                     title: cfg.title,
                     showBack: cfg.showBack && router.canGoBack,
@@ -47,16 +39,16 @@ extension View {
         title: String,
         showBack: Bool = true,
         overrideBackground: Color? = nil,
-        @ViewBuilder leading: @escaping () -> any View = { EmptyView() },
-        @ViewBuilder trailing: @escaping () -> any View = { EmptyView() }
+        @ViewBuilder leading: @escaping () -> some View = { EmptyView() },
+        @ViewBuilder trailing: @escaping () -> some View = { EmptyView() }
     ) -> some View {
-        self.environment(\.reeceNavBarConfig, .init(
+        let cfg = ReeceNavBarConfig(
             title: title,
             showBack: showBack,
             overrideBackground: overrideBackground,
-            leading: leading,
-            trailing: trailing
-        ))
-        .modifier(ReeceNavBarModifier())
+            leading: { AnyView(leading()) },
+            trailing: { AnyView(trailing()) }
+        )
+        return modifier(ReeceNavBarModifier(cfg: cfg))
     }
 }
