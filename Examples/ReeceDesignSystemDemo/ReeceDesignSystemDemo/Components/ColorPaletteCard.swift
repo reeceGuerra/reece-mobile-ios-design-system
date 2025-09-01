@@ -62,7 +62,7 @@ public struct ColorPaletteCard: View {
                         tone.color
                         Text(ReeceColorExport.hexString(for: tone.color, scheme: systemScheme, includeAlpha: false) ?? tone.hex.uppercased())
                             .font(.caption.weight(.semibold))
-                            .foregroundStyle(ReeceColorContrast.preferredLabelColor(over: tone.color, scheme: systemScheme))
+                            .foregroundStyle(ReeceColorContrast.onColor(for: tone.color, scheme: systemScheme))
                             .shadow(radius: 0.5)
                     }
                     .frame(height: bandHeight)

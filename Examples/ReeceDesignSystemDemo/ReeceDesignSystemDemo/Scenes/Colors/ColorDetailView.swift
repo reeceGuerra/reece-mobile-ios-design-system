@@ -22,7 +22,7 @@ struct ColorDetailView: View {
     let title: String
     let color: Color
     private var labelColor: Color {
-        ReeceColorContrast.preferredLabelColor(over: color, scheme: systemScheme)
+        ReeceColorContrast.onColor(for: color, scheme: systemScheme)
     }
     private var hexText: String {
         ReeceColorExport.hexString(for: color, scheme: systemScheme, includeAlpha: false) ?? "#N/A"
