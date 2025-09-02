@@ -7,8 +7,8 @@ let package = Package(
     name: "ReeceDesignSystem",
     defaultLocalization: "en",
     platforms: [
-        .iOS(.v15),
-        .macOS(.v10_15)
+        .iOS(.v17),
+        .macOS(.v15)
     ],
     products: [
         .library(
@@ -21,10 +21,11 @@ let package = Package(
             name: "ReeceDesignSystem",
             path: "ReeceDesignSystem/Sources/ReeceDesignSystem",
             resources: [
-                .process("Resources/Assets.xcassets")
+                .process("Resources/Assets.xcassets"),
+                .process("Resources/Fonts")
             ],
             swiftSettings: [
-                .swiftLanguageMode(.v6)
+                .swiftLanguageMode(.v6),
             ]
         ),
         .testTarget(
