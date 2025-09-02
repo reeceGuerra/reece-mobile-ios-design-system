@@ -1,85 +1,79 @@
 //
-//  File.swift
+//  ReeceText+Modifier.swift
 //  ReeceDesignSystem
 //
 //  Created by Carlos Lopez on 02/09/25.
-//
-//  Provides a convenience `Text.reeceText(_:, slant:, color:)` API to apply typography tokens,
-//  ensuring consistent Dynamic Type, italic behavior, tracking, and color.
-//
-//  Example:
-//
-//  ```swift
-//  // Upright
-//  Text("Title").reeceText(.headline)
-//
-//  // Italic
-//  Text("Emphasis").reeceText(.bodyM, slant: .italic)
-//
-//  // With brand color
-//  Text("Body with brand color")
-//      .reeceText(.bodyM, color: ReeceColors.primary.DarkBlue.color(.t100, using: .light))
-//  ```
-//
 
 import SwiftUI
 
-/// Internal modifier that applies typographic attributes like tracking and color.
-/// Line height is intentionally not forced to keep cross-platform behavior predictable.
-struct ReeceTextAttributes: ViewModifier {
-
-    /// Letter spacing in points to apply to the content.
-    let tracking: CGFloat
-
-    /// Optional foreground color; defaults to `.primary` when `nil`.
-    let color: Color?
-
-    func body(content: Content) -> some View {
-        content
-            .tracking(tracking)
-            .foregroundStyle(color ?? .primary)
-            .accessibilityAddTraits(.isStaticText)
-    }
-}
+// MARK: - Public API
 
 public extension Text {
 
-    /// Applies a Reece text token to a `Text` view, handling font resolution,
-    /// italic (via view modifier when needed), tracking, and color.
-    ///
-    /// - Parameters:
-    ///   - token: The typography token to apply (e.g., `.bodyM`, `.headline`).
-    ///   - slant: Optional slant (`.normal` or `.italic`). Default is `.normal`.
-    ///   - color: Optional foreground `Color`. When `nil`, `.primary` is used.
-    /// - Returns: A new view with the specified typographic style applied.
-    ///
-    /// - Note:
-    ///   - For `.systemDefault`, this applies `.fontWeight(_:)` and `.italic()` as needed,
-    ///     because the system dynamic font is constructed as `Font.system(_:)`.
-    ///   - For `.named` / `.custom`, `Font.custom(name:size:relativeTo:)` is used to keep
-    ///     Dynamic Type scaling. Italic is encoded in the PostScript name, so no extra
-    ///     view modifier is required.
-    ///
-    /// - Example:
-    ///   ```swift
-    ///   Text("Hello, world!")
-    ///       .reeceText(.bodyM, slant: .italic)
-    ///   ```
-    @MainActor func reeceText(
+    /// Apply a token style.
+    @MainActor
+    func reeceText(
         _ token: ReeceTextStyleToken,
         slant: ReeceFontSlant = .normal,
         color: Color? = nil
     ) -> some View {
         let style = ReeceTypography.text(token, slant: slant)
         let resolved = style.resolve()
+        let spacingAdjust: CGFloat? = style.lineHeight.map { max(0, $0 - style.size) }
 
-        return self
+        // Construimos sobre `Text` para poder usar .lineSpacing(_:)
+        var txt: Text = self
             .font(resolved.font)
             .reeceApplySystemWeightIfNeeded(resolved.systemWeight)
             .reeceApplyItalicIfNeeded(resolved.needsViewItalic)
-            .modifier(ReeceTextAttributes(tracking: style.tracking, color: color))
+
+        if let s = spacingAdjust, s > 0 {
+            txt = txt.lineSpacing(s) as! Text
+        }
+
+        return txt
+            .tracking(style.tracking)
+            .foregroundStyle(color ?? .primary)
+            .accessibilityAddTraits(.isStaticText)
+    }
+
+    /// Apply a Figma-based style (px + % inputs).
+    @MainActor
+    func reeceText(
+        figma spec: ReeceTextStyle,
+        color: Color? = nil
+    ) -> some View {
+        let resolved = spec.resolve()
+        let spacingAdjust: CGFloat? = spec.lineHeight.map { max(0, $0 - spec.size) }
+
+        var txt: Text = self
+            .font(resolved.font)
+            .reeceApplySystemWeightIfNeeded(resolved.systemWeight)
+            .reeceApplyItalicIfNeeded(resolved.needsViewItalic)
+
+        if let s = spacingAdjust, s > 0 {
+            txt = txt.lineSpacing(s) as! Text
+        }
+
+        return txt
+            .tracking(spec.tracking)
+            .foregroundStyle(color ?? .primary)
+            .accessibilityAddTraits(.isStaticText)
     }
 }
+
+// MARK: - Helpers that stay on Text
+
+private extension Text {
+    func reeceApplySystemWeightIfNeeded(_ weight: Font.Weight?) -> Text {
+        guard let w = weight else { return self }
+        return self.fontWeight(w)
+    }
+    func reeceApplyItalicIfNeeded(_ enabled: Bool) -> Text {
+        enabled ? self.italic() : self
+    }
+}
+
 
 #if DEBUG
 /// Preview demonstrating the token scale in various roles (upright vs italic).

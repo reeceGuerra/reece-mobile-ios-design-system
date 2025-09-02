@@ -4,143 +4,91 @@
 //
 //  Created by Carlos Lopez on 02/09/25.
 //
-//
-//  Defines text style tokens and their concrete values (size, weight, tracking,
-//  and scaling behavior) and exposes a simple API to resolve tokens to SwiftUI fonts.
-//  Custom/named fonts keep Dynamic Type support using `Font.custom(..., relativeTo:)`.
-//
-//  Key points:
-//  - Use `ReeceTypography.text(_:, slant:)` to obtain a `ReeceTextStyle`
-//  - Call `ReeceTextStyle.resolve()` to get a `ReeceResolvedFont`
-//  - Or use `Text.reeceText(_:, slant:, color:)` convenience modifier
+//  Token API + Figma bridge API.
+//  - Tokens: ReeceTypography.text(_:slant:)
+//  - Figma:  ReeceTypography.figma(...), using px + % directly
 //
 
 import SwiftUI
 
-/// Public tokens that describe how text should look across the product.
-///
-/// Choose a token based on intent/role rather than a specific pixel value.
-/// This lets the design system tweak the underlying metrics centrally.
+// MARK: Tokens
+
 public enum ReeceTextStyleToken: CaseIterable, Sendable {
-
-    // MARK: Display / Marketing
-
-    /// Very large, used sparingly for hero moments.
-    case displayXL
-    /// Large display for marketing headers.
-    case displayL
-    /// Medium display for prominent headlines.
-    case displayM
-
-    // MARK: App Structure
-
-    /// Section or screen-level headline inside the app.
-    case headline
-    /// Title for important elements (large).
-    case titleL
-    /// Title for mid-importance elements (medium).
-    case titleM
-    /// Title for small sub-sections (small).
-    case titleS
-
-    // MARK: Body & UI
-
-    /// Primary reading size (large).
-    case bodyL
-    /// Primary reading size (default).
-    case bodyM
-    /// Secondary reading size or dense UIs.
-    case bodyS
-    /// Labels, chips, taglines with medium weight.
-    case label
-    /// Ancillary small text, disclaimers, timestamps.
-    case caption
-
-    // MARK: Monospace
-
-    /// Fixed-width font for code snippets.
+    case displayXL, displayL, displayM
+    case headline, titleL, titleM, titleS
+    case bodyL, bodyM, bodyS, label, caption
     case code
 }
 
-/// Concrete style values resolved from a token.
-///
-/// Use this structure to obtain the SwiftUI `Font` and to feed any additional
-/// rendering attributes, like tracking (letter spacing).
 public struct ReeceTextStyle: Sendable {
-
-    /// Base point size used when resolving custom or named families.
-    /// - Note: With `.systemDefault`, the actual rendered size is driven by
-    ///         the platform’s text style referenced by `relativeTo`.
-    public let size: CGFloat
-
-    /// Semantic weight for the style.
+    public let size: CGFloat        // base size (pt)
     public let weight: ReeceFontWeight
-
-    /// Letter spacing (tracking) in points.
-    public let tracking: CGFloat
-
-    /// Text style to scale relative to for Dynamic Type.
+    public let tracking: CGFloat    // points
     public let relativeTo: Font.TextStyle
-
-    /// Desired slant (upright or italic).
     public let slant: ReeceFontSlant
+    public let lineHeight: CGFloat? // pt (optional)
 
-    /// Resolves a `ReeceResolvedFont` for the current `ReeceFonts.activeFamily`.
-    ///
-    /// - Returns: A `ReeceResolvedFont` containing the `Font` and metadata
-    ///            for italic and (system) weight application at the view level.
     @MainActor public func resolve() -> ReeceResolvedFont {
-        ReeceFonts.resolveFont(
-            weight: weight,
-            size: size,
-            relativeTo: relativeTo,
-            slant: slant
-        )
+        ReeceFonts.resolveFont(weight: weight, size: size, relativeTo: relativeTo, slant: slant)
     }
 }
 
-/// Resolves tokens to concrete `ReeceTextStyle` values.
-///
-/// Centralizes all typography metrics, making it easy to modify them without
-/// touching call-sites.
 @MainActor
 public enum ReeceTypography {
 
-    /// Returns the `ReeceTextStyle` for a given token.
-    ///
-    /// - Parameters:
-    ///   - token: The high-level text role (e.g. `.bodyM`, `.headline`).
-    ///   - slant: Optional slant to apply (default: `.normal`).
-    /// - Returns: A `ReeceTextStyle` carrying size, weight, tracking, `relativeTo`, and `slant`.
-    /// - Example:
-    ///   ```swift
-    ///   let style = ReeceTypography.text(.bodyM, slant: .italic)
-    ///   let resolved = style.resolve()
-    ///   Text("Hello").font(resolved.font)
-    ///   ```
+    // --- Existing token scale (unchanged defaults) ---
     public static func text(_ token: ReeceTextStyleToken, slant: ReeceFontSlant = .normal) -> ReeceTextStyle {
         switch token {
+        case .displayXL: return .init(size: 44, weight: .bold,   tracking: 0.2, relativeTo: .largeTitle, slant: slant, lineHeight: nil)
+        case .displayL:  return .init(size: 36, weight: .bold,   tracking: 0.2, relativeTo: .largeTitle, slant: slant, lineHeight: nil)
+        case .displayM:  return .init(size: 28, weight: .medium, tracking: 0.2, relativeTo: .title,      slant: slant, lineHeight: nil)
 
-        // Display / Marketing
-        case .displayXL: return .init(size: 44, weight: .bold,     tracking: 0.2, relativeTo: .largeTitle, slant: slant)
-        case .displayL:  return .init(size: 36, weight: .bold,     tracking: 0.2, relativeTo: .largeTitle, slant: slant)
-        case .displayM:  return .init(size: 28, weight: .medium, tracking: 0.2, relativeTo: .title,      slant: slant)
+        case .headline:  return .init(size: 20, weight: .medium, tracking: 0.1, relativeTo: .headline, slant: slant, lineHeight: nil)
+        case .titleL:    return .init(size: 22, weight: .medium, tracking: 0.1, relativeTo: .title2,   slant: slant, lineHeight: nil)
+        case .titleM:    return .init(size: 18, weight: .medium, tracking: 0.1, relativeTo: .title3,   slant: slant, lineHeight: nil)
+        case .titleS:    return .init(size: 16, weight: .medium, tracking: 0.1, relativeTo: .headline, slant: slant, lineHeight: nil)
 
-        // App structure
-        case .headline:  return .init(size: 20, weight: .medium, tracking: 0.1, relativeTo: .headline, slant: slant)
-        case .titleL:    return .init(size: 22, weight: .medium, tracking: 0.1, relativeTo: .title2,   slant: slant)
-        case .titleM:    return .init(size: 18, weight: .medium, tracking: 0.1, relativeTo: .title3,   slant: slant)
-        case .titleS:    return .init(size: 16, weight: .medium,   tracking: 0.1, relativeTo: .headline, slant: slant)
+        case .bodyL:     return .init(size: 17, weight: .regular, tracking: 0.0, relativeTo: .body,    slant: slant, lineHeight: nil)
+        case .bodyM:     return .init(size: 15, weight: .regular, tracking: 0.0, relativeTo: .body,    slant: slant, lineHeight: nil)
+        case .bodyS:     return .init(size: 13, weight: .regular, tracking: 0.0, relativeTo: .callout, slant: slant, lineHeight: nil)
+        case .label:     return .init(size: 12, weight: .medium,  tracking: 0.1, relativeTo: .caption, slant: slant, lineHeight: nil)
+        case .caption:   return .init(size: 11, weight: .regular, tracking: 0.1, relativeTo: .caption2, slant: slant, lineHeight: nil)
 
-        // Body & UI
-        case .bodyL:     return .init(size: 17, weight: .regular,  tracking: 0.0, relativeTo: .body,    slant: slant)
-        case .bodyM:     return .init(size: 15, weight: .regular,  tracking: 0.0, relativeTo: .body,    slant: slant)
-        case .bodyS:     return .init(size: 13, weight: .regular,  tracking: 0.0, relativeTo: .callout, slant: slant)
-        case .label:     return .init(size: 12, weight: .medium,   tracking: 0.1, relativeTo: .caption, slant: slant)
-        case .caption:   return .init(size: 11, weight: .regular,  tracking: 0.1, relativeTo: .caption2, slant: slant)
-
-        // Monospace
-        case .code:      return .init(size: 13, weight: .regular,  tracking: 0.0, relativeTo: .body,    slant: slant)
+        case .code:      return .init(size: 13, weight: .regular, tracking: 0.0, relativeTo: .body,    slant: slant, lineHeight: nil)
         }
+    }
+
+    // --- Figma bridge (px + % inputs) ---
+
+    /// Build a text style directly from Figma fields.
+    ///
+    /// - Parameters:
+    ///   - sizePx: Font size in Figma (px). We treat 1 px ≈ 1 pt by default.
+    ///   - lineHeightPx: Optional line height in px. When provided, we approximate
+    ///                   using `.lineSpacing(lineHeight - size)`.
+    ///   - letterSpacingPercent: Optional letter spacing in percent (e.g., 0.75 for 0.75%).
+    ///                           Converted to points as `size * (percent/100)`.
+    ///   - weightNumber: Figma weight number (e.g., 700). Mapped via `ReeceFonts.weight(fromFigma:)`.
+    ///   - italic: Whether the style is italic.
+    ///   - relativeTo: Dynamic Type base; default `.body`.
+    public static func figma(
+        sizePx: CGFloat,
+        lineHeightPx: CGFloat? = nil,
+        letterSpacingPercent: CGFloat? = nil,
+        weightNumber: Int,
+        italic: Bool = false,
+        relativeTo: Font.TextStyle = .body
+    ) -> ReeceTextStyle {
+        let weight = ReeceFonts.weight(fromFigma: weightNumber)
+        let trackingPts = (letterSpacingPercent ?? 0) * sizePx / 100.0
+        let slant: ReeceFontSlant = italic ? .italic : .normal
+        return .init(
+            size: sizePx,
+            weight: weight,
+            tracking: trackingPts,
+            relativeTo: relativeTo,
+            slant: slant,
+            lineHeight: lineHeightPx
+        )
     }
 }
