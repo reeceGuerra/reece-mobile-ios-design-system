@@ -14,19 +14,21 @@ import SwiftUI
 // MARK: Tokens
 
 public enum ReeceTextStyleToken: CaseIterable, Sendable {
-    case displayXL, displayL, displayM
-    case headline, titleL, titleM, titleS
-    case bodyL, bodyM, bodyS, label, caption
+    case h1B, h1M, h1R
+    case h2B, h2M, h2R
+    case h3B, h3M, h3R
+    case h4B, h4M, h4R
+    case h5B, h5M, h5R
+    case buttonM, buttonS
+    case body, caption
     case code
 }
 
 public struct ReeceTextStyle: Sendable {
     public let size: CGFloat        // base size (pt)
     public let weight: ReeceFontWeight
-    public let tracking: CGFloat    // points
     public let relativeTo: Font.TextStyle
     public let slant: ReeceFontSlant
-    public let lineHeight: CGFloat? // pt (optional)
 
     @MainActor public func resolve() -> ReeceResolvedFont {
         ReeceFonts.resolveFont(weight: weight, size: size, relativeTo: relativeTo, slant: slant)
@@ -39,56 +41,32 @@ public enum ReeceTypography {
     // --- Existing token scale (unchanged defaults) ---
     public static func text(_ token: ReeceTextStyleToken, slant: ReeceFontSlant = .normal) -> ReeceTextStyle {
         switch token {
-        case .displayXL: return .init(size: 44, weight: .bold,   tracking: 0.2, relativeTo: .largeTitle, slant: slant, lineHeight: nil)
-        case .displayL:  return .init(size: 36, weight: .bold,   tracking: 0.2, relativeTo: .largeTitle, slant: slant, lineHeight: nil)
-        case .displayM:  return .init(size: 28, weight: .medium, tracking: 0.2, relativeTo: .title,      slant: slant, lineHeight: nil)
+        case .h1B: return .init(size: 48.83, weight: .weight(700), relativeTo: .headline, slant: slant)
+        case .h1M: return .init(size: 48.83, weight: .weight(500), relativeTo: .headline, slant: slant)
+        case .h1R: return .init(size: 48.83, weight: .weight(400), relativeTo: .headline, slant: slant)
+            
+        case .h2B: return .init(size: 39.06, weight: .weight(700), relativeTo: .headline, slant: slant)
+        case .h2M: return .init(size: 39.06, weight: .weight(500), relativeTo: .headline, slant: slant)
+        case .h2R: return .init(size: 39.06, weight: .weight(400), relativeTo: .headline, slant: slant)
+            
+        case .h3B: return .init(size: 31.25, weight: .weight(700), relativeTo: .subheadline, slant: slant)
+        case .h3M: return .init(size: 31.25, weight: .weight(500), relativeTo: .subheadline, slant: slant)
+        case .h3R: return .init(size: 31.25, weight: .weight(400), relativeTo: .subheadline, slant: slant)
+            
+        case .h4B: return .init(size: 25, weight: .weight(700), relativeTo: .subheadline, slant: slant)
+        case .h4M: return .init(size: 25, weight: .weight(500), relativeTo: .subheadline, slant: slant)
+        case .h4R: return .init(size: 25, weight: .weight(400), relativeTo: .subheadline, slant: slant)
+            
+        case .h5B: return .init(size: 20, weight: .weight(700), relativeTo: .subheadline, slant: slant)
+        case .h5M: return .init(size: 20, weight: .weight(500), relativeTo: .subheadline, slant: slant)
+        case .h5R: return .init(size: 20, weight: .weight(400), relativeTo: .subheadline, slant: slant)
+            
+        case .buttonM: return .init(size: 16, weight: .weight(500), relativeTo: .body, slant: slant)
+        case .buttonS: return .init(size: 14, weight: .weight(500), relativeTo: .body, slant: slant)
 
-        case .headline:  return .init(size: 20, weight: .medium, tracking: 0.1, relativeTo: .headline, slant: slant, lineHeight: nil)
-        case .titleL:    return .init(size: 22, weight: .medium, tracking: 0.1, relativeTo: .title2,   slant: slant, lineHeight: nil)
-        case .titleM:    return .init(size: 18, weight: .medium, tracking: 0.1, relativeTo: .title3,   slant: slant, lineHeight: nil)
-        case .titleS:    return .init(size: 16, weight: .medium, tracking: 0.1, relativeTo: .headline, slant: slant, lineHeight: nil)
-
-        case .bodyL:     return .init(size: 17, weight: .regular, tracking: 0.0, relativeTo: .body,    slant: slant, lineHeight: nil)
-        case .bodyM:     return .init(size: 15, weight: .regular, tracking: 0.0, relativeTo: .body,    slant: slant, lineHeight: nil)
-        case .bodyS:     return .init(size: 13, weight: .regular, tracking: 0.0, relativeTo: .callout, slant: slant, lineHeight: nil)
-        case .label:     return .init(size: 12, weight: .medium,  tracking: 0.1, relativeTo: .caption, slant: slant, lineHeight: nil)
-        case .caption:   return .init(size: 11, weight: .regular, tracking: 0.1, relativeTo: .caption2, slant: slant, lineHeight: nil)
-
-        case .code:      return .init(size: 13, weight: .regular, tracking: 0.0, relativeTo: .body,    slant: slant, lineHeight: nil)
+        case .body: return .init(size: 16, weight: .weight(400), relativeTo: .body, slant: slant)
+        case .caption: return .init(size: 12.8, weight: .weight(400), relativeTo: .caption, slant: slant)
+        case .code: return .init(size: 12, weight: .weight(400), relativeTo: .caption2, slant: slant)
         }
-    }
-
-    // --- Figma bridge (px + % inputs) ---
-
-    /// Build a text style directly from Figma fields.
-    ///
-    /// - Parameters:
-    ///   - sizePx: Font size in Figma (px). We treat 1 px ≈ 1 pt by default.
-    ///   - lineHeightPx: Optional line height in px. When provided, we approximate
-    ///                   using `.lineSpacing(lineHeight - size)`.
-    ///   - letterSpacingPercent: Optional letter spacing in percent (e.g., 0.75 for 0.75%).
-    ///                           Converted to points as `size * (percent/100)`.
-    ///   - weightNumber: Figma weight number (e.g., 700). Mapped via `ReeceFonts.weight(fromFigma:)`.
-    ///   - italic: Whether the style is italic.
-    ///   - relativeTo: Dynamic Type base; default `.body`.
-    public static func figma(
-        sizePx: CGFloat,
-        lineHeightPx: CGFloat? = nil,
-        letterSpacingPercent: CGFloat? = nil,
-        weightNumber: Int,
-        italic: Bool = false,
-        relativeTo: Font.TextStyle = .body
-    ) -> ReeceTextStyle {
-        let weight = ReeceFonts.weight(fromFigma: weightNumber)
-        let trackingPts = (letterSpacingPercent ?? 0) * sizePx / 100.0
-        let slant: ReeceFontSlant = italic ? .italic : .normal
-        return .init(
-            size: sizePx,
-            weight: weight,
-            tracking: trackingPts,
-            relativeTo: relativeTo,
-            slant: slant,
-            lineHeight: lineHeightPx
-        )
     }
 }

@@ -76,13 +76,8 @@ public extension Text {
         let style = ReeceTypography.text(token, slant: slant)
         let resolved = style.resolve()
 
-        // extra space between baselines = desiredLineHeight - baseFontSize
-        let spacingAdjust: CGFloat? = style.lineHeight.map { max(0, $0 - style.size) }
-
         // Compose as View (no Text-typed reassignment):
         return self
-            .reeceLineSpacing(spacingAdjust)                       // <-- safe, conditional
-            .tracking(style.tracking)
             .font(resolved.font)
             .modifier(ApplyFontWeightIfNeeded(weight: resolved.systemWeight))
             .modifier(ApplyItalicIfNeeded(enabled: resolved.needsViewItalic))
@@ -100,11 +95,8 @@ public extension Text {
         color: Color? = nil
     ) -> some View {
         let resolved = spec.resolve()
-        let spacingAdjust: CGFloat? = spec.lineHeight.map { max(0, $0 - spec.size) }
 
         return self
-            .reeceLineSpacing(spacingAdjust)                       // <-- safe, conditional
-            .tracking(spec.tracking)
             .font(resolved.font)
             .modifier(ApplyFontWeightIfNeeded(weight: resolved.systemWeight))
             .modifier(ApplyItalicIfNeeded(enabled: resolved.needsViewItalic))
@@ -117,22 +109,43 @@ struct ReeceTypography_Previews: PreviewProvider {
     static var previews: some View {
         VStack(alignment: .leading, spacing: 12) {
             Group {
-                Text("Display XL").reeceText(.displayXL)
-                Text("Display L (Italic)").reeceText(.displayL, slant: .italic)
-                Text("Display M").reeceText(.displayM)
+                Text("h1B").reeceText(.h1B)
+                Text("h1M italic").reeceText(.h1B, slant: .italic)
+                Text("h1R").reeceText(.h1R)
             }
             Group {
-                Text("Headline").reeceText(.headline)
-                Text("Title L (Italic)").reeceText(.titleL, slant: .italic)
-                Text("Title M").reeceText(.titleM)
-                Text("Title S").reeceText(.titleS)
+                Text("h2B").reeceText(.h1B)
+                Text("h2M italic").reeceText(.h1B, slant: .italic)
+                Text("h2R").reeceText(.h1R)
             }
             Group {
-                Text("Body L").reeceText(.bodyL)
-                Text("Body M (Italic)").reeceText(.bodyM, slant: .italic)
-                Text("Body S").reeceText(.bodyS)
-                Text("Label").reeceText(.label)
+                Text("h3B").reeceText(.h1B)
+                Text("h3M italic").reeceText(.h1B, slant: .italic)
+                Text("h3R").reeceText(.h1R)
+            }
+            Group {
+                Text("h4B").reeceText(.h1B)
+                Text("h4M italic").reeceText(.h1B, slant: .italic)
+                Text("h4R").reeceText(.h1R)
+            }
+            Group {
+                Text("h5B").reeceText(.h1B)
+                Text("h5M italic").reeceText(.h1B, slant: .italic)
+                Text("h5R").reeceText(.h1R)
+            }
+            Group {
+                Text("Body").reeceText(.body)
+                Text("Body (Italic)").reeceText(.body, slant: .italic)
                 Text("Caption").reeceText(.caption)
+            }
+            Group {
+                Button(action: { }) {
+                    Text("Button M").reeceText(.buttonM)
+                }
+                
+                Button(action: { }) {
+                    Text("Button S").reeceText(.buttonS)
+                }
             }
             Group {
                 Text("Code sample: let x = 42").reeceText(.code)

@@ -27,22 +27,6 @@ public enum ReeceFonts {
         // SPM resource inclusion is enough for SwiftUI + Font.custom
     }
 
-    /// Map Figma numeric weights (100...900) to semantic weights.
-    ///
-    /// The mapping is tuned for Roboto (classic set has Light/Regular/Medium/Bold/Black).
-    /// Adjust if you add a Semibold face.
-    public static func weight(fromFigma number: Int) -> ReeceFontWeight {
-        switch number {
-        case ..<200: return .light          // 100 Thin
-        case 200..<400: return .light       // 200 ExtraLight / 300 Light
-        case 400: return .regular           // 400 Regular
-        case 401..<600: return .medium      // 500 Medium
-        case 600..<700: return .bold        // 600 Semibold → Bold as approximation
-        case 700..<900: return .bold        // 700 Bold / 800 ExtraBold
-        default: return .black              // 900 Black
-        }
-    }
-
     /// Resolve a SwiftUI `Font` + metadata for italic/weight handling.
     public static func resolveFont(
         weight: ReeceFontWeight,
@@ -128,6 +112,22 @@ public enum ReeceFontWeight: Sendable {
         case .medium:  return .medium
         case .bold:    return .bold
         case .black:   return .black
+        }
+    }
+    
+    /// Map Figma numeric weights (100...900) to semantic weights.
+    ///
+    /// The mapping is tuned for Roboto (classic set has Light/Regular/Medium/Bold/Black).
+    /// Adjust if you add a Semibold face.
+    public static func weight(_ number: Int) -> ReeceFontWeight {
+        switch number {
+        case ..<200: return .light          // 100 Thin
+        case 200..<400: return .light       // 200 ExtraLight / 300 Light
+        case 400: return .regular           // 400 Regular
+        case 401..<600: return .medium      // 500 Medium
+        case 600..<700: return .bold        // 600 Semibold → Bold as approximation
+        case 700..<900: return .bold        // 700 Bold / 800 ExtraBold
+        default: return .black              // 900 Black
         }
     }
 }
