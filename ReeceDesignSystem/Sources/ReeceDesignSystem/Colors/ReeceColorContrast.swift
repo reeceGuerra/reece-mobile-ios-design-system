@@ -41,16 +41,4 @@ public enum ReeceColorContrast {
         let luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b
         return luminance > threshold ? .black : .white
     }
-
-    // MARK: - Backward compatibility (deprecated)
-
-    /// Deprecated alias. Use `onColor(for:scheme:threshold:)` instead.
-    @available(*, deprecated, message: "Use onColor(for:scheme:threshold:) instead.")
-    public static func preferredLabelColor(
-        over background: Color,
-        scheme: ColorScheme? = nil,
-        threshold: Double = 0.57
-    ) -> Color {
-        onColor(for: background, scheme: scheme, threshold: threshold)
-    }
 }
