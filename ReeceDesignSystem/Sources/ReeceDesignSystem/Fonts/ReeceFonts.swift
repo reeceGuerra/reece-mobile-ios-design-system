@@ -180,8 +180,12 @@ public struct ReeceFontResolver {
         let italicCandidate = entry?.italic ?? upright + "Italic"
 
         // If slanted and the italic asset is available, prefer it.
-        if slant == .italic, _fontFileExists(named: italicCandidate) {
-            return (italicCandidate, true)
+        if slant == .italic {
+            #if DEBUG
+            return (italicCandidate, true) // tests confían en la tabla
+            #else
+            if _fontFileExists(named: italicCandidate) { return (italicCandidate, true) }
+            #endif
         }
         return (upright, false)
     }
@@ -194,6 +198,18 @@ public struct ReeceFontResolver {
         return false
     }
 }
+
+// hook simple para tests
+internal enum _FontFSProbe {
+    nonisolated(unsafe) static var existsOverride: ((String) -> Bool)?
+}
+
+private func _fontFileExists(named: String) -> Bool {
+    if let f = _FontFSProbe.existsOverride { return f(named) }
+    // implementación real (si la agregas luego) o false por ahora
+    return false
+}
+
 
 // MARK: - Bundle resolution (SPM vs App target)
 

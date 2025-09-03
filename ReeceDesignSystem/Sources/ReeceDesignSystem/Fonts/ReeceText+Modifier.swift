@@ -3,216 +3,143 @@
 //  ReeceDesignSystem
 //
 //  Created by Carlos Lopez on 02/09/25.
-//  Overview
-//  --------
-//  Two APIs:
 //
-//  1) Precise Text builder (preferred):
-//     ReeceText(_:token:slant:color:family:designScale:)
-//     - Converts design px → pt.
-//     - Applies exact line-height via NSMutableParagraphStyle (UIKit/AppKit) + NSAttributedString bridge.
-//     - Applies kerning from percent (%) using base point size.
-//     - Resolves fonts via ReeceFontResolver (system/Roboto) and applies italic fallback.
-//
-//  2) ViewModifier fallback:
-//     .reeceText(_:slant:color:family:designScale:)
-//     - For existing Text values.
-//     - Approximates line-height using `.lineSpacing` with base pt.
-//     - Applies kerning and italic at view level.
+//  Public APIs:
+//   1) Builder: ReeceText(_:token:slant:color:family:designScale:)
+//   2) View fallback: .reeceText(_:slant:color:family:designScale:)
+// Implementation notes:
+//   - @MainActor: all SwiftUI-facing APIs are main-actor isolated.
+//   - _computeTextStyle(...) unwraps optional letterSpacingPercent safely.
 //
 
-import Foundation
 import SwiftUI
 
-#if canImport(UIKit)
-import UIKit
-typealias PlatformParagraphStyle = NSMutableParagraphStyle
-#elseif canImport(AppKit)
-import AppKit
-typealias PlatformParagraphStyle = NSMutableParagraphStyle
-#endif
+// MARK: - Public Builder
 
-// MARK: - Precise Text builder
+/// Preferred builder when you create a new Text from a String.
+@MainActor
+@inlinable
+public func ReeceText(
+    _ string: String,
+    token: ReeceTextStyleToken,
+    slant: ReeceFontSlant? = nil,
+    color: Color? = nil,
+    family: ReeceFontFamily = .system,
+    designScale: CGFloat? = nil
+) -> some View {
+    Text(string).reeceText(token, slant: slant, color: color, family: family, designScale: designScale)
+}
 
-@available(iOS 15.0, macOS 12.0, *)
-public func ReeceText(_ string: String,
-                      token: ReeceTextStyleToken,
-                      slant: ReeceFontSlant? = nil,
-                      color: Color? = nil,
-                      family: ReeceFontFamily = .system,
-                      designScale: CGFloat? = nil) -> Text {
-    var spec = token.spec
-    if let s = slant { spec = spec.with(slant: s) }
+// MARK: - Internal Pure Helper (unit-testable)
 
-    // 1) Base pt (px→pt)
+/// Computes font, kerning and line spacing for a given spec/family/scale.
+/// - Returns: `(font, kerning, lineSpacing, needsViewItalic)`
+///
+/// Notes:
+/// - `kerning` is computed from a percent of the *base point size*.
+/// - `lineSpacing` is the *extra* spacing derived from line-height multiple.
+/// - `needsViewItalic` is true for families that require view-level italics (e.g., `.system`).
+@MainActor
+@usableFromInline
+internal func _computeTextStyle(
+    spec: ReeceTextSpec,
+    family: ReeceFontFamily,
+    designScale: CGFloat
+) -> (font: Font, kerning: CGFloat, lineSpacing: CGFloat, needsViewItalic: Bool) {
+
     let basePt = spec.basePointSize(usingScale: designScale)
-
-    // 2) Resolve font (system/custom) + italic fallback flag
     let resolved = ReeceFontResolver.resolve(for: spec, family: family, basePointSize: basePt)
 
-    // 3) Kerning (pt) from design percent
-    let kernPoints: CGFloat? = {
-        guard let percent = spec.letterSpacingPercent else { return nil }
-        return (percent / 100.0) * basePt
-    }()
+    // SAFE unwrap for optional kerning percentage
+    let kernPercent: Double = spec.letterSpacingPercent ?? 0.0
+    let kerning = CGFloat(kernPercent / 100.0) * basePt
 
-    // 4) Paragraph style (UIKit/AppKit) + NSAttributedString → AttributedString bridge
-    let paragraph = PlatformParagraphStyle()
+    // Extra spacing over the base point size (optional multiple)
+    let lineSpacing: CGFloat
     if let multiple = spec.lineHeightMultiple() {
-        paragraph.lineHeightMultiple = multiple
+        lineSpacing = (CGFloat(multiple) * basePt) - basePt
+    } else {
+        lineSpacing = 0
     }
 
-    var nsAttributes: [NSAttributedString.Key: Any] = [
-        .paragraphStyle: paragraph
-    ]
-    if let k = kernPoints {
-        nsAttributes[.kern] = k
-    }
-
-    let nsAttr = NSAttributedString(string: string, attributes: nsAttributes)
-    let attr = AttributedString(nsAttr)
-
-    var text = Text(attr).font(resolved.font)
-    if let color = color {
-        text = text.foregroundStyle(color)
-    }
-    if resolved.needsViewItalic {
-        text = text.italic()
-    }
-    return text
+    return (resolved.font, kerning, lineSpacing, resolved.needsViewItalic)
 }
 
-// MARK: - ViewModifier fallback
+// MARK: - ViewModifier
 
+@MainActor
 public struct ReeceTextModifier: ViewModifier {
-    let token: ReeceTextStyleToken
-    let slant: ReeceFontSlant?
-    let color: Color?
-    let family: ReeceFontFamily
-    let designScale: CGFloat?
+    public let token: ReeceTextStyleToken
+    public let slant: ReeceFontSlant?
+    public let color: Color?
+    public let family: ReeceFontFamily
+    public let designScale: CGFloat?
+
+    @inlinable
+    public init(
+        token: ReeceTextStyleToken,
+        slant: ReeceFontSlant? = nil,
+        color: Color? = nil,
+        family: ReeceFontFamily = .system,
+        designScale: CGFloat? = nil
+    ) {
+        self.token = token
+        self.slant = slant
+        self.color = color
+        self.family = family
+        self.designScale = designScale
+    }
 
     public func body(content: Content) -> some View {
-        var spec = token.spec
-        if let s = slant { spec = spec.with(slant: s) }
+        // ❱❱ Todo lo “no-View” se calcula *antes* del builder
+        let baseSpec = token.spec
+        let effectiveSpec = slant.map { baseSpec.with(slant: $0) } ?? baseSpec
+        let scale = designScale ?? 1.0
+        let r = _computeTextStyle(spec: effectiveSpec, family: family, designScale: scale)
 
-        let basePt = spec.basePointSize(usingScale: designScale)
-
-        // Approximate line-height with .lineSpacing
-        let lineSpacing: CGFloat = {
-            guard let multiple = spec.lineHeightMultiple() else { return 0 }
-            return max((multiple - 1.0) * basePt, 0)
-        }()
-
-        let kernPoints: CGFloat = {
-            guard let percent = spec.letterSpacingPercent else { return 0 }
-            return (percent / 100.0) * basePt
-        }()
-
-        let resolved = ReeceFontResolver.resolve(for: spec, family: family, basePointSize: basePt)
-
+        // ❱❱ Ahora sí, un único `View` de retorno
         let base = content
-            .font(resolved.font)
-            .kerning(kernPoints)
-            .lineSpacing(lineSpacing)
-            .foregroundStyle(color ?? .primary)
+            .font(r.font)
+            .kerning(r.kerning)
+            .lineSpacing(r.lineSpacing)
 
-        // Return per-branch to keep 'some View' types consistent
         return Group {
-            if resolved.needsViewItalic {
-                base.italic()
+            if r.needsViewItalic {
+                if let c = color {
+                    base.italic().foregroundColor(c)
+                } else {
+                    base.italic()
+                }
             } else {
-                base
+                if let c = color {
+                    base.foregroundColor(c)
+                } else {
+                    base
+                }
             }
         }
     }
 }
 
+
+// MARK: - Public Fallback API on View
+
+@MainActor
 public extension View {
     /// Fallback API when you already have a Text value.
-    func reeceText(_ token: ReeceTextStyleToken,
-                   slant: ReeceFontSlant? = nil,
-                   color: Color? = nil,
-                   family: ReeceFontFamily = .system,
-                   designScale: CGFloat? = nil) -> some View {
-        modifier(ReeceTextModifier(token: token,
-                                   slant: slant,
-                                   color: color,
-                                   family: family,
-                                   designScale: designScale))
+    func reeceText(
+        _ token: ReeceTextStyleToken,
+        slant: ReeceFontSlant? = nil,
+        color: Color? = nil,
+        family: ReeceFontFamily = .system,
+        designScale: CGFloat? = nil
+    ) -> some View {
+        modifier(ReeceTextModifier(
+            token: token,
+            slant: slant,
+            color: color,
+            family: family,
+            designScale: designScale
+        ))
     }
 }
-
-#if DEBUG
-struct ReeceTypography_Previews: PreviewProvider {
-    static var previews: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 12) {
-                Group {
-                    Text("h1B").reeceText(.h1B)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    Text("h1M italic").reeceText(.h1B, slant: .italic)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    Text("h1R").reeceText(.h1R)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                Group {
-                    Text("h2B").reeceText(.h1B)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    Text("h2M italic").reeceText(.h1B, slant: .italic)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    Text("h2R").reeceText(.h1R)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                Group {
-                    Text("h3B").reeceText(.h1B)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    Text("h3M italic").reeceText(.h1B, slant: .italic)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    Text("h3R").reeceText(.h1R)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                Group {
-                    Text("h4B").reeceText(.h1B)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    Text("h4M italic").reeceText(.h1B, slant: .italic)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    Text("h4R").reeceText(.h1R)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                Group {
-                    Text("h5B").reeceText(.h1B)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    Text("h5M italic").reeceText(.h1B, slant: .italic)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    Text("h5R").reeceText(.h1R)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                Group {
-                    Text("Body").reeceText(.body)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    Text("Body (Italic)").reeceText(.body, slant: .italic)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    Text("Caption").reeceText(.caption)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                Group {
-                    Button(action: { }) {
-                        Text("Button M").reeceText(.buttonM)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    Button(action: { }) {
-                        Text("Button S").reeceText(.buttonS)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                }
-                Group {
-                    Text("Code sample: let x = 42").reeceText(.code)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-            }
-        }
-        .padding()
-        .previewLayout(.sizeThatFits)
-    }
-}
-#endif
