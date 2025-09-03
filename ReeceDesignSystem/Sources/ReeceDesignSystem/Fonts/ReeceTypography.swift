@@ -1,17 +1,100 @@
 //
-//  File.swift
+//  ReeceTypography.swift
 //  ReeceDesignSystem
 //
 //  Created by Carlos Lopez on 02/09/25.
 //
-//  Token API + Figma bridge API.
-//  - Tokens: ReeceTypography.text(_:slant:)
-//  - Figma:  ReeceTypography.figma(...), using px + % directly
+//  Overview
+//  --------
+//  Design-driven typography spec and tokens.
+//  • Accepts font size in pixels (px) from design and converts to points (pt).
+//  • Accepts line height in px and uses a scale-independent multiple (lhPx/fontPx).
+//  • Accepts letter spacing as percent (%) of font size.
+//  • Uses numeric weight mapping → ReeceFontWeight.
+//  • Supports slant (normal/italic).
+//
+//  No UIKit dependency
+//  -------------------
+//  We avoid UIKit to keep this module SwiftUI-only. When no explicit design scale is
+//  provided, we default to 1.0 (i.e., 1 px == 1 pt). Call sites may override the scale
+//  (e.g., 2.0 or 3.0) if they need it.
 //
 
 import SwiftUI
 
-// MARK: Tokens
+// MARK: - Spec
+
+/// Immutable, design-driven typographic specification.
+public struct ReeceTextSpec: Sendable {
+    /// Design font size in pixels.
+    public let designFontSizePx: CGFloat?
+    /// Optional override in points (skip px→pt).
+    public let pointSizeOverride: CGFloat?
+    /// Numeric design weight mapped to DS weight.
+    public let weight: ReeceFontWeight
+    /// Normal or italic style.
+    public let slant: ReeceFontSlant
+    /// Dynamic Type anchor.
+    public let relativeTo: Font.TextStyle
+    /// Design line height in pixels.
+    public let designLineHeightPx: CGFloat?
+    /// Letter spacing as percent (%) of font size.
+    public let letterSpacingPercent: CGFloat?
+
+    /// Base point size (pre–Dynamic Type). If `pointSizeOverride` exists, it wins.
+    /// Otherwise: pt = px / scale, with a UIKit-free default scale of 1.0.
+    public func basePointSize(usingScale scale: CGFloat?) -> CGFloat {
+        if let pt = pointSizeOverride { return pt }
+        guard let px = designFontSizePx else { return 0 }
+        let s = scale ?? 1.0   // <-- FIX: no UIScreen.main (avoids MainActor error)
+        guard s > 0 else { return px }
+        return px / s
+    }
+
+    /// Scale-independent multiple: lineHeightMultiple = lineHeightPx / fontSizePx.
+    public func lineHeightMultiple() -> CGFloat? {
+        guard let lh = designLineHeightPx, let fontPx = designFontSizePx, fontPx > 0 else { return nil }
+        return lh / fontPx
+    }
+
+    public init(designFontSizePx: CGFloat? = nil,
+                pointSizeOverride: CGFloat? = nil,
+                weight: ReeceFontWeight,
+                slant: ReeceFontSlant = .normal,
+                relativeTo: Font.TextStyle,
+                designLineHeightPx: CGFloat? = nil,
+                letterSpacingPercent: CGFloat? = nil) {
+        self.designFontSizePx = designFontSizePx
+        self.pointSizeOverride = pointSizeOverride
+        self.weight = weight
+        self.slant = slant
+        self.relativeTo = relativeTo
+        self.designLineHeightPx = designLineHeightPx
+        self.letterSpacingPercent = letterSpacingPercent
+    }
+
+    public func with(weightNumber: Int) -> ReeceTextSpec {
+        .init(designFontSizePx: designFontSizePx,
+              pointSizeOverride: pointSizeOverride,
+              weight: .weight(weightNumber),
+              slant: slant,
+              relativeTo: relativeTo,
+              designLineHeightPx: designLineHeightPx,
+              letterSpacingPercent: letterSpacingPercent)
+    }
+
+    public func with(slant: ReeceFontSlant) -> ReeceTextSpec {
+        .init(designFontSizePx: designFontSizePx,
+              pointSizeOverride: pointSizeOverride,
+              weight: weight,
+              slant: slant,
+              relativeTo: relativeTo,
+              designLineHeightPx: designLineHeightPx,
+              letterSpacingPercent: letterSpacingPercent)
+    }
+}
+
+// MARK: - Tokens (defaults; adjust to your design source)
 
 public enum ReeceTextStyleToken: CaseIterable, Sendable {
     case h1B, h1M, h1R
@@ -20,53 +103,39 @@ public enum ReeceTextStyleToken: CaseIterable, Sendable {
     case h4B, h4M, h4R
     case h5B, h5M, h5R
     case buttonM, buttonS
-    case body, caption
-    case code
+    case body, caption, code
 }
 
-public struct ReeceTextStyle: Sendable {
-    public let size: CGFloat        // base size (pt)
-    public let weight: ReeceFontWeight
-    public let relativeTo: Font.TextStyle
-    public let slant: ReeceFontSlant
+public extension ReeceTextStyleToken {
+    var spec: ReeceTextSpec {
+        switch self {
+        case .h1B: return .init(designFontSizePx: 48.83, weight: .weight(700), slant: .normal, relativeTo: .largeTitle, designLineHeightPx: 56, letterSpacingPercent: 0.75)
+        case .h1M: return .init(designFontSizePx: 48.83, weight: .weight(500), slant: .normal, relativeTo: .largeTitle, designLineHeightPx: 56, letterSpacingPercent: 0.75)
+        case .h1R: return .init(designFontSizePx: 48.83, weight: .weight(400), slant: .normal, relativeTo: .largeTitle, designLineHeightPx: 56, letterSpacingPercent: 0.75)
 
-    @MainActor public func resolve() -> ReeceResolvedFont {
-        ReeceFonts.resolveFont(weight: weight, size: size, relativeTo: relativeTo, slant: slant)
-    }
-}
+        case .h2B: return .init(designFontSizePx: 39.06, weight: .weight(700), slant: .normal, relativeTo: .title, designLineHeightPx: 46, letterSpacingPercent: 0.75)
+        case .h2M: return .init(designFontSizePx: 39.06, weight: .weight(500), slant: .normal, relativeTo: .title, designLineHeightPx: 46, letterSpacingPercent: 0.75)
+        case .h2R: return .init(designFontSizePx: 39.06, weight: .weight(400), slant: .normal, relativeTo: .title, designLineHeightPx: 46, letterSpacingPercent: 0.75)
 
-@MainActor
-public enum ReeceTypography {
+        case .h3B: return .init(designFontSizePx: 31.25, weight: .weight(700), slant: .normal, relativeTo: .title2, designLineHeightPx: 37, letterSpacingPercent: 0.75)
+        case .h3M: return .init(designFontSizePx: 31.25, weight: .weight(500), slant: .normal, relativeTo: .title2, designLineHeightPx: 37, letterSpacingPercent: 0.75)
+        case .h3R: return .init(designFontSizePx: 31.25, weight: .weight(400), slant: .normal, relativeTo: .title2, designLineHeightPx: 37, letterSpacingPercent: 0.75)
 
-    // --- Existing token scale (unchanged defaults) ---
-    public static func text(_ token: ReeceTextStyleToken, slant: ReeceFontSlant = .normal) -> ReeceTextStyle {
-        switch token {
-        case .h1B: return .init(size: 48.83, weight: .weight(700), relativeTo: .headline, slant: slant)
-        case .h1M: return .init(size: 48.83, weight: .weight(500), relativeTo: .headline, slant: slant)
-        case .h1R: return .init(size: 48.83, weight: .weight(400), relativeTo: .headline, slant: slant)
-            
-        case .h2B: return .init(size: 39.06, weight: .weight(700), relativeTo: .headline, slant: slant)
-        case .h2M: return .init(size: 39.06, weight: .weight(500), relativeTo: .headline, slant: slant)
-        case .h2R: return .init(size: 39.06, weight: .weight(400), relativeTo: .headline, slant: slant)
-            
-        case .h3B: return .init(size: 31.25, weight: .weight(700), relativeTo: .subheadline, slant: slant)
-        case .h3M: return .init(size: 31.25, weight: .weight(500), relativeTo: .subheadline, slant: slant)
-        case .h3R: return .init(size: 31.25, weight: .weight(400), relativeTo: .subheadline, slant: slant)
-            
-        case .h4B: return .init(size: 25, weight: .weight(700), relativeTo: .subheadline, slant: slant)
-        case .h4M: return .init(size: 25, weight: .weight(500), relativeTo: .subheadline, slant: slant)
-        case .h4R: return .init(size: 25, weight: .weight(400), relativeTo: .subheadline, slant: slant)
-            
-        case .h5B: return .init(size: 20, weight: .weight(700), relativeTo: .subheadline, slant: slant)
-        case .h5M: return .init(size: 20, weight: .weight(500), relativeTo: .subheadline, slant: slant)
-        case .h5R: return .init(size: 20, weight: .weight(400), relativeTo: .subheadline, slant: slant)
-            
-        case .buttonM: return .init(size: 16, weight: .weight(500), relativeTo: .body, slant: slant)
-        case .buttonS: return .init(size: 14, weight: .weight(500), relativeTo: .body, slant: slant)
+        case .h4B: return .init(designFontSizePx: 25, weight: .weight(700), slant: .normal, relativeTo: .title3, designLineHeightPx: 30, letterSpacingPercent: 0.75)
+        case .h4M: return .init(designFontSizePx: 25, weight: .weight(500), slant: .normal, relativeTo: .title3, designLineHeightPx: 30, letterSpacingPercent: 0.75)
+        case .h4R: return .init(designFontSizePx: 25, weight: .weight(400), slant: .normal, relativeTo: .title3, designLineHeightPx: 30, letterSpacingPercent: 0.75)
 
-        case .body: return .init(size: 16, weight: .weight(400), relativeTo: .body, slant: slant)
-        case .caption: return .init(size: 12.8, weight: .weight(400), relativeTo: .caption, slant: slant)
-        case .code: return .init(size: 12, weight: .weight(400), relativeTo: .caption2, slant: slant)
+        case .h5B: return .init(designFontSizePx: 20, weight: .weight(700), slant: .normal, relativeTo: .headline,   designLineHeightPx: 24, letterSpacingPercent: 0.75)
+        case .h5M: return .init(designFontSizePx: 20, weight: .weight(500), slant: .normal, relativeTo: .subheadline,designLineHeightPx: 24, letterSpacingPercent: 0.75)
+        case .h5R: return .init(designFontSizePx: 20, weight: .weight(400), slant: .normal, relativeTo: .subheadline,designLineHeightPx: 24, letterSpacingPercent: 0.75)
+
+        case .buttonM: return .init(designFontSizePx: 16, weight: .weight(500), slant: .normal, relativeTo: .body, designLineHeightPx: 24, letterSpacingPercent: 0.5)
+        case .buttonS: return .init(designFontSizePx: 14, weight: .weight(500), slant: .normal, relativeTo: .body, designLineHeightPx: 22, letterSpacingPercent: 0.5)
+
+        case .body:   return .init(designFontSizePx: 16, weight: .weight(400), slant: .normal, relativeTo: .body,    designLineHeightPx: 24, letterSpacingPercent: 0.5)
+        case .caption:return .init(designFontSizePx: 12.8, weight: .weight(400), slant: .normal, relativeTo: .caption, designLineHeightPx: 16.2, letterSpacingPercent: 0.0)
+        case .code:   return .init(designFontSizePx: 12, weight: .weight(400), slant: .normal, relativeTo: .caption2, designLineHeightPx: 16, letterSpacingPercent: 0.0)
         }
     }
 }
+

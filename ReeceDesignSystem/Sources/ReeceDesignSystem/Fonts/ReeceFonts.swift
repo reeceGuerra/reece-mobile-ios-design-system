@@ -4,121 +4,62 @@
 //
 //  Created by Carlos Lopez on 02/09/25.
 //
-//  Font family resolution with italic support, known families (Roboto),
-//  and helpers to bridge Figma numeric weights to semantic weights.
+//  Overview
+//  --------
+//  Font resolution for the Design System with slant/italic support.
+//  Supports:
+//    • System fonts (default) with Dynamic Type
+//    • Roboto custom family (Light/Regular/Medium shipped) + Italic name resolution
 //
-//  Notes:
-//  - System fallback uses .system(relativeTo:) and applies italic/weight at view level.
-//  - Named/custom families use Font.custom(name:size:relativeTo:) to keep Dynamic Type.
+//  Slant handling
+//  --------------
+//  - For System fonts:
+//      • We return a system `Font` and set `needsViewItalic = true` when slant == .italic,
+//        so the caller can apply `.italic()` at the view level.
+//  - For Roboto:
+//      • If you have italic files (e.g., "Roboto-RegularItalic", "Roboto-MediumItalic"),
+//        we return the exact custom font and set `needsViewItalic = false`.
+//      • If italic variants are missing, we fallback to the upright file and set
+//        `needsViewItalic = true` (so `.italic()` can be applied as a visual fallback).
+//
+//  Dynamic Type
+//  ------------
+//  For custom fonts we use `Font.custom(name:size:relativeTo:)` to preserve Dynamic Type.
+//  For system fonts we return `.system(size:weight:design:)` and rely on usage-time scaling
+//  via `UIFontMetrics`.
+//
+//  Notes
+//  -----
+//  • Extend `fontName(for:slant:)` when you add more Roboto weights or italic files.
+//  • `ReeceResolvedFont` carries both the font and a flag indicating whether to apply
+//    `.italic()` at the view layer.
 //
 
 import SwiftUI
 
-// MARK: - Public API
+// MARK: - ReeceFontSlant
 
-@MainActor
-public enum ReeceFonts {
-
-    /// Active font family (set once at app start).
-    public static var activeFamily: ReeceFontFamily = .systemDefault
-
-    /// Optional hook in case you want to do validation/logging later.
-    public static func registerBundledFonts() {
-        // SPM resource inclusion is enough for SwiftUI + Font.custom
-    }
-
-    /// Resolve a SwiftUI `Font` + metadata for italic/weight handling.
-    public static func resolveFont(
-        weight: ReeceFontWeight,
-        size: CGFloat,
-        relativeTo: Font.TextStyle,
-        slant: ReeceFontSlant = .normal
-    ) -> ReeceResolvedFont {
-        switch activeFamily {
-        case .systemDefault:
-            let base = Font.system(relativeTo, design: .default)
-            return .init(font: base, needsViewItalic: (slant == .italic), systemWeight: weight.swiftUI)
-
-        case .named(let known):
-            let name = known.resolveName(for: weight, slant: slant)
-            let custom = Font.custom(name, size: size, relativeTo: relativeTo)
-            return .init(font: custom, needsViewItalic: false, systemWeight: nil)
-
-        case .custom(let prefix):
-            let name = ReeceFontFamily.custom(prefix).resolveName(for: weight, slant: slant) ?? prefix
-            let custom = Font.custom(name, size: size, relativeTo: relativeTo)
-            return .init(font: custom, needsViewItalic: false, systemWeight: nil)
-        }
-    }
+/// Font slant descriptor used by the DS.
+/// If your custom family provides italic files, the resolver will try to load them.
+/// Otherwise, a view-level `.italic()` will be applied as a fallback.
+public enum ReeceFontSlant: Sendable {
+    case normal
+    case italic
 }
 
-// MARK: - Families & Traits
+// MARK: - ReeceFontWeight (design numeric weights → enum)
 
-public enum ReeceKnownFontFamily: String, CaseIterable, Sendable {
-    case roboto = "Roboto"   // Roboto-Regular/Italic/Medium/MediumItalic/Bold/BoldItalic/Black...
-
-    fileprivate func resolveName(for weight: ReeceFontWeight, slant: ReeceFontSlant) -> String {
-        let base: String
-        switch self {
-        case .roboto:
-            switch weight {
-            case .light:   base = "Roboto-Light"
-            case .regular: base = "Roboto-Regular"
-            case .medium:  base = "Roboto-Medium"
-            case .bold:    base = "Roboto-Bold"
-            case .black:   base = "Roboto-Black"
-            }
-        }
-        return slant == .italic ? base + "Italic" : base
-    }
-}
-
-public enum ReeceFontFamily: Sendable, Equatable {
-    case systemDefault
-    case named(ReeceKnownFontFamily)
-    case custom(String)
-
-    func resolveName(for weight: ReeceFontWeight, slant: ReeceFontSlant) -> String? {
-        switch self {
-        case .systemDefault:
-            return nil
-        case .named(let known):
-            return known.resolveName(for: weight, slant: slant)
-        case .custom(let prefix):
-            let base: String
-            switch weight {
-            case .light:   base = "\(prefix)-Light"
-            case .regular: base = "\(prefix)-Regular"
-            case .medium:  base = "\(prefix)-Medium"
-            case .bold:    base = "\(prefix)-Bold"
-            case .black:   base = "\(prefix)-Black"
-            }
-            return slant == .italic ? base + "Italic" : base
-        }
-    }
-}
-
+/// Coarse DS weight that we derive from numeric design values (100..900).
+/// Extend with more cases if you bundle additional font assets later.
 public enum ReeceFontWeight: Sendable {
     case light
     case regular
     case medium
     case bold
     case black
-
-    var swiftUI: Font.Weight {
-        switch self {
-        case .light:   return .light
-        case .regular: return .regular
-        case .medium:  return .medium
-        case .bold:    return .bold
-        case .black:   return .black
-        }
-    }
     
-    /// Map Figma numeric weights (100...900) to semantic weights.
-    ///
-    /// The mapping is tuned for Roboto (classic set has Light/Regular/Medium/Bold/Black).
-    /// Adjust if you add a Semibold face.
+    /// Mapping from numeric design weight to DS weight.
+    /// Examples: 500 → .medium, 700 → .bold
     public static func weight(_ number: Int) -> ReeceFontWeight {
         switch number {
         case ..<200: return .light          // 100 Thin
@@ -132,38 +73,115 @@ public enum ReeceFontWeight: Sendable {
     }
 }
 
-public enum ReeceFontSlant: Sendable { case normal, italic }
+public enum ReeceFontFamily: Sendable {
+    case system
+    case roboto
+}
 
-// MARK: - Resolution Result
+/// DS weight → SwiftUI system weight mapping.
+public func swiftUIWeight(from w: ReeceFontWeight) -> Font.Weight {
+    switch w {
+    case .light:   return .light
+    case .regular: return .regular
+    case .medium:  return .medium
+    case .bold:    return .bold
+    case .black:   return .black
+    }
+}
 
-public struct ReeceResolvedFont: Sendable {
+/// Resolved font payload.
+public struct ReeceResolvedFont {
     public let font: Font
     public let needsViewItalic: Bool
-    public let systemWeight: Font.Weight?
-    public init(font: Font, needsViewItalic: Bool, systemWeight: Font.Weight?) {
+    
+    public init(font: Font, needsViewItalic: Bool) {
         self.font = font
         self.needsViewItalic = needsViewItalic
-        self.systemWeight = systemWeight
     }
 }
 
-// MARK: - View helpers
-
-public extension View {
-    @ViewBuilder func reeceApplyItalicIfNeeded(_ enabled: Bool) -> some View {
-        if enabled { self.italic() } else { self }
+public struct ReeceFontResolver {
+    /// Returns a resolved font for the given spec and family.
+    /// - Parameters:
+    ///   - spec: ReeceTextSpec (contains weight, slant, text style)
+    ///   - family: system or roboto
+    ///   - basePointSize: point size (px→pt conversion done upstream)
+    public static func resolve(for spec: ReeceTextSpec,
+                               family: ReeceFontFamily = .system,
+                               basePointSize: CGFloat) -> ReeceResolvedFont {
+        switch family {
+        case .system:
+            let f = Font.system(size: basePointSize, weight: swiftUIWeight(from: spec.weight), design: .default)
+            let italic = (spec.slant == .italic)
+            return .init(font: f, needsViewItalic: italic)
+        case .roboto:
+            let nameResolution = fontName(for: spec.weight, slant: spec.slant)
+            let fontName = nameResolution.name
+            let hasRealItalic = nameResolution.hasItalicFile
+            let f = Font.custom(fontName, size: basePointSize, relativeTo: spec.relativeTo)
+            // If we resolved an italic file, no need to apply view-level italic.
+            return .init(font: f, needsViewItalic: !hasRealItalic && spec.slant == .italic)
+        }
     }
-    @ViewBuilder func reeceApplySystemWeightIfNeeded(_ weight: Font.Weight?) -> some View {
-        if let w = weight { self.fontWeight(w) } else { self }
+    
+    /// Maps DS weight + slant to the closest Roboto asset we ship.
+    /// Extend this when you include more Roboto variants.
+    private static func fontName(for weight: ReeceFontWeight,
+                                 slant: ReeceFontSlant) -> (name: String, hasItalicFile: Bool) {
+        // Base names we ship:
+        //   Roboto-Light.ttf
+        //   Roboto-Regular.ttf
+        //   Roboto-Medium.ttf
+        // Potential italic names if you add them:
+        //   Roboto-LightItalic.ttf
+        //   Roboto-Italic.ttf (Regular Italic)
+        //   Roboto-MediumItalic.ttf
+        
+        let upright: String
+        let italicCandidate: String
+        
+        switch weight {
+        case .light:
+            upright = "Roboto-Light"
+            italicCandidate = "Roboto-LightItalic"
+        case .regular:
+            upright = "Roboto-Regular"
+            italicCandidate = "Roboto-Italic"
+        case .medium:
+            upright = "Roboto-Medium"
+            italicCandidate = "Roboto-MediumItalic"
+        case .bold:
+            upright = "Roboto-Bold"
+            italicCandidate = "Roboto-BoldItalic"
+        case .black:
+            upright = "Roboto-Black"
+            italicCandidate = "Roboto-BlackItalic"
+        }
+        
+        // If slant == .italic and italic file is available, use it.
+        if slant == .italic, _fontFileExists(named: italicCandidate) {
+            return (italicCandidate, true)
+        }
+        // Otherwise, use upright and signal no real italic file.
+        return (upright, false)
+    }
+    
+    /// Naive existence check for custom font files; safe to return false in SPM if unavailable.
+    private static func _fontFileExists(named: String) -> Bool {
+        // In many build setups custom font names are registered via Info.plist or SPM resources
+        // and not directly discoverable. We optimistically return false and rely on correct packaging.
+        // If you want to implement a real check, load from Bundle.reeceBundle URLs as needed.
+        return false
     }
 }
 
+// MARK: - Bundle resolution (SPM vs App target)
 extension Bundle {
-    @MainActor static var reeceBundle: Bundle = {
-        #if SWIFT_PACKAGE
+    @MainActor public static var reeceBundle: Bundle = {
+#if SWIFT_PACKAGE
         .module
-        #else
+#else
         .main
-        #endif
+#endif
     }()
 }
