@@ -4,7 +4,6 @@
 ![SPM Compatible](https://img.shields.io/badge/SPM-Compatible-green?logo=swift)
 ![iOS 17+](https://img.shields.io/badge/iOS-17%2B-blue?logo=apple)
 ![macOS 14+](https://img.shields.io/badge/macOS-14%2B-lightgrey?logo=apple)
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow)
 
 A Swift-based **design system** for iOS and macOS, providing a unified set of **colors, typography, and reusable components** to ensure consistency across Reece’s mobile apps.
 
@@ -44,6 +43,8 @@ This package is distributed via **Swift Package Manager (SPM)**.
 
 ### Colors
 
+#### Solid Color
+
 ```swift
 import ReeceDesignSystem
 import SwiftUI
@@ -51,10 +52,33 @@ import SwiftUI
 struct ExampleView: View {
     var body: some View {
         Rectangle()
-            .fill(ReeceColors.primary.DarkBlue.color(.t100, using: .light))
+            .fill(
+                ReeceStyle.solid(
+                    ReeceColors.primary.DarkBlue.color(.t100, using: .light)
+                ).style
+            )
             .frame(height: 100)
     }
 }
+```
+
+#### Gradient
+
+```swift
+Rectangle()
+    .fill(
+        ReeceStyle.gradient(
+            LinearGradient(
+                colors: [
+                    ReeceColors.primary.DarkBlue.color(.t100, using: .light),
+                    ReeceColors.primary.DarkBlue.color(.t300, using: .light)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        ).style
+    )
+    .frame(height: 100)
 ```
 
 ### Typography

@@ -20,19 +20,62 @@
                   location = "group:ReeceColorsPrimaryTests.swift">
                </FileRef>
                <FileRef
+                  location = "group:ReeceColorsRandomTests.swift">
+               </FileRef>
+               <FileRef
                   location = "group:ReeceColorsSupportTests.swift">
                </FileRef>
                <FileRef
                   location = "group:ReeceColorHexTests.swift">
                </FileRef>
                <FileRef
+                  location = "group:ReeceStyleTests.swift">
+               </FileRef>
+               <FileRef
                   location = "group:ReeceColorsSecondaryTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ReeceThemeModeTests.swift">
                </FileRef>
                <FileRef
                   location = "group:ReeceColorContrastTests.swift">
                </FileRef>
                <FileRef
                   location = "group:ReeceColorExportTests.swift">
+               </FileRef>
+            </Group>
+            <Group
+               location = "group:Fonts"
+               name = "Fonts">
+               <FileRef
+                  location = "group:ReeceFontRegisterTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ReeceFontExistsOverrideTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ReeceFontAssetsMapCoverageTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ReeceTextBuilderTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ReeceTypographySpecAdditionalTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ReeceTypographySpecTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ReeceFontResolverTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ReeceFontsMissingAssetTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ReeceTextStyleTokenTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ReeceTextModifierComputeTests.swift">
                </FileRef>
             </Group>
          </Group>
@@ -46,14 +89,137 @@
          <Group
             location = "group:ReeceDesignSystem"
             name = "ReeceDesignSystem">
+            <Group
+               location = "group:Resources"
+               name = "Resources">
+               <FileRef
+                  location = "group:Assets.xcassets">
+               </FileRef>
+               <Group
+                  location = "group:Fonts"
+                  name = "Fonts">
+                  <Group
+                     location = "group:Roboto"
+                     name = "Roboto">
+                     <FileRef
+                        location = "group:Roboto-Medium.ttf">
+                     </FileRef>
+                     <FileRef
+                        location = "group:Roboto-Light.ttf">
+                     </FileRef>
+                     <FileRef
+                        location = "group:Roboto-Regular.ttf">
+                     </FileRef>
+                     <FileRef
+                        location = "group:Roboto-MediumItalic.ttf">
+                     </FileRef>
+                     <FileRef
+                        location = "group:Roboto-BoldItalic.ttf">
+                     </FileRef>
+                     <FileRef
+                        location = "group:Roboto-LightItalic.ttf">
+                     </FileRef>
+                     <FileRef
+                        location = "group:Roboto-Italic.ttf">
+                     </FileRef>
+                     <FileRef
+                        location = "group:Roboto-BlackItalic.ttf">
+                     </FileRef>
+                     <FileRef
+                        location = "group:Roboto-Bold.ttf">
+                     </FileRef>
+                     <FileRef
+                        location = "group:Roboto-Black.ttf">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:HelveticaNeueLtPro"
+                     name = "HelveticaNeueLtPro">
+                     <FileRef
+                        location = "group:HelveticaNeueLTPro-Bold.otf">
+                     </FileRef>
+                     <FileRef
+                        location = "group:HelveticaNeueLTPro-Black.otf">
+                     </FileRef>
+                     <FileRef
+                        location = "group:HelveticaNeueLTPro-Italic.otf">
+                     </FileRef>
+                     <FileRef
+                        location = "group:HelveticaNeueLTPro-Regular.otf">
+                     </FileRef>
+                     <FileRef
+                        location = "group:HelveticaNeueLTPro-MediumItalic.otf">
+                     </FileRef>
+                     <FileRef
+                        location = "group:HelveticaNeueLTPro-BlackItalic.otf">
+                     </FileRef>
+                     <FileRef
+                        location = "group:HelveticaNeueLTPro-LightItalic.otf">
+                     </FileRef>
+                     <FileRef
+                        location = "group:HelveticaNeueLTPro-Medium.otf">
+                     </FileRef>
+                     <FileRef
+                        location = "group:HelveticaNeueLTPro-Light.otf">
+                     </FileRef>
+                     <FileRef
+                        location = "group:HelveticaNeueLTPro-BoldItalic.otf">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:OpenSans"
+                     name = "OpenSans">
+                     <FileRef
+                        location = "group:OpenSans-Light.ttf">
+                     </FileRef>
+                     <FileRef
+                        location = "group:OpenSans-Italic.ttf">
+                     </FileRef>
+                     <FileRef
+                        location = "group:OpenSans-MediumItalic.ttf">
+                     </FileRef>
+                     <FileRef
+                        location = "group:OpenSans-Black.ttf">
+                     </FileRef>
+                     <FileRef
+                        location = "group:OpenSans-LightItalic.ttf">
+                     </FileRef>
+                     <FileRef
+                        location = "group:OpenSans-Bold.ttf">
+                     </FileRef>
+                     <FileRef
+                        location = "group:OpenSans-Medium.ttf">
+                     </FileRef>
+                     <FileRef
+                        location = "group:OpenSans-Regular.ttf">
+                     </FileRef>
+                     <FileRef
+                        location = "group:OpenSans-BoldItalic.ttf">
+                     </FileRef>
+                     <FileRef
+                        location = "group:OpenSans-BlackItalic.ttf">
+                     </FileRef>
+                  </Group>
+               </Group>
+            </Group>
             <FileRef
                location = "group:ReeceTheme.swift">
             </FileRef>
+            <Group
+               location = "group:Styles"
+               name = "Styles">
+               <FileRef
+                  location = "group:ReeceStyle.swift">
+               </FileRef>
+            </Group>
             <Group
                location = "group:Colors"
                name = "Colors">
                <FileRef
                   location = "group:ReeceColorEngine.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ReeceColorsExtension.swift">
                </FileRef>
                <FileRef
                   location = "group:ReeceColorContrast.swift">
@@ -68,6 +234,9 @@
                   location = "group:ReeceColors.Root.swift">
                </FileRef>
                <FileRef
+                  location = "group:ReecePaletteFamily.swift">
+               </FileRef>
+               <FileRef
                   location = "group:ReeceColors.Secondary.swift">
                </FileRef>
                <FileRef
@@ -75,6 +244,22 @@
                </FileRef>
                <FileRef
                   location = "group:ReeceColorHex.swift">
+               </FileRef>
+            </Group>
+            <Group
+               location = "group:Fonts"
+               name = "Fonts">
+               <FileRef
+                  location = "group:ReeceFonts.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ReeceFontRegister.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ReeceTypography.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ReeceText+Modifier.swift">
                </FileRef>
             </Group>
          </Group>
