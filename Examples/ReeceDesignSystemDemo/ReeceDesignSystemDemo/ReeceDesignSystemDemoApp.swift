@@ -6,9 +6,14 @@
 //
 
 import SwiftUI
+import ReeceDesignSystem
 
 @main
 struct ReeceDesignSystemDemoApp: App {
+    init() {
+        _ = ReeceFontRegister.registerAllFonts()
+    }
+    
     var body: some Scene {
         WindowGroup {
             AppRootView()

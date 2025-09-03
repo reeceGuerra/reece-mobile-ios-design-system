@@ -31,6 +31,7 @@ struct AppRootView: View {
                 List {
                     Section("Assets") {
                         NavigationLink("Colors", value: ReeceRoute.home)
+                        NavigationLink("Fonts", value: ReeceRoute.fontsview)
                     }
                     .listRowBackground(cellBg)
                 }
@@ -68,6 +69,12 @@ struct AppRootView: View {
                             title: name,
                             color: Color(hex: hex)
                         )
+                    case .fontsview:
+                        FontsView { font in
+                            router.push(.fontDetail(font: font))
+                        }
+                    case let .fontDetail(font):
+                        FontDetailView(font: font)
                     }
                 }
         }

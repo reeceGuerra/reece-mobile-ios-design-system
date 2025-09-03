@@ -15,6 +15,8 @@ enum ReeceRoute: Hashable {
     case secondary
     case support
     case colorDetail(name: String, hex: String)
+    case fontsview
+    case fontDetail(font: DemoFontFamily)
 }
 
 /// Router observable con un `NavigationPath` compartido.

@@ -1,5 +1,21 @@
+//
+//  ReeceColorsRandomTests.swift
+//  ReeceDesignSystem
+//
+//  Created by Carlos Lopez on 03/09/25.
+//
+
+
 import XCTest
 import SwiftUI
+#if canImport(UIKit)
+import UIKit
+#endif
+
+#if canImport(AppKit) && !targetEnvironment(macCatalyst)
+import AppKit
+#endif
+
 @testable import ReeceDesignSystem
 
 final class ReeceColorsRandomTests: XCTestCase {
@@ -9,7 +25,6 @@ final class ReeceColorsRandomTests: XCTestCase {
     /// Convierte un `SwiftUI.Color` a RGBA (device RGB) para poder compararlo en tests.
     private func rgba(_ color: Color) -> (r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat)? {
         #if canImport(UIKit)
-        import UIKit
         let ui = UIColor(color)
         guard let rgb = ui.cgColor.converted(to: CGColorSpaceCreateDeviceRGB(),
                                              intent: .defaultIntent,
@@ -24,7 +39,6 @@ final class ReeceColorsRandomTests: XCTestCase {
             return nil
         }
         #elseif canImport(AppKit)
-        import AppKit
         let ns = NSColor(color)
         guard let rgb = ns.usingColorSpace(.deviceRGB) else { return nil }
         return (rgb.redComponent, rgb.greenComponent, rgb.blueComponent, rgb.alphaComponent)
@@ -57,4 +71,27 @@ final class ReeceColorsRandomTests: XCTestCase {
 
     @MainActor
     func test_random_returnsOpaqueColor_inDark() {
-        let c = Reec
+        let c = ReeceColors.random(using: .dark)
+        guard let comps = rgba(c) else {
+            XCTFail("Could not extract RGBA from random color (dark).")
+            return
+        }
+        XCTAssertGreaterThan(comps.a, 0.0, "Expected non-transparent color (dark).")
+    }
+
+    @MainActor
+    func test_random_isDeterministicallyNonClear_acrossSchemes() {
+        // Ninguno de los colores definidos usa transparencia, por lo que alpha debe ser 1.
+        // (Si en el futuro agregas tokens con alpha < 1, ajusta esta aserción.)
+        for scheme in [ColorScheme.light, .dark] {
+            for _ in 0..<30 {
+                let c = ReeceColors.random(using: scheme)
+                guard let comps = rgba(c) else {
+                    XCTFail("Could not extract RGBA in scheme \(scheme).")
+                    return
+                }
+                XCTAssertEqual(quantize(comps).3, 1000, "Expected opaque color (alpha ~ 1.0).")
+            }
+        }
+    }
+}
