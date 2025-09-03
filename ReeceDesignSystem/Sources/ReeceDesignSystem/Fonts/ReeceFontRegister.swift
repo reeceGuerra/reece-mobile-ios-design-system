@@ -1,6 +1,8 @@
 //
-//  ReeceFontRegistrar.swift
+//  ReeceFontRegister.swift
 //  ReeceDesignSystem
+//
+//  Created by Carlos Lopez on 03/09/25.
 //
 //  Registers packaged fonts at runtime (iOS + macOS) from Bundle.module/Resources/Fonts.
 //
@@ -8,7 +10,7 @@
 import Foundation
 import CoreText
 
-public enum ReeceFontRegistrar {
+public enum ReeceFontRegister {
     /// Registers all .ttf / .otf files under Resources/Fonts (recursively).
     /// Safe to call multiple times.
     @discardableResult
