@@ -14,39 +14,42 @@ public enum ReeceFontRegister {
     /// Registers all .ttf / .otf files under Resources/Fonts (recursively).
     /// Safe to call multiple times.
     @discardableResult
-    public static func registerAllFonts() -> Int {
-        guard let fontsRoot = Bundle.module.url(forResource: "Fonts", withExtension: nil) else {
-            #if DEBUG
-            print("ReeceFontRegistrar: Fonts directory not found in Bundle.module")
-            #endif
-            return 0
-        }
-
-        var registeredCount = 0
-        let exts = Set(["ttf","otf"])
-
-        let fm = FileManager.default
-        let enumerator = fm.enumerator(at: fontsRoot, includingPropertiesForKeys: nil)
-        while let item = enumerator?.nextObject() as? URL {
-            guard exts.contains(item.pathExtension.lowercased()) else { continue }
-
-            var cfError: Unmanaged<CFError>?
-            let ok = CTFontManagerRegisterFontsForURL(item as CFURL, .process, &cfError)
-            if ok {
-                registeredCount += 1
-            } else if let e = cfError?.takeRetainedValue() {
-                // If already registered, CoreText returns kCTFontManagerErrorAlreadyRegistered
+        public static func registerAllFonts() -> Int {
+            guard let root = Bundle.module.resourceURL else {
                 #if DEBUG
-                let code = CFErrorGetCode(e)
-                let domain = CFErrorGetDomain(e) as String
-                let desc = CFErrorCopyDescription(e) as String
-                print("ReeceFontRegistrar: Failed to register \(item.lastPathComponent) (\(domain):\(code)) – \(desc)")
+                print("ReeceFontRegistrar: resourceURL is nil for Bundle.module")
                 #endif
+                return 0
             }
+
+            let exts = Set(["ttf","otf"])
+            var registered = 0
+
+            if let enumerator = FileManager.default.enumerator(
+                at: root, includingPropertiesForKeys: [.isRegularFileKey]
+            ) {
+                for case let url as URL in enumerator {
+                    guard exts.contains(url.pathExtension.lowercased()) else { continue }
+
+                    var cfError: Unmanaged<CFError>?
+                    let ok = CTFontManagerRegisterFontsForURL(url as CFURL, .process, &cfError)
+                    if ok {
+                        registered += 1
+                    } else if let e = cfError?.takeRetainedValue() {
+                        #if DEBUG
+                        // Already-registered isn’t fatal; CoreText returns a specific error code.
+                        let code = CFErrorGetCode(e)
+                        let domain = CFErrorGetDomain(e) as String
+                        let desc = CFErrorCopyDescription(e) as String
+                        print("ReeceFontRegistrar: could not register \(url.lastPathComponent) (\(domain):\(code)) – \(desc)")
+                        #endif
+                    }
+                }
+            }
+
+            #if DEBUG
+            print("ReeceFontRegistrar: registered \(registered) font file(s)")
+            #endif
+            return registered
         }
-        #if DEBUG
-        print("ReeceFontRegistrar: registered \(registeredCount) font file(s)")
-        #endif
-        return registeredCount
-    }
 }
