@@ -5,7 +5,6 @@
 //  Created by Carlos Lopez on 02/09/25.
 //
 //  Public APIs:
-//   1) Builder: ReeceText(_:token:slant:color:family:designScale:)
 //   2) View fallback: .reeceText(_:slant:color:family:designScale:)
 // Implementation notes:
 //   - @MainActor: all SwiftUI-facing APIs are main-actor isolated.
