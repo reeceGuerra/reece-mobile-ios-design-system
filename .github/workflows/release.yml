@@ -4,10 +4,10 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'Package.swift'
-      - 'Sources/**'
-      - 'Tests/**'
-      - 'Examples/**'
+      - '**/Package.swift'
+      - '**/Sources/**'
+      - '**/Tests/**'
+      - '**/Examples/**'
       - '.github/workflows/release.yml'
   workflow_dispatch: {}
 

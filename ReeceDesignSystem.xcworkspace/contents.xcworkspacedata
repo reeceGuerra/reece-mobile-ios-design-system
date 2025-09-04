@@ -63,6 +63,9 @@
                   location = "group:ReeceTypographySpecAdditionalTests.swift">
                </FileRef>
                <FileRef
+                  location = "group:ReeceFontFamilyPrecedenceTests.swift">
+               </FileRef>
+               <FileRef
                   location = "group:ReeceTypographySpecTests.swift">
                </FileRef>
                <FileRef
@@ -257,6 +260,9 @@
                </FileRef>
                <FileRef
                   location = "group:ReeceTypography.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ReeceTypographyEnvironment.swift">
                </FileRef>
                <FileRef
                   location = "group:ReeceText+Modifier.swift">
