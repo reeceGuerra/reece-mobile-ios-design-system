@@ -26,44 +26,66 @@ import SwiftUI
 
 /// Immutable, design-driven typographic specification.
 public struct ReeceTextSpec: Sendable {
-    /// Design font size in pixels.
+    /// Design font size in pixels (px). If `pointSizeOverride` is set, it wins.
     public let designFontSizePx: CGFloat?
-    /// Optional override in points (skip px→pt).
+    /// Optional explicit point size in pt (skips px→pt conversion).
     public let pointSizeOverride: CGFloat?
-    /// Numeric design weight mapped to DS weight.
+    /// Typeface weight (domain enum defined in ReeceFonts.swift).
     public let weight: ReeceFontWeight
-    /// Normal or italic style.
+    /// Font slant (e.g., `.normal`, `.italic`).
     public let slant: ReeceFontSlant
-    /// Dynamic Type anchor.
+    /// Dynamic Type anchor (e.g., `.body`, `.headline`).
     public let relativeTo: Font.TextStyle
-    /// Design line height in pixels.
+    /// Design line height in pixels (px).
     public let designLineHeightPx: CGFloat?
-    /// Letter spacing as percent (%) of font size.
+    /// Letter spacing as percent (%) of font size (nil = default).
     public let letterSpacingPercent: CGFloat?
+    /// Optional token-level font family override.
+    /// If set, this takes precedence over the environment default unless
+    /// a call site passes an explicit `family:`.
+    public let preferredFamily: ReeceFontFamily?
 
-    /// Base point size (pre–Dynamic Type). If `pointSizeOverride` exists, it wins.
-    /// Otherwise: pt = px / scale, with a UIKit-free default scale of 1.0.
+    // MARK: Base metrics
+
+    /// Returns the base point size (pre–Dynamic Type).
+    /// If `pointSizeOverride` exists, it wins; otherwise `px / scale`.
+    /// - Parameter scale: Design px→pt scale (defaults to 1.0 if nil).
+    /// - Returns: Point size in pt.
     public func basePointSize(usingScale scale: CGFloat?) -> CGFloat {
         if let pt = pointSizeOverride { return pt }
         guard let px = designFontSizePx else { return 0 }
-        let s = scale ?? 1.0   // <-- FIX: no UIScreen.main (avoids MainActor error)
+        let s = scale ?? 1.0
         guard s > 0 else { return px }
         return px / s
     }
 
-    /// Scale-independent multiple: lineHeightMultiple = lineHeightPx / fontSizePx.
+    /// Returns a scale-independent multiple: lineHeightPx / fontSizePx.
+    /// - Returns: The multiple, or `nil` if inputs are missing.
     public func lineHeightMultiple() -> CGFloat? {
         guard let lh = designLineHeightPx, let fontPx = designFontSizePx, fontPx > 0 else { return nil }
         return lh / fontPx
     }
 
+    // MARK: Init
+
+    /// Creates a new text spec.
+    /// - Parameters:
+    ///   - designFontSizePx: Design font size in px (ignored if overriding `pointSizeOverride`).
+    ///   - pointSizeOverride: Explicit point size in pt (skips px→pt).
+    ///   - weight: Typeface weight.
+    ///   - slant: Font slant (default `.normal`).
+    ///   - relativeTo: Dynamic Type anchor.
+    ///   - designLineHeightPx: Design line height in px.
+    ///   - letterSpacingPercent: Letter spacing as % of point size.
+    ///   - preferredFamily: Token-level font family override (default `nil`).
     public init(designFontSizePx: CGFloat? = nil,
                 pointSizeOverride: CGFloat? = nil,
                 weight: ReeceFontWeight,
                 slant: ReeceFontSlant = .normal,
                 relativeTo: Font.TextStyle,
                 designLineHeightPx: CGFloat? = nil,
-                letterSpacingPercent: CGFloat? = nil) {
+                letterSpacingPercent: CGFloat? = nil,
+                preferredFamily: ReeceFontFamily? = nil) {
         self.designFontSizePx = designFontSizePx
         self.pointSizeOverride = pointSizeOverride
         self.weight = weight
@@ -71,18 +93,28 @@ public struct ReeceTextSpec: Sendable {
         self.relativeTo = relativeTo
         self.designLineHeightPx = designLineHeightPx
         self.letterSpacingPercent = letterSpacingPercent
+        self.preferredFamily = preferredFamily
     }
 
-    public func with(weightNumber: Int) -> ReeceTextSpec {
+    // MARK: Builders
+
+    /// Returns a copy with the provided numeric weight mapped to domain weight.
+    /// - Parameter weightNumber: Numeric weight (e.g., 100…900).
+    /// - Returns: Updated spec with mapped weight.
+    func with(weightNumber: Int) -> ReeceTextSpec {
         .init(designFontSizePx: designFontSizePx,
               pointSizeOverride: pointSizeOverride,
               weight: .weight(weightNumber),
               slant: slant,
               relativeTo: relativeTo,
               designLineHeightPx: designLineHeightPx,
-              letterSpacingPercent: letterSpacingPercent)
+              letterSpacingPercent: letterSpacingPercent,
+              preferredFamily: preferredFamily)
     }
 
+    /// Returns a copy with a different slant.
+    /// - Parameter slant: The desired `ReeceFontSlant`.
+    /// - Returns: Updated spec preserving all other fields.
     public func with(slant: ReeceFontSlant) -> ReeceTextSpec {
         .init(designFontSizePx: designFontSizePx,
               pointSizeOverride: pointSizeOverride,
@@ -90,7 +122,8 @@ public struct ReeceTextSpec: Sendable {
               slant: slant,
               relativeTo: relativeTo,
               designLineHeightPx: designLineHeightPx,
-              letterSpacingPercent: letterSpacingPercent)
+              letterSpacingPercent: letterSpacingPercent,
+              preferredFamily: preferredFamily)
     }
 }
 
