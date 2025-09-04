@@ -55,8 +55,8 @@ jobs:
       - name: Run release script
         if: steps.bump.outputs.bump != 'none'
         run: |
-          chmod +x scripts/release.sh
-          scripts/release.sh "${{ steps.bump.outputs.bump }}"
+          git config core.filemode false
+          bash scripts/release.sh "${{ steps.bump.outputs.bump }}"
 
       - name: Push CHANGELOG commit (if created)
         if: steps.bump.outputs.bump != 'none'
