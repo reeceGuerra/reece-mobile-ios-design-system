@@ -157,15 +157,4 @@ Or inside Xcode via **Product > Test**.
 
 ---
 
-## 📄 License
-
-MIT License. See [LICENSE](LICENSE) for details.
-
----
-
-## 🤝 Contributing
-
-Contributions, issues, and feature requests are welcome!  
-Open a PR or create an issue in this repo.
-
 
