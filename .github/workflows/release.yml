@@ -1,0 +1,66 @@
+name: Release (auto-tag)
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'Package.swift'
+      - 'Sources/**'
+      - 'Tests/**'
+      - 'Examples/**'
+      - '.github/workflows/release.yml'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set git user
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Compute bump from commit messages
+        id: bump
+        shell: bash
+        run: |
+          latest_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "latest_tag=$latest_tag"
+          log=$(git log --format='%s%n%b' "${latest_tag}..HEAD")
+
+          bump="none"
+          if echo "$log" | grep -Eiq 'BREAKING CHANGE|\[MAJOR\]'; then
+            bump="major"
+          elif echo "$log" | grep -Eiq '\[FEAT\]'; then
+            bump="minor"
+          elif echo "$log" | grep -Eiq '\[FIX\]|\[PERF\]|\[REFACTOR\]'; then
+            bump="patch"
+          fi
+
+          echo "bump=$bump" >> $GITHUB_OUTPUT
+          echo "Bump: $bump"
+
+      - name: Skip if no version bump
+        if: steps.bump.outputs.bump == 'none'
+        run: echo "No bump detected; skipping release."
+
+      - name: Run release script
+        if: steps.bump.outputs.bump != 'none'
+        run: |
+          chmod +x scripts/release.sh
+          scripts/release.sh "${{ steps.bump.outputs.bump }}"
+
+      - name: Push CHANGELOG commit (if created)
+        if: steps.bump.outputs.bump != 'none'
+        env:
+          BRANCH_REF: ${{ github.ref_name }}
+        run: |
+          git push origin "HEAD:${BRANCH_REF}"
