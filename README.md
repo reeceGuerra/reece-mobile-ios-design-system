@@ -53,12 +53,6 @@ resolves versions from tags — the version is **not** stored inside `Package.sw
 
 In Xcode: **File → Add Package Dependencies…** and set the rule to **Up to Next Major Version** starting from **2.0.0**.
 
-### Cutting a release (from a clean main)
-```bash
-git tag -a v2.0.0 -m "Release v2.0.0"
-git push origin v2.0.0
-```
-
 ## 🚀 Usage
 
 ### Colors
