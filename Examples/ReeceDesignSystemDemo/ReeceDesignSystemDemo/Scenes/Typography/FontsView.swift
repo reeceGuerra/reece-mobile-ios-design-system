@@ -80,6 +80,7 @@ struct FontsView: View {
             .listStyle(.insetGrouped)
             .scrollContentBackground(.hidden)
             .background(background)
+            .reeceText(.body)
         }
         .reeceNavigationBar(title: "Reece DS - Typography", trailing: {
             ReeceThemeMenuView()

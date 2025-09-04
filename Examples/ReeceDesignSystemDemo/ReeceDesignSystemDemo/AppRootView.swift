@@ -42,6 +42,7 @@ struct AppRootView: View {
                 .background(background)
                 .reeceBackground(background)
                 .reeceCellBackground(cellBg)
+                .reeceText(.body)
             }
             .reeceNavigationBar(
                 title: "Reece DS",

@@ -39,6 +39,7 @@ struct ColorsView: View {
             .background(background)
             .reeceBackground(background)
             .reeceCellBackground(cellBg)
+            .reeceText(.body)
         }
         .reeceNavigationBar(
             title: "Reece DS - Colors", trailing:  {
