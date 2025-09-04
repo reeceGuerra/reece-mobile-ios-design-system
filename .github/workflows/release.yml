@@ -9,7 +9,14 @@ on:
       - '**/Tests/**'
       - '**/Examples/**'
       - '.github/workflows/release.yml'
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: 'Release bump (override when running manually)'
+        required: true
+        type: choice
+        default: patch
+        options: [patch, minor, major]
 
 permissions:
   contents: write
@@ -28,7 +35,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Compute bump from commit messages
+      - name: Compute bump from commit messages (or manual override)
         id: bump
         shell: bash
         run: |
@@ -43,6 +50,11 @@ jobs:
             bump="minor"
           elif echo "$log" | grep -Eiq '\[FIX\]|\[PERF\]|\[REFACTOR\]'; then
             bump="patch"
+          fi
+
+          # Manual override if launched from UI
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            bump="${{ github.event.inputs.bump }}"
           fi
 
           echo "bump=$bump" >> $GITHUB_OUTPUT
