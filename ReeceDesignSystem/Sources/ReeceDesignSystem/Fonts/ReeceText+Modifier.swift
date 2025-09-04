@@ -14,6 +14,41 @@
 
 import SwiftUI
 
+/// Computes SwiftUI `Font`, kerning and line spacing for the given spec/family.
+/// Uses `ReeceFontResolver.resolve(for:family:basePointSize:)` from ReeceFonts.swift.
+///
+/// - Parameters:
+///   - spec: Fully design-driven text spec (px-based + metadata).
+///   - family: Effective font family to use.
+///   - designScale: Optional px→pt scale factor (if `nil`, spec uses 1.0).
+/// - Returns: Tuple with `font`, `kerning` (points), `lineSpacing` (extra leading) and `needsViewItalic`.
+func _computeTextStyle(spec: ReeceTextSpec,
+                       family: ReeceFontFamily,
+                       designScale: CGFloat?) -> (font: Font, kerning: CGFloat, lineSpacing: CGFloat, needsViewItalic: Bool) {
+    
+    // 1) Base size in points (pre–Dynamic Type)
+    let basePt = spec.basePointSize(usingScale: designScale)
+    
+    // 2) Resolve font via central resolver
+    let resolved = ReeceFontResolver.resolve(for: spec,
+                                             family: family,
+                                             basePointSize: basePt)
+    
+    // 3) Kerning from percent over point size (safe unwrap)
+    let kernPercent: CGFloat = spec.letterSpacingPercent ?? 0.0
+    let kerning = (kernPercent / 100.0) * basePt
+    
+    // 4) Extra spacing over the base point size (use multiple if present)
+    let lineSpacing: CGFloat
+    if let multiple = spec.lineHeightMultiple() {
+        lineSpacing = (multiple * basePt) - basePt
+    } else {
+        lineSpacing = 0
+    }
+    
+    return (resolved.font, kerning, lineSpacing, resolved.needsViewItalic)
+}
+
 // MARK: - Reece Text Modifier (Environment-aware)
 
 /// Applies Reece Typography to any view using token specs and font-family resolution.
@@ -121,45 +156,5 @@ public extension View {
     @ViewBuilder
     func foregroundStyleIf(_ color: Color?) -> some View {
         if let c = color { self.foregroundStyle(c) } else { self }
-    }
-}
-
-// MARK: - Private helpers
-
-@available(iOS 17, macOS 14, *)
-private extension ReeceTextModifier {
-    /// Computes SwiftUI `Font`, kerning and line spacing for the given spec/family.
-    /// Uses `ReeceFontResolver.resolve(for:family:basePointSize:)` from ReeceFonts.swift.
-    ///
-    /// - Parameters:
-    ///   - spec: Fully design-driven text spec (px-based + metadata).
-    ///   - family: Effective font family to use.
-    ///   - designScale: Optional px→pt scale factor (if `nil`, spec uses 1.0).
-    /// - Returns: Tuple with `font`, `kerning` (points), `lineSpacing` (extra leading) and `needsViewItalic`.
-    func _computeTextStyle(spec: ReeceTextSpec,
-                           family: ReeceFontFamily,
-                           designScale: CGFloat?) -> (font: Font, kerning: CGFloat, lineSpacing: CGFloat, needsViewItalic: Bool) {
-        
-        // 1) Base size in points (pre–Dynamic Type)
-        let basePt = spec.basePointSize(usingScale: designScale)
-        
-        // 2) Resolve font via central resolver
-        let resolved = ReeceFontResolver.resolve(for: spec,
-                                                 family: family,
-                                                 basePointSize: basePt)
-        
-        // 3) Kerning from percent over point size (safe unwrap)
-        let kernPercent: CGFloat = spec.letterSpacingPercent ?? 0.0
-        let kerning = (kernPercent / 100.0) * basePt
-        
-        // 4) Extra spacing over the base point size (use multiple if present)
-        let lineSpacing: CGFloat
-        if let multiple = spec.lineHeightMultiple() {
-            lineSpacing = (multiple * basePt) - basePt
-        } else {
-            lineSpacing = 0
-        }
-        
-        return (resolved.font, kerning, lineSpacing, resolved.needsViewItalic)
     }
 }
