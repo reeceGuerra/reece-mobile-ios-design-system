@@ -10,14 +10,13 @@
 //  ReeceStyle.swift
 //  ReeceDesignSystem
 //
-//  Created by [Your Name] on [Date].
+//  Created by Carlos Guerra Lopez on 09/02/2025.
 //
 //  This file defines a lightweight abstraction for style tokens in the
 //  Reece Design System. Instead of exposing only `Color`, it allows tokens
 //  to represent either solid colors or gradients, and provides a unified
 //  interface (`AnyShapeStyle`) that can be used across SwiftUI views.
 //
-//  Requirements: iOS 17+, macOS 14+
 //
 
 import SwiftUI
@@ -26,26 +25,7 @@ import SwiftUI
 /// Use this when you want to expose a design token that might be more than
 /// a single `Color`, but still usable wherever a `ShapeStyle` is required.
 ///
-/// Example:
-/// ```swift
-/// Circle()
-///     .fill(ReeceStyle.solid(ReeceColors.Primary.DarkBlue_t100).style)
-///
-/// RoundedRectangle(cornerRadius: 12)
-///     .fill(
-///         ReeceStyle.gradient(
-///             LinearGradient(
-///                 colors: [
-///                     ReeceColors.Primary.DarkBlue_t100,
-///                     ReeceColors.Primary.DarkBlue_t300
-///                 ],
-///                 startPoint: .top,
-///                 endPoint: .bottom
-///             )
-///         ).style
-///     )
-/// ```
-@available(iOS 17, macOS 14, *)
+
 public enum ReeceStyle {
     
     /// Represents a solid color style.
