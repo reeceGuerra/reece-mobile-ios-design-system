@@ -14,132 +14,152 @@
 
 import SwiftUI
 
-// MARK: - Public Builder
+// MARK: - Reece Text Modifier (Environment-aware)
 
-/// Preferred builder when you create a new Text from a String.
-@MainActor
-@inlinable
-public func ReeceText(
-    _ string: String,
-    token: ReeceTextStyleToken,
-    slant: ReeceFontSlant? = nil,
-    color: Color? = nil,
-    family: ReeceFontFamily = .system,
-    designScale: CGFloat? = nil
-) -> some View {
-    Text(string).reeceText(token, slant: slant, color: color, family: family, designScale: designScale)
-}
-
-// MARK: - Internal Pure Helper (unit-testable)
-
-/// Computes font, kerning and line spacing for a given spec/family/scale.
-/// - Returns: `(font, kerning, lineSpacing, needsViewItalic)`
-///
-/// Notes:
-/// - `kerning` is computed from a percent of the *base point size*.
-/// - `lineSpacing` is the *extra* spacing derived from line-height multiple.
-/// - `needsViewItalic` is true for families that require view-level italics (e.g., `.system`).
-@MainActor
-@usableFromInline
-internal func _computeTextStyle(
-    spec: ReeceTextSpec,
-    family: ReeceFontFamily,
-    designScale: CGFloat
-) -> (font: Font, kerning: CGFloat, lineSpacing: CGFloat, needsViewItalic: Bool) {
-
-    let basePt = spec.basePointSize(usingScale: designScale)
-    let resolved = ReeceFontResolver.resolve(for: spec, family: family, basePointSize: basePt)
-
-    // SAFE unwrap for optional kerning percentage
-    let kernPercent: Double = spec.letterSpacingPercent ?? 0.0
-    let kerning = CGFloat(kernPercent / 100.0) * basePt
-
-    // Extra spacing over the base point size (optional multiple)
-    let lineSpacing: CGFloat
-    if let multiple = spec.lineHeightMultiple() {
-        lineSpacing = (CGFloat(multiple) * basePt) - basePt
-    } else {
-        lineSpacing = 0
-    }
-
-    return (resolved.font, kerning, lineSpacing, resolved.needsViewItalic)
-}
-
-// MARK: - ViewModifier
-
-@MainActor
+/// Applies Reece Typography to any view using token specs and font-family resolution.
+/// Family resolution priority (highest → lowest):
+/// 1) Explicit `family:` at call site
+/// 2) Token `preferredFamily`
+/// 3) Environment `\.reeceFontFamily`
+/// 4) `.system` fallback
 public struct ReeceTextModifier: ViewModifier {
-    public let token: ReeceTextStyleToken
-    public let slant: ReeceFontSlant?
-    public let color: Color?
-    public let family: ReeceFontFamily
-    public let designScale: CGFloat?
-
-    @inlinable
-    public init(
-        token: ReeceTextStyleToken,
-        slant: ReeceFontSlant? = nil,
-        color: Color? = nil,
-        family: ReeceFontFamily = .system,
-        designScale: CGFloat? = nil
-    ) {
+    // Inputs
+    private let token: ReeceTextStyleToken
+    private let slant: ReeceFontSlant?
+    private let color: Color?
+    private let explicitFamily: ReeceFontFamily?
+    private let designScale: CGFloat?
+    
+    // Environment: global default family
+    @Environment(\.reeceFontFamily) private var envFamily
+    
+    /// Creates a modifier that styles text according to a Reece token.
+    /// - Parameters:
+    ///   - token: Typography token describing size/weight/metrics.
+    ///   - slant: Optional font slant (e.g., italic).
+    ///   - color: Optional SwiftUI color to apply.
+    ///   - family: Optional explicit font family override (highest priority).
+    ///   - designScale: Optional design px → pt scale factor used for `basePointSize`.
+    public init(token: ReeceTextStyleToken,
+                slant: ReeceFontSlant? = nil,
+                color: Color? = nil,
+                family: ReeceFontFamily? = nil,
+                designScale: CGFloat? = nil) {
         self.token = token
         self.slant = slant
         self.color = color
-        self.family = family
+        self.explicitFamily = family
         self.designScale = designScale
     }
-
+    
+    /// Builds the styled view using the resolved spec and `_computeTextStyle`.
+    /// - Parameter content: The input view.
+    /// - Returns: A view styled with font, kerning and line spacing.
     public func body(content: Content) -> some View {
-        // ❱❱ Todo lo “no-View” se calcula *antes* del builder
-        let baseSpec = token.spec
-        let effectiveSpec = slant.map { baseSpec.with(slant: $0) } ?? baseSpec
-        let scale = designScale ?? 1.0
-        let r = _computeTextStyle(spec: effectiveSpec, family: family, designScale: scale)
-
-        // ❱❱ Ahora sí, un único `View` de retorno
-        let base = content
-            .font(r.font)
-            .kerning(r.kerning)
-            .lineSpacing(r.lineSpacing)
-
-        return Group {
-            if r.needsViewItalic {
-                if let c = color {
-                    base.italic().foregroundColor(c)
-                } else {
-                    base.italic()
-                }
-            } else {
-                if let c = color {
-                    base.foregroundColor(c)
-                } else {
-                    base
-                }
-            }
+        // Base token spec
+        var spec = token.spec
+        
+        // Apply slant override (if any)
+        if let s = slant {
+            spec = spec.with(slant: s)
         }
+        
+        // Resolve effective family
+        let effectiveFamily = explicitFamily
+        ?? spec.preferredFamily
+        ?? envFamily
+        
+        // Compute final font & metrics via resolver
+        let style = _computeTextStyle(spec: spec,
+                                      family: effectiveFamily,
+                                      designScale: designScale)
+        
+        // Apply to content
+        let styled = content
+            .font(style.font)
+            .kerning(style.kerning)
+            .lineSpacing(style.lineSpacing)
+            .italicIf(style.needsViewItalic)
+            .foregroundStyleIf(color)
+        
+        return styled
     }
 }
 
+// MARK: - View Convenience
 
-// MARK: - Public Fallback API on View
-
-@MainActor
+@available(iOS 17, macOS 14, *)
 public extension View {
-    /// Fallback API when you already have a Text value.
-    func reeceText(
-        _ token: ReeceTextStyleToken,
-        slant: ReeceFontSlant? = nil,
-        color: Color? = nil,
-        family: ReeceFontFamily = .system,
-        designScale: CGFloat? = nil
-    ) -> some View {
-        modifier(ReeceTextModifier(
-            token: token,
-            slant: slant,
-            color: color,
-            family: family,
-            designScale: designScale
-        ))
+    /// Applies Reece Typography using the given token and optional overrides.
+    /// - Parameters:
+    ///   - token: Typography token describing size/weight/metrics.
+    ///   - slant: Optional font slant (e.g., italic).
+    ///   - color: Optional SwiftUI color to apply.
+    ///   - family: Optional explicit font family override. If `nil`, the environment is used.
+    ///   - designScale: Optional design px → pt scale factor used for `basePointSize`.
+    /// - Returns: A view styled with Reece typography rules.
+    func reeceText(_ token: ReeceTextStyleToken,
+                   slant: ReeceFontSlant? = nil,
+                   color: Color? = nil,
+                   family: ReeceFontFamily? = nil,
+                   designScale: CGFloat? = nil) -> some View {
+        modifier(ReeceTextModifier(token: token,
+                                   slant: slant,
+                                   color: color,
+                                   family: family,
+                                   designScale: designScale))
+    }
+    /// Conditionally applies `.italic()` when `flag` is true.
+    /// - Parameter flag: When `true`, applies italic.
+    @ViewBuilder
+    func italicIf(_ flag: Bool) -> some View {
+        if flag { self.italic() } else { self }
+    }
+    
+    /// Conditionally applies `.foregroundStyle(_:)` if a color is provided.
+    /// - Parameter color: Optional color to apply.
+    @ViewBuilder
+    func foregroundStyleIf(_ color: Color?) -> some View {
+        if let c = color { self.foregroundStyle(c) } else { self }
+    }
+}
+
+// MARK: - Private helpers
+
+@available(iOS 17, macOS 14, *)
+private extension ReeceTextModifier {
+    /// Computes SwiftUI `Font`, kerning and line spacing for the given spec/family.
+    /// Uses `ReeceFontResolver.resolve(for:family:basePointSize:)` from ReeceFonts.swift.
+    ///
+    /// - Parameters:
+    ///   - spec: Fully design-driven text spec (px-based + metadata).
+    ///   - family: Effective font family to use.
+    ///   - designScale: Optional px→pt scale factor (if `nil`, spec uses 1.0).
+    /// - Returns: Tuple with `font`, `kerning` (points), `lineSpacing` (extra leading) and `needsViewItalic`.
+    func _computeTextStyle(spec: ReeceTextSpec,
+                           family: ReeceFontFamily,
+                           designScale: CGFloat?) -> (font: Font, kerning: CGFloat, lineSpacing: CGFloat, needsViewItalic: Bool) {
+        
+        // 1) Base size in points (pre–Dynamic Type)
+        let basePt = spec.basePointSize(usingScale: designScale)
+        
+        // 2) Resolve font via central resolver
+        let resolved = ReeceFontResolver.resolve(for: spec,
+                                                 family: family,
+                                                 basePointSize: basePt)
+        
+        // 3) Kerning from percent over point size (safe unwrap)
+        let kernPercent: CGFloat = spec.letterSpacingPercent ?? 0.0
+        let kerning = (kernPercent / 100.0) * basePt
+        
+        // 4) Extra spacing over the base point size (use multiple if present)
+        let lineSpacing: CGFloat
+        if let multiple = spec.lineHeightMultiple() {
+            lineSpacing = (multiple * basePt) - basePt
+        } else {
+            lineSpacing = 0
+        }
+        
+        return (resolved.font, kerning, lineSpacing, resolved.needsViewItalic)
     }
 }
