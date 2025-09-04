@@ -119,6 +119,38 @@ public struct ReeceFontResolver {
             return resolveCustom(for: spec, family: family, basePointSize: basePointSize)
         }
     }
+    
+    /// Returns the PostScript font name that would be picked for a given
+       /// family/weight/slant, along with a flag indicating whether the name
+       /// corresponds to a dedicated italic face.
+       ///
+       /// This is a convenience for callers that need to inspect or validate the
+       /// chosen custom font face without constructing a `Font`. The main rendering
+       /// entry point remains `resolve(for:family:basePointSize:)`.
+       ///
+       /// - Parameters:
+       ///   - family: Target font family (e.g., `.roboto`, `.openSans`, or `.system`).
+       ///   - weight: Domain weight to resolve (see `ReeceFontWeight`).
+       ///   - slant: Slant request (normal/italic).
+       /// - Returns:
+       ///   A tuple `(name, hasItalicFace)`. For `.system`, this returns a sensible
+       ///   fallback name (`"SanFrancisco"`—not used to render) and `false`, because
+       ///   system fonts are handled via `Font.system`.
+       public static func postScriptName(
+           family: ReeceFontFamily,
+           weight: ReeceFontWeight,
+           slant: ReeceFontSlant
+       ) -> (name: String, hasItalicFace: Bool) {
+           switch family {
+           case .system:
+               // System fonts are created with `Font.system`, not PostScript names.
+               // Return a placeholder name and indicate no dedicated italic asset.
+               return ("SanFrancisco", false)
+           default:
+               let (n, hasIt) = fontName(for: family, weight: weight, slant: slant)
+               return (n, hasIt)
+           }
+       }
 
     // MARK: Private
 
