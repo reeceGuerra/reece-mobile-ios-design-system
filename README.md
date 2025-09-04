@@ -39,6 +39,26 @@ This package is distributed via **Swift Package Manager (SPM)**.
 
 ---
 
+## 🏷️ Releases & Versioning
+
+This package follows **Semantic Versioning** using **Git tags** (e.g., `v2.0.0`). Swift Package Manager
+resolves versions from tags — the version is **not** stored inside `Package.swift`.
+
+### Consuming the package (pinning a minimum version)
+```swift
+.dependencies = [
+  .package(url: "https://github.com/reeceGuerra/reece-mobile-ios-design-system.git", from: "2.0.0")
+]
+```
+
+In Xcode: **File → Add Package Dependencies…** and set the rule to **Up to Next Major Version** starting from **2.0.0**.
+
+### Cutting a release (from a clean main)
+```bash
+git tag -a v2.0.0 -m "Release v2.0.0"
+git push origin v2.0.0
+```
+
 ## 🚀 Usage
 
 ### Colors
