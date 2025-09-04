@@ -142,3 +142,29 @@ MIT License. See [LICENSE](LICENSE) for details.
 
 Contributions, issues, and feature requests are welcome!  
 Open a PR or create an issue in this repo.
+
+
+## Typography: global font override & exceptions
+
+Set a default font family for your app (or any subtree) via the SwiftUI environment:
+
+```swift
+@main
+struct DemoApp: App {
+  var body: some Scene {
+    WindowGroup {
+      RootView()
+        .reeceFontFamily(.roboto) // global default
+    }
+  }
+}
+```
+
+Opt out locally by passing an explicit `family:` at the call site:
+
+```swift
+Text("System tag")
+  .reeceText(.body, family: .system)
+```
+
+Token-level override (optional): a token may set `preferredFamily` in its `ReeceTextSpec` to enforce a specific family, regardless of the global default. An explicit call-site override still wins.
