@@ -1,6 +1,6 @@
 //
 //  ColorDetailView.swift
-//  ReeceDesignSystemDemo
+//  RDSDesignSystemDemo
 //
 //  Created by Carlos Lopez on 31/08/25.
 //
@@ -11,7 +11,7 @@ import RDSUI
 
 /// Vista detalle tipo "Pantone card".
 /// Muestra un bloque de color a pantalla completa con:
-/// - Encabezado "ReeceDS COLORS"
+/// - Encabezado "RDSDS COLORS"
 /// - HEX del color (resuelto por scheme)
 /// - Nombre + tono (e.g. "DarkBlue Tone 10")
 
@@ -22,10 +22,10 @@ struct ColorDetailView: View {
     let title: String
     let color: Color
     private var labelColor: Color {
-        ReeceColorContrast.onColor(for: color, scheme: systemScheme)
+        RDSColorContrast.onColor(for: color, scheme: systemScheme)
     }
     private var hexText: String {
-        ReeceColorExport.hexString(for: color, scheme: systemScheme, includeAlpha: false) ?? "#N/A"
+        RDSColorExport.hexString(for: color, scheme: systemScheme, includeAlpha: false) ?? "#N/A"
     }
 
     var body: some View {
@@ -50,7 +50,7 @@ struct ColorDetailView: View {
         }
         .onAppear { appeared = true }
         .reeceNavigationBar(title: "", overrideBackground: color, trailing: {
-            ReeceThemeMenuView()
+            RDSThemeMenuView()
         })
     }
 }

@@ -1,6 +1,6 @@
 //
 //  NavRouter.swift
-//  ReeceDesignSystemDemo
+//  RDSDesignSystemDemo
 //
 //  Created by Carlos Lopez on 31/08/25.
 //
@@ -9,7 +9,7 @@
 import SwiftUI
 
 /// Rutas de la demo.
-enum ReeceRoute: Hashable {
+enum RDSRoute: Hashable {
     case home
     case primary
     case secondary
@@ -21,12 +21,12 @@ enum ReeceRoute: Hashable {
 
 /// Router observable con un `NavigationPath` compartido.
 @MainActor
-final class ReeceNavRouter: ObservableObject {
+final class RDSNavRouter: ObservableObject {
     @Published var path = NavigationPath()
     
     var canGoBack: Bool { !path.isEmpty }
     
-    func push(_ route: ReeceRoute) {
+    func push(_ route: RDSRoute) {
         path.append(route)
     }
     

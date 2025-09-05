@@ -1,6 +1,6 @@
 //
 //  FontDetailView.swift
-//  ReeceDesignSystemDemo
+//  RDSDesignSystemDemo
 //
 //  Created by Carlos Lopez on 03/09/25.
 //
@@ -8,7 +8,7 @@
 
 //
 //  ColorDetailView.swift
-//  ReeceDesignSystemDemo
+//  RDSDesignSystemDemo
 //
 //  Created by Carlos Lopez on 31/08/25.
 //
@@ -19,7 +19,7 @@ import RDSUI
 
 /// Vista detalle tipo "Pantone card".
 /// Muestra un bloque de color a pantalla completa con:
-/// - Encabezado "ReeceDS COLORS"
+/// - Encabezado "RDSDS COLORS"
 /// - HEX del color (resuelto por scheme)
 /// - Nombre + tono (e.g. "DarkBlue Tone 10")
 
@@ -40,8 +40,8 @@ struct FontDetailView: View {
     let font: DemoFontFamily
 
     var body: some View {
-        let color: Color = ReeceColors.random(using: systemScheme)
-        let labelColor: Color = ReeceColorContrast.onColor(for: color, scheme: systemScheme)
+        let color: Color = RDSColors.random(using: systemScheme)
+        let labelColor: Color = RDSColorContrast.onColor(for: color, scheme: systemScheme)
         
         ZStack(alignment: .topLeading) {
             color.ignoresSafeArea()
@@ -82,7 +82,7 @@ struct FontDetailView: View {
         }
         .onAppear { appeared = true }
         .reeceNavigationBar(title: "", overrideBackground: color, trailing: {
-            ReeceThemeMenuView()
+            RDSThemeMenuView()
         })
     }
 }

@@ -1,6 +1,6 @@
 //
 //  FontsView.swift
-//  ReeceDesignSystemDemo
+//  RDSDesignSystemDemo
 //
 //  Created by Carlos Lopez on 03/09/25.
 //
@@ -13,7 +13,7 @@
 //  Integration
 //  -----------
 //  Drop this file under:
-//  Examples/ReeceDesignSystemDemo/ReeceDesignSystemDemo/Scenes/Typography/
+//  Examples/RDSDesignSystemDemo/RDSDesignSystemDemo/Scenes/Typography/
 //  You can push it from your Home/Colors menu once you add a new route.
 //
 
@@ -24,7 +24,7 @@ import RDSUI
 
 struct DemoFontFamily: Identifiable, Hashable {
     let id = UUID()
-    let family: ReeceFontFamily
+    let family: RDSFontFamily
     let displayName: String
     
     static let all: [DemoFontFamily] = [
@@ -57,13 +57,13 @@ private struct FontFamilyRow: View {
 
 struct FontsView: View {
     @Environment(\.colorScheme) private var systemScheme
-    @Environment(\.reeceTheme) private var themeMode: Binding<ReeceThemeMode>
-    @EnvironmentObject private var router: ReeceNavRouter
+    @Environment(\.reeceTheme) private var themeMode: Binding<RDSThemeMode>
+    @EnvironmentObject private var router: RDSNavRouter
     let onSelect: (DemoFontFamily) -> Void
     
     var body: some View {
-        let cellBg = ReeceThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode.wrappedValue) == .dark ? Color(white: 0.50) : Color.white
-        let background = ReeceThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode.wrappedValue) == .dark ? Color(white: 0.30) : Color(white: 0.90)
+        let cellBg = RDSThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode.wrappedValue) == .dark ? Color(white: 0.50) : Color.white
+        let background = RDSThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode.wrappedValue) == .dark ? Color(white: 0.30) : Color(white: 0.90)
         ZStack {
             List {
                 Section(footer: Text("Tap a family to explore it in detail")) {
@@ -83,7 +83,7 @@ struct FontsView: View {
             .reeceText(.body)
         }
         .reeceNavigationBar(title: "Reece DS - Typography", trailing: {
-            ReeceThemeMenuView()
+            RDSThemeMenuView()
         })
     }
 }
@@ -91,7 +91,7 @@ struct FontsView: View {
 #Preview {
     NavigationStack {
         FontsView(onSelect: { _ in })
-            .environmentObject(ReeceNavRouter())
+            .environmentObject(RDSNavRouter())
             .environment(\.reeceTheme, .constant(.system))
     }
 }

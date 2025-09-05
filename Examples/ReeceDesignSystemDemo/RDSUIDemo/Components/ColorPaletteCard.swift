@@ -1,6 +1,6 @@
 //
 //  ColorPaletteCard.swift
-//  ReeceDesignSystemDemo
+//  RDSDesignSystemDemo
 //
 //  Created by Carlos Lopez on 31/08/25.
 //
@@ -60,9 +60,9 @@ public struct ColorPaletteCard: View {
                 ForEach(Array(show.enumerated()), id: \.element.id) { idx, tone in
                     ZStack {
                         tone.color
-                        Text(ReeceColorExport.hexString(for: tone.color, scheme: systemScheme, includeAlpha: false) ?? tone.hex.uppercased())
+                        Text(RDSColorExport.hexString(for: tone.color, scheme: systemScheme, includeAlpha: false) ?? tone.hex.uppercased())
                             .font(.caption.weight(.semibold))
-                            .foregroundStyle(ReeceColorContrast.onColor(for: tone.color, scheme: systemScheme))
+                            .foregroundStyle(RDSColorContrast.onColor(for: tone.color, scheme: systemScheme))
                             .shadow(radius: 0.5)
                     }
                     .frame(height: bandHeight)

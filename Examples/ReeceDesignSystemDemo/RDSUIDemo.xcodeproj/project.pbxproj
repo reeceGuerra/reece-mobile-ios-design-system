@@ -10,17 +10,18 @@
 		AE55BBE12E66169C0050A95C /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		AE5920B62E6A289A0086F22F /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		AE5921592E6B35CD0086F22F /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		AEECB1FC2E6B413000F0C685 /* RDSUI in Frameworks */ = {isa = PBXBuildFile; productRef = AEECB1FB2E6B413000F0C685 /* RDSUI */; };
+		AE5AD0842E6B4B9200FFFCFF /* RDSUI in Frameworks */ = {isa = PBXBuildFile; productRef = AE5AD0832E6B4B9200FFFCFF /* RDSUI */; };
+		AEECB1FC2E6B413000F0C685 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		AE9E84B22E63FD6B003EF140 /* ReeceDesignSystemDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ReeceDesignSystemDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AE9E84B22E63FD6B003EF140 /* RDSUIDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RDSUIDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		AE9E84B42E63FD6B003EF140 /* ReeceDesignSystemDemo */ = {
+		AE9E84B42E63FD6B003EF140 /* RDSUIDemo */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = ReeceDesignSystemDemo;
+			path = RDSUIDemo;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -30,9 +31,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AEECB1FC2E6B413000F0C685 /* RDSUI in Frameworks */,
+				AEECB1FC2E6B413000F0C685 /* (null) in Frameworks */,
 				AE5920B62E6A289A0086F22F /* (null) in Frameworks */,
 				AE55BBE12E66169C0050A95C /* (null) in Frameworks */,
+				AE5AD0842E6B4B9200FFFCFF /* RDSUI in Frameworks */,
 				AE5921592E6B35CD0086F22F /* (null) in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -43,7 +45,7 @@
 		AE9E84A92E63FD6B003EF140 = {
 			isa = PBXGroup;
 			children = (
-				AE9E84B42E63FD6B003EF140 /* ReeceDesignSystemDemo */,
+				AE9E84B42E63FD6B003EF140 /* RDSUIDemo */,
 				AE9E84B32E63FD6B003EF140 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -51,7 +53,7 @@
 		AE9E84B32E63FD6B003EF140 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				AE9E84B22E63FD6B003EF140 /* ReeceDesignSystemDemo.app */,
+				AE9E84B22E63FD6B003EF140 /* RDSUIDemo.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -59,9 +61,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		AE9E84B12E63FD6B003EF140 /* ReeceDesignSystemDemo */ = {
+		AE9E84B12E63FD6B003EF140 /* RDSUIDemo */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = AE9E84BD2E63FD6B003EF140 /* Build configuration list for PBXNativeTarget "ReeceDesignSystemDemo" */;
+			buildConfigurationList = AE9E84BD2E63FD6B003EF140 /* Build configuration list for PBXNativeTarget "RDSUIDemo" */;
 			buildPhases = (
 				AE9E84AE2E63FD6B003EF140 /* Sources */,
 				AE9E84AF2E63FD6B003EF140 /* Frameworks */,
@@ -72,11 +74,11 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				AE9E84B42E63FD6B003EF140 /* ReeceDesignSystemDemo */,
+				AE9E84B42E63FD6B003EF140 /* RDSUIDemo */,
 			);
-			name = ReeceDesignSystemDemo;
-			productName = ReeceDesignSystemDemo;
-			productReference = AE9E84B22E63FD6B003EF140 /* ReeceDesignSystemDemo.app */;
+			name = RDSUIDemo;
+			productName = RDSUIDemo;
+			productReference = AE9E84B22E63FD6B003EF140 /* RDSUIDemo.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -94,7 +96,7 @@
 					};
 				};
 			};
-			buildConfigurationList = AE9E84AD2E63FD6B003EF140 /* Build configuration list for PBXProject "ReeceDesignSystemDemo" */;
+			buildConfigurationList = AE9E84AD2E63FD6B003EF140 /* Build configuration list for PBXProject "RDSUIDemo" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -104,14 +106,14 @@
 			mainGroup = AE9E84A92E63FD6B003EF140;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				AEECB1FA2E6B413000F0C685 /* XCRemoteSwiftPackageReference "reece-mobile-ios-design-system" */,
+				AE5AD0822E6B4B9200FFFCFF /* XCRemoteSwiftPackageReference "reece-mobile-ios-design-system" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = AE9E84B32E63FD6B003EF140 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				AE9E84B12E63FD6B003EF140 /* ReeceDesignSystemDemo */,
+				AE9E84B12E63FD6B003EF140 /* RDSUIDemo */,
 			);
 		};
 /* End PBXProject section */
@@ -278,7 +280,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.reece.ReeceDesignSystemDemo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.reece.RDSUIDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -306,7 +308,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.reece.ReeceDesignSystemDemo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.reece.RDSUIDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -317,7 +319,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		AE9E84AD2E63FD6B003EF140 /* Build configuration list for PBXProject "ReeceDesignSystemDemo" */ = {
+		AE9E84AD2E63FD6B003EF140 /* Build configuration list for PBXProject "RDSUIDemo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AE9E84BB2E63FD6B003EF140 /* Debug */,
@@ -326,7 +328,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		AE9E84BD2E63FD6B003EF140 /* Build configuration list for PBXNativeTarget "ReeceDesignSystemDemo" */ = {
+		AE9E84BD2E63FD6B003EF140 /* Build configuration list for PBXNativeTarget "RDSUIDemo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AE9E84BE2E63FD6B003EF140 /* Debug */,
@@ -338,20 +340,20 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		AEECB1FA2E6B413000F0C685 /* XCRemoteSwiftPackageReference "reece-mobile-ios-design-system" */ = {
+		AE5AD0822E6B4B9200FFFCFF /* XCRemoteSwiftPackageReference "reece-mobile-ios-design-system" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/reeceGuerra/reece-mobile-ios-design-system";
 			requirement = {
 				kind = exactVersion;
-				version = 0.3.0;
+				version = 0.4.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		AEECB1FB2E6B413000F0C685 /* RDSUI */ = {
+		AE5AD0832E6B4B9200FFFCFF /* RDSUI */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AEECB1FA2E6B413000F0C685 /* XCRemoteSwiftPackageReference "reece-mobile-ios-design-system" */;
+			package = AE5AD0822E6B4B9200FFFCFF /* XCRemoteSwiftPackageReference "reece-mobile-ios-design-system" */;
 			productName = RDSUI;
 		};
 /* End XCSwiftPackageProductDependency section */

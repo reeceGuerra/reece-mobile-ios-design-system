@@ -1,6 +1,6 @@
 //
 //  HomeView.swift
-//  ReeceDesignSystemDemo
+//  RDSDesignSystemDemo
 //
 //  Created by Carlos Lopez on 30/08/25.
 //
@@ -9,8 +9,8 @@ import RDSUI
 
 struct ColorsView: View {
     @Environment(\.colorScheme) private var systemScheme
-    @Environment(\.reeceTheme) private var themeMode: Binding<ReeceThemeMode>
-    @EnvironmentObject private var router: ReeceNavRouter
+    @Environment(\.reeceTheme) private var themeMode: Binding<RDSThemeMode>
+    @EnvironmentObject private var router: RDSNavRouter
     @StateObject private var vm = ColorsViewModel()
     
     var body: some View {
@@ -26,9 +26,9 @@ struct ColorsView: View {
         ZStack {
             List {
                 Section("FAMILIES") {
-                    NavigationLink("Primary", value: ReeceRoute.primary)
-                    NavigationLink("Secondary", value: ReeceRoute.secondary)
-                    NavigationLink("Support", value: ReeceRoute.support)
+                    NavigationLink("Primary", value: RDSRoute.primary)
+                    NavigationLink("Secondary", value: RDSRoute.secondary)
+                    NavigationLink("Support", value: RDSRoute.support)
                 }
                 .listRowBackground(cellBg)
             }
@@ -43,13 +43,13 @@ struct ColorsView: View {
         }
         .reeceNavigationBar(
             title: "Reece DS - Colors", trailing:  {
-                ReeceThemeMenuView()
+                RDSThemeMenuView()
         })
     }
 }
 
 #Preview {
     ColorsView()
-        .environmentObject(ReeceNavRouter())
+        .environmentObject(RDSNavRouter())
         .environment(\.reeceTheme, .constant(.system))
 }

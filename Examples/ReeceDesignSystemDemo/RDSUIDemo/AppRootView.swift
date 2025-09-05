@@ -1,6 +1,6 @@
 //
 //  AppRootView.swift
-//  ReeceDesignSystemDemo
+//  RDSDesignSystemDemo
 //
 //  Created by Carlos Lopez on 31/08/25.
 //
@@ -9,20 +9,20 @@ import RDSUI
 
 struct AppRootView: View {
     @Environment(\.colorScheme) private var systemScheme
-    @StateObject private var router = ReeceNavRouter()
-    @State private var themeMode: ReeceThemeMode = .system
+    @StateObject private var router = RDSNavRouter()
+    @State private var themeMode: RDSThemeMode = .system
 
     var body: some View {
-        let background = ReeceThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode) == .dark
+        let background = RDSThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode) == .dark
         ? Color(white: 0.30)
         : Color(white: 0.90)
-        let cellBg = ReeceThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode) == .dark
+        let cellBg = RDSThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode) == .dark
         ? Color(white: 0.50)
         : Color.white
-        let textColor = ReeceThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode) == .dark
+        let textColor = RDSThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode) == .dark
         ? Color.white.opacity(0.92)
         : Color.black.opacity(0.9)
-        let tintColor = ReeceThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode) == .dark
+        let tintColor = RDSThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode) == .dark
         ? Color.white.opacity(0.95)
         : Color.black.opacity(0.95)
         
@@ -30,8 +30,8 @@ struct AppRootView: View {
             ZStack {
                 List {
                     Section("Assets") {
-                        NavigationLink("Colors", value: ReeceRoute.home)
-                        NavigationLink("Fonts", value: ReeceRoute.fontsview)
+                        NavigationLink("Colors", value: RDSRoute.home)
+                        NavigationLink("Fonts", value: RDSRoute.fontsview)
                     }
                     .listRowBackground(cellBg)
                 }
@@ -47,9 +47,9 @@ struct AppRootView: View {
             .reeceNavigationBar(
                 title: "Reece DS",
                 showBack: false, trailing:  {
-                    ReeceThemeMenuView()
+                    RDSThemeMenuView()
             })
-                .navigationDestination(for: ReeceRoute.self) { route in
+                .navigationDestination(for: RDSRoute.self) { route in
                     switch route {
                     case .home:
                         ColorsView()

@@ -1,34 +1,34 @@
 //
 //  MenuView.swift
-//  ReeceDesignSystemDemo
+//  RDSDesignSystemDemo
 //
 //  Created by Carlos Lopez on 01/09/25.
 //
 import SwiftUI
 import RDSUI
 
-struct ReeceThemeMenuView: View {
-    @Environment(\.reeceTheme) private var themeMode: Binding<ReeceThemeMode>
+struct RDSThemeMenuView: View {
+    @Environment(\.reeceTheme) private var themeMode: Binding<RDSThemeMode>
     @Environment(\.colorScheme) private var systemScheme
     
     var body: some View {
-        let menuBg: Color =  ReeceThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode.wrappedValue) == .dark
+        let menuBg: Color =  RDSThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode.wrappedValue) == .dark
         ? Color.white.opacity(0.12)
         : Color.black.opacity(0.08)
         
-        let menuBorder: Color = ReeceThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode.wrappedValue) == .dark
+        let menuBorder: Color = RDSThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode.wrappedValue) == .dark
         ? Color.white.opacity(0.22)
         : Color.black.opacity(0.18)
         
-        let menuIcon: String = ReeceThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode.wrappedValue) == .dark
+        let menuIcon: String = RDSThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode.wrappedValue) == .dark
         ? "moon.stars.fill"
         : "sun.max.fill"
-        let textColor = ReeceThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode.wrappedValue) == .dark
+        let textColor = RDSThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode.wrappedValue) == .dark
         ? Color.white.opacity(0.92)
         : Color.black.opacity(0.9)
         
         Menu {
-            ForEach(ReeceThemeMode.allCases, id: \.self) { theme in
+            ForEach(RDSThemeMode.allCases, id: \.self) { theme in
                 Button {
                     themeMode.wrappedValue = theme
                 } label: {

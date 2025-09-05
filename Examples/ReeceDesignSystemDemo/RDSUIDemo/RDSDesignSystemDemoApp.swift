@@ -1,6 +1,6 @@
 //
-//  ReeceDesignSystemDemoApp.swift
-//  ReeceDesignSystemDemo
+//  RDSDesignSystemDemoApp.swift
+//  RDSDesignSystemDemo
 //
 //  Created by Carlos Lopez on 30/08/25.
 //
@@ -9,9 +9,9 @@ import SwiftUI
 import RDSUI
 
 @main
-struct ReeceDesignSystemDemoApp: App {
+struct RDSDesignSystemDemoApp: App {
     init() {
-        _ = ReeceFontRegister.registerAllFonts()
+        _ = RDSFontRegister.registerAllFonts()
     }
     
     var body: some Scene {

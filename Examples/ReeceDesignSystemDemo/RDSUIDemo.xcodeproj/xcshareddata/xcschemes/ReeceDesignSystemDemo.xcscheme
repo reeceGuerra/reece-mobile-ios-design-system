@@ -16,9 +16,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "AE9E84B12E63FD6B003EF140"
-               BuildableName = "ReeceDesignSystemDemo.app"
-               BlueprintName = "ReeceDesignSystemDemo"
-               ReferencedContainer = "container:ReeceDesignSystemDemo.xcodeproj">
+               BuildableName = "RDSUIDemo.app"
+               BlueprintName = "RDSUIDemo"
+               ReferencedContainer = "container:RDSUIDemo.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -45,9 +45,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "AE9E84B12E63FD6B003EF140"
-            BuildableName = "ReeceDesignSystemDemo.app"
-            BlueprintName = "ReeceDesignSystemDemo"
-            ReferencedContainer = "container:ReeceDesignSystemDemo.xcodeproj">
+            BuildableName = "RDSUIDemo.app"
+            BlueprintName = "RDSUIDemo"
+            ReferencedContainer = "container:RDSUIDemo.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -62,9 +62,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "AE9E84B12E63FD6B003EF140"
-            BuildableName = "ReeceDesignSystemDemo.app"
-            BlueprintName = "ReeceDesignSystemDemo"
-            ReferencedContainer = "container:ReeceDesignSystemDemo.xcodeproj">
+            BuildableName = "RDSUIDemo.app"
+            BlueprintName = "RDSUIDemo"
+            ReferencedContainer = "container:RDSUIDemo.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

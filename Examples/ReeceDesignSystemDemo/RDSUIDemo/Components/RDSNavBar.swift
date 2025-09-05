@@ -1,6 +1,6 @@
 //
-//  ReeceTopBar.swift
-//  ReeceDesignSystemDemo
+//  RDSTopBar.swift
+//  RDSDesignSystemDemo
 //
 //  Created by Carlos Lopez on 31/08/25.
 //
@@ -9,23 +9,23 @@
 import SwiftUI
 import RDSUI
 
-struct ReceThemeKey: EnvironmentKey {
-    static let defaultValue:Binding<ReeceThemeMode> = .constant(.system)
+struct RDSThemeKey: EnvironmentKey {
+    static let defaultValue:Binding<RDSThemeMode> = .constant(.system)
 }
 
-struct ReeceRouteKey: EnvironmentKey {
-    static let defaultValue: ReeceRoute = .home
+struct RDSRouteKey: EnvironmentKey {
+    static let defaultValue: RDSRoute = .home
 }
 
 extension EnvironmentValues {
-    var reeceTheme: Binding<ReeceThemeMode> {
-        get { self[ReceThemeKey.self] }
-        set { self[ReceThemeKey.self] = newValue }
+    var reeceTheme: Binding<RDSThemeMode> {
+        get { self[RDSThemeKey.self] }
+        set { self[RDSThemeKey.self] = newValue }
     }
     
-    var reeceRoute: ReeceRoute {
-        get { self[ReeceRouteKey.self] }
-        set { self[ReeceRouteKey.self] = newValue }
+    var reeceRoute: RDSRoute {
+        get { self[RDSRouteKey.self] }
+        set { self[RDSRouteKey.self] = newValue }
     }
 }
 
@@ -34,10 +34,10 @@ extension EnvironmentValues {
 /// - Botón Back opcional (aparece cuando hay algo en el router.path).
 /// - Menú de theme a la derecha, usando tu HomeViewModel.
 /// - Colores reactivos al scheme efectivo.
-struct ReeceNavBar<Leading: View, Trailing: View>: View {
+struct RDSNavBar<Leading: View, Trailing: View>: View {
     @Environment(\.colorScheme) private var systemScheme
-    @Environment(\.reeceTheme) private var themeMode: Binding<ReeceThemeMode>
-    @Environment(\.reeceRoute) private var router: ReeceRoute
+    @Environment(\.reeceTheme) private var themeMode: Binding<RDSThemeMode>
+    @Environment(\.reeceRoute) private var router: RDSRoute
     
     let title: String
     let showBack: Bool
@@ -48,12 +48,12 @@ struct ReeceNavBar<Leading: View, Trailing: View>: View {
     
     // Derivados de UI (idénticos a tu toolbar previo)
     private var backgroundColor: Color {
-        ReeceThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode.wrappedValue) == .dark
+        RDSThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode.wrappedValue) == .dark
         ? Color(white: 0.30)
         : Color(white: 0.90)
     }
     private var textColor: Color {
-        ReeceThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode.wrappedValue) == .dark
+        RDSThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode.wrappedValue) == .dark
         ? Color.white.opacity(0.92)
         : Color.black.opacity(0.9)
     }
