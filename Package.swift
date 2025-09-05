@@ -21,8 +21,7 @@ let package = Package(
             name: "ReeceDesignSystem",
             path: "ReeceDesignSystem/Sources/ReeceDesignSystem",
             resources: [
-                .process("Resources/Assets.xcassets"),
-                .process("Resources/Fonts")
+                .process("Resources"),
             ],
             swiftSettings: [
                 .swiftLanguageMode(.v6),
