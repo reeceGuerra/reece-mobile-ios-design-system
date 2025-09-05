@@ -15,8 +15,8 @@
     {
       "target" : {
         "containerPath" : "container:",
-        "identifier" : "ReeceDesignSystemTests",
-        "name" : "ReeceDesignSystemTests"
+        "identifier" : "RDSUITests",
+        "name" : "RDSUITests"
       }
     }
   ],

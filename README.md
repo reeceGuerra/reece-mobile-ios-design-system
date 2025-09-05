@@ -60,15 +60,15 @@ In Xcode: **File → Add Package Dependencies…** and set the rule to **Up to N
 #### Solid Color
 
 ```swift
-import ReeceDesignSystem
+import RDSDesignSystem
 import SwiftUI
 
 struct ExampleView: View {
     var body: some View {
         Rectangle()
             .fill(
-                ReeceStyle.solid(
-                    ReeceColors.primary.DarkBlue.color(.t100, using: .light)
+                RDSStyle.solid(
+                    RDSColors.primary.DarkBlue.color(.t100, using: .light)
                 ).style
             )
             .frame(height: 100)
@@ -81,11 +81,11 @@ struct ExampleView: View {
 ```swift
 Rectangle()
     .fill(
-        ReeceStyle.gradient(
+        RDSStyle.gradient(
             LinearGradient(
                 colors: [
-                    ReeceColors.primary.DarkBlue.color(.t100, using: .light),
-                    ReeceColors.primary.DarkBlue.color(.t300, using: .light)
+                    RDSColors.primary.DarkBlue.color(.t100, using: .light),
+                    RDSColors.primary.DarkBlue.color(.t300, using: .light)
                 ],
                 startPoint: .top,
                 endPoint: .bottom
@@ -119,7 +119,7 @@ Text("System tag")
   .reeceText(.body, family: .system)
 ```
 
-Token-level override (optional): a token may set `preferredFamily` in its `ReeceTextSpec` to enforce a specific family, regardless of the global default. An explicit call-site override still wins.
+Token-level override (optional): a token may set `preferredFamily` in its `RDSTextSpec` to enforce a specific family, regardless of the global default. An explicit call-site override still wins.
 
 
 ```swift
@@ -130,7 +130,7 @@ Text("Hello Reece!")
 ### Random Color Helper
 
 ```swift
-let color = ReeceColorEngine.random()
+let color = RDSColorEngine.random()
 ```
 
 ---
@@ -138,15 +138,15 @@ let color = ReeceColorEngine.random()
 ## 📂 Project Structure
 
 ```
-ReeceDesignSystem/
+RDSDesignSystem/
 ├─ Sources/
-│  └─ ReeceDesignSystem/   # Core design system code
+│  └─ RDSDesignSystem/   # Core design system code
 │
 ├─ Tests/
-│  └─ ReeceDesignSystemTests/  # Unit tests
+│  └─ RDSDesignSystemTests/  # Unit tests
 │
 └─ Examples/
-   └─ ReeceDesignSystemDemo/   # SwiftUI demo app
+   └─ RDSDesignSystemDemo/   # SwiftUI demo app
 ```
 
 ---
