@@ -7,7 +7,7 @@
 
 
 import SwiftUI
-import ReeceDesignSystem
+import RDSUI
 
 @MainActor
 final class ColorsViewModel: ObservableObject {

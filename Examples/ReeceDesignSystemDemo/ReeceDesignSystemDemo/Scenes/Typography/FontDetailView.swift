@@ -15,7 +15,7 @@
 
 
 import SwiftUI
-import ReeceDesignSystem
+import RDSUI
 
 /// Vista detalle tipo "Pantone card".
 /// Muestra un bloque de color a pantalla completa con:

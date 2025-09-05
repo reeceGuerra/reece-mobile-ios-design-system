@@ -5,7 +5,7 @@
 //  Created by Carlos Lopez on 30/08/25.
 //
 import SwiftUI
-import ReeceDesignSystem
+import RDSUI
 
 struct PrimaryView: View {
     @Environment(\.reeceTheme) private var themeMode: Binding<ReeceThemeMode>

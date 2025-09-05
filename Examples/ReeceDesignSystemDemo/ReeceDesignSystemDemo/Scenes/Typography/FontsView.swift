@@ -18,7 +18,7 @@
 //
 
 import SwiftUI
-import ReeceDesignSystem
+import RDSUI
 
 // MARK: - Model (local to demo)
 

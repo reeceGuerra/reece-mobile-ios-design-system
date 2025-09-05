@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import ReeceDesignSystem // para Color(hex:)
+import RDSUI // para Color(hex:)
 
 /// Modelo simple de un tono a renderizar en la card.
 public struct PaletteTone: Identifiable, Hashable, Sendable {

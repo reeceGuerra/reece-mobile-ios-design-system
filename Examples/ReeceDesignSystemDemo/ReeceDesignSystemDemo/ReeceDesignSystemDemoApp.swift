@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import ReeceDesignSystem
+import RDSUI
 
 @main
 struct ReeceDesignSystemDemoApp: App {

@@ -1,6 +1,6 @@
 // ReeceToolbarModifier.swift
 import SwiftUI
-import ReeceDesignSystem
+import RDSUI
 
 struct ReeceNavBarConfig {
     var title: String = ""

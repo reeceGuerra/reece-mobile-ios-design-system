@@ -5,7 +5,7 @@
 //  Created by Carlos Lopez on 31/08/25.
 //
 import SwiftUI
-import ReeceDesignSystem
+import RDSUI
 
 struct AppRootView: View {
     @Environment(\.colorScheme) private var systemScheme

@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import ReeceDesignSystem
+import RDSUI
 
 struct SecondaryView: View {
     @Environment(\.reeceTheme) private var themeMode: Binding<ReeceThemeMode>
