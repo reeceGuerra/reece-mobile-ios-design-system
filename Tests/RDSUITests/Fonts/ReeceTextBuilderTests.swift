@@ -9,7 +9,7 @@
 //
 import XCTest
 import SwiftUI
-@testable import ReeceDesignSystem
+@testable import RDSUI
 
 /// Exercises Typography via the ViewModifier path and the compute helper,
 /// ensuring code paths run across families, slants, and scales.

@@ -4,36 +4,26 @@
 import PackageDescription
 
 let package = Package(
-    name: "ReeceDesignSystem",
+    name: "RDSUI",
     defaultLocalization: "en",
     platforms: [
-        .iOS(.v17),
-        .macOS(.v15)
+        .iOS(.v17), .macOS(.v15)
     ],
     products: [
-        .library(
-            name: "ReeceDesignSystem",
-            targets: ["ReeceDesignSystem"]
-        )
+        .library(name: "RDSUI", targets: ["RDSUI"])
     ],
     targets: [
         .target(
-            name: "ReeceDesignSystem",
-            path: "ReeceDesignSystem/Sources/ReeceDesignSystem",
-            resources: [
-                .process("Resources"),
-            ],
-            swiftSettings: [
-                .swiftLanguageMode(.v6),
-            ]
+            name: "RDSUI",
+            path: "Sources/RDSUI",
+            resources: [.process("Resources")],
+            swiftSettings: [.swiftLanguageMode(.v6)]
         ),
         .testTarget(
-            name: "ReeceDesignSystemTests",
-            dependencies: ["ReeceDesignSystem"],
-            path: "ReeceDesignSystem/Tests/ReeceDesignSystemTests",
-            swiftSettings: [
-                .swiftLanguageMode(.v6)
-            ]
+            name: "RDSUITests",
+            dependencies: ["RDSUI"],
+            path: "Tests/RDSUITests",
+            swiftSettings: [.swiftLanguageMode(.v6)]
         )
     ]
 )

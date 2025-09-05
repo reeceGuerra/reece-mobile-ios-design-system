@@ -8,7 +8,7 @@
 
 import XCTest
 import SwiftUI
-@testable import ReeceDesignSystem
+@testable import RDSUI
 
 final class ReeceTextModifierComputeTests: XCTestCase {
     @MainActor func testCompute_System_Normal_Scale1() {

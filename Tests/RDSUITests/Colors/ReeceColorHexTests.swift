@@ -7,7 +7,7 @@
 
 
 import XCTest
-@testable import ReeceDesignSystem
+@testable import RDSUI
 
 final class ReeceColorHexTests: XCTestCase {
 

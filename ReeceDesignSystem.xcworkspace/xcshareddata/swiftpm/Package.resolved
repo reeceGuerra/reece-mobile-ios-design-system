@@ -1,13 +1,13 @@
 {
-  "originHash" : "7bebf39623d98eca768fdfb84ae83a7ac2ce52262dbfa819221481df22e3dfd5",
+  "originHash" : "b1361f5b346c9549b419874573339441eb85b80261b0b7c813cd61da4c399a50",
   "pins" : [
     {
       "identity" : "reece-mobile-ios-design-system",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/reeceGuerra/reece-mobile-ios-design-system.git",
       "state" : {
-        "branch" : "main",
-        "revision" : "4491ae457274eb3439c7c9e28bf373e8feb29cf0"
+        "revision" : "7557fc2fa6f8690240f51d364e1c387b8cd96fb2",
+        "version" : "0.2.4"
       }
     }
   ],

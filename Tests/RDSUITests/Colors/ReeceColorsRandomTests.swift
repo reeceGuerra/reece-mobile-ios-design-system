@@ -16,7 +16,7 @@ import UIKit
 import AppKit
 #endif
 
-@testable import ReeceDesignSystem
+@testable import RDSUI
 
 final class ReeceColorsRandomTests: XCTestCase {
 

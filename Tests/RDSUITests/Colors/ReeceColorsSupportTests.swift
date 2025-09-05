@@ -8,7 +8,7 @@
 
 import XCTest
 import SwiftUI
-@testable import ReeceDesignSystem
+@testable import RDSUI
 
 @MainActor
 final class ReeceColorsSupportTests: XCTestCase {

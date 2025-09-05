@@ -7,7 +7,7 @@
 
 import XCTest
 import SwiftUI
-@testable import ReeceDesignSystem
+@testable import RDSUI
 
 /// Covers additional branches in ReeceTypography (pointSizeOverride, with(slant:), token access).
 final class ReeceTypographySpecAdditionalTests: XCTestCase {

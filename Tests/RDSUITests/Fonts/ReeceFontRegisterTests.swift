@@ -16,7 +16,7 @@ import UIKit
 #if canImport(AppKit) && !targetEnvironment(macCatalyst)
 import AppKit
 #endif
-@testable import ReeceDesignSystem
+@testable import RDSUI
 
 final class ReeceFontRegisterTests: XCTestCase {
 

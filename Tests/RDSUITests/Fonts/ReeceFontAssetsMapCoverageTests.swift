@@ -7,7 +7,7 @@
 
 import XCTest
 import SwiftUI
-@testable import ReeceDesignSystem
+@testable import RDSUI
 
 /// Expands coverage of assetsMap and fontName by hitting multiple families/weights/slants.
 final class ReeceFontAssetsMapCoverageTests: XCTestCase {
