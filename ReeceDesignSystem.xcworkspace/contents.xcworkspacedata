@@ -5,6 +5,12 @@
       location = "group:Package.swift">
    </FileRef>
    <FileRef
-      location = "group:Examples/ReeceDesignSystemDemo/ReeceDesignSystemDemo.xcodeproj">
+      location = "group:Sources">
+   </FileRef>
+   <FileRef
+      location = "group:Tests">
+   </FileRef>
+   <FileRef
+      location = "group:Examples/ReeceDesignSystemDemo/RDSUIDemo.xcodeproj">
    </FileRef>
 </Workspace>
