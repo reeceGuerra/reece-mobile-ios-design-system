@@ -99,9 +99,6 @@
 			);
 			mainGroup = AE9E84A92E63FD6B003EF140;
 			minimizedProjectReferenceProxies = 1;
-			packageReferences = (
-				AE5920B42E6A289A0086F22F /* XCRemoteSwiftPackageReference "reece-mobile-ios-design-system" */,
-			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = AE9E84B32E63FD6B003EF140 /* Products */;
 			projectDirPath = "";
@@ -333,24 +330,6 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		AE5920B42E6A289A0086F22F /* XCRemoteSwiftPackageReference "reece-mobile-ios-design-system" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/reeceGuerra/reece-mobile-ios-design-system.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		AE5920B52E6A289A0086F22F /* ReeceDesignSystem */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = AE5920B42E6A289A0086F22F /* XCRemoteSwiftPackageReference "reece-mobile-ios-design-system" */;
-			productName = ReeceDesignSystem;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = AE9E84AA2E63FD6B003EF140 /* Project object */;
 }
