@@ -10,21 +10,45 @@ permissions:
 
 jobs:
   build-test:
-    runs-on: macos-latest
+    runs-on: macos-14
+
     steps:
       - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s "/Applications/Xcode.app/Contents/Developer"
+
       - name: Cache SwiftPM
         uses: actions/cache@v4
         with:
           path: |
             ~/.swiftpm
             ~/Library/Caches/org.swift.swiftpm
+            ~/Library/Developer/Xcode/DerivedData
           key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
           restore-keys: |
             ${{ runner.os }}-spm-
-      - name: Swift version
-        run: swift --version
-      - name: Build (debug)
-        run: swift build
-      - name: Test
-        run: swift test --parallel
+
+      - name: Toolchain versions
+        run: |
+          swift --version
+          xcodebuild -version
+
+      # Importante: usar xcodebuild con un simulador iOS para que .xcassets se compile
+      - name: Build (iOS Simulator)
+        run: |
+          xcodebuild \
+            -scheme "RDSUI-Package" \
+            -destination "platform=iOS Simulator,name=iPhone 15" \
+            -sdk iphonesimulator \
+            -skipPackagePluginValidation \
+            build
+
+      - name: Test (iOS Simulator)
+        run: |
+          xcodebuild \
+            -scheme "RDSUI-Package" \
+            -destination "platform=iOS Simulator,name=iPhone 15" \
+            -sdk iphonesimulator \
+            -skipPackagePluginValidation \
+            test
