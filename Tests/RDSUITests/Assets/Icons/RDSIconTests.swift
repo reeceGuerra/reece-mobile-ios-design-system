@@ -5,14 +5,6 @@
 //  Created by Carlos Lopez on 06/09/25.
 //
 
-
-//
-//  RDSIconTests.swift
-//  RDSUI
-//
-//  Created by Design System Generator on 06/09/25.
-//
-
 import Testing
 @testable import RDSUI
 import SwiftUI
