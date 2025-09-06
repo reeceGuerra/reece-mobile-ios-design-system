@@ -1,4 +1,4 @@
-name: Release (pre-1.0, tags v0.* or UI)
+name: Release
 
 on:
   push:
