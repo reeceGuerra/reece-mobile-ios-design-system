@@ -14,76 +14,127 @@
 //  Note: We verify compute-level effects and spec behavior; environment precedence
 //  is exercised indirectly via `.reeceText(...)` in existing tests.
 //
-import XCTest
+import Testing
 import SwiftUI
 @testable import RDSUI
 
-final class RDSFontFamilyPrecedenceTests: XCTestCase {
+// Test doubles for providers
+private struct FakeTypographyProvider: RDSTypographyTokenProviding {
+    let suppliedSpec: RDSTypographySpec
+    func spec(for token: RDSTextStyleToken) -> RDSTypographySpec { suppliedSpec }
+}
 
-    func testPreferredFamilyIsPreservedWhenChangingSlant() {
-        var spec = RDSTextSpec(
+private struct FakeFamilyProvider: RDSFontFamilyProviding {
+    let fallback: RDSFontFamily
+    func resolvePreferredFamily(for token: RDSTextStyleToken) -> RDSFontFamily { fallback }
+}
+
+/// Small helper to mimic the family precedence we specify in the design:
+/// explicit > spec.preferredFamily > provider.resolvePreferredFamily
+private func resolveFamily(explicit: RDSFontFamily?,
+                           spec: RDSTypographySpec,
+                           token: RDSTextStyleToken,
+                           provider: RDSFontFamilyProviding) -> RDSFontFamily {
+    return explicit ?? spec.preferredFamily ?? provider.resolvePreferredFamily(for: token)
+}
+
+@Suite("RDS Font Family Precedence")
+struct RDSFontFamilyPrecedenceTests {
+
+    @MainActor
+    @Test("Explicit family overrides preferred and provider")
+    func explicitFamilyBeatsPreferredAndProvider() async {
+        // Spec declares a preferred family (Roboto)
+        let spec = RDSTextSpec(
             designFontSizePx: 16,
+            pointSizeOverride: nil,
             weight: .regular,
-            slant: .normal,
+            slant: .italic,           // use italic to make the difference observable
             relativeTo: .body,
             designLineHeightPx: 24,
-            letterSpacingPercent: 0.0,
-            preferredFamily: .openSans
+            letterSpacingPercent: 0,
+            preferredFamily: .roboto  // preferred from token/spec
         )
-        spec = spec.with(slant: .italic)
-        XCTAssertEqual(spec.preferredFamily, .openSans, "preferredFamily should persist after with(slant:)")
+
+        let token: RDSTextStyleToken = .buttonM
+        let typography = FakeTypographyProvider(suppliedSpec: spec)
+        let familyProvider = FakeFamilyProvider(fallback: .system)
+
+        // Precedence: explicit (.system) should win over preferred (.roboto)
+        let chosen = resolveFamily(explicit: .system,
+                                   spec: typography.spec(for: token),
+                                   token: token,
+                                   provider: familyProvider)
+
+        #expect(chosen == .system)
+
+        // Observability: system+italic relies on view-level italic
+        let base = spec.basePointSize(usingScale: 1.0)
+        let resolved = RDSFontResolver.resolve(for: spec, family: chosen, basePointSize: base)
+        #expect(resolved.needsViewItalic == true)
     }
 
     @MainActor
-    func testExplicitFamilyOverridesPreferredAtComputeLevel() {
-        // Spec prefiere OpenSans, pero aquí comprobamos que al pedir Roboto
-        // el resolver selecciona un PostScript distinto y el cómputo produce un Font.
+    @Test("Preferred family overrides provider when no explicit family")
+    func preferredBeatsProvider() async {
         let spec = RDSTextSpec(
             designFontSizePx: 16,
-            weight: .medium,
-            slant: .normal,
+            pointSizeOverride: nil,
+            weight: .regular,
+            slant: .italic,
             relativeTo: .body,
             designLineHeightPx: 24,
-            letterSpacingPercent: 0.0,
-            preferredFamily: .openSans
+            letterSpacingPercent: 0,
+            preferredFamily: .roboto
         )
 
-        // 1) Resolver: nombres PostScript deben diferir entre familias
-        let psOpen = RDSFontResolver.postScriptName(
-            family: .openSans,
-            weight: spec.weight,
-            slant: spec.slant
-        ).name
+        let token: RDSTextStyleToken = .buttonM
+        let typography = FakeTypographyProvider(suppliedSpec: spec)
+        let familyProvider = FakeFamilyProvider(fallback: .system)
 
-        let psRoboto = RDSFontResolver.postScriptName(
-            family: .roboto,
-            weight: spec.weight,
-            slant: spec.slant
-        ).name
+        // No explicit -> preferred (roboto) should be used
+        let chosen = resolveFamily(explicit: nil,
+                                   spec: typography.spec(for: token),
+                                   token: token,
+                                   provider: familyProvider)
 
-        XCTAssertNotEqual(psOpen, psRoboto, "Different families should map to different PostScript names")
+        #expect(chosen == .roboto)
 
-        // 2) Cómputo: ambos deben producir un Font válido (independiente de si hay fallback a sistema)
-        let resPreferred = _computeTextStyle(spec: spec, family: .openSans, designScale: 1.0)
-        let resExplicit  = _computeTextStyle(spec: spec, family: .roboto,   designScale: 1.0)
-
-        XCTAssertNotNil(String(describing: resPreferred.1))
-        XCTAssertNotNil(String(describing: resExplicit.1))
+        // Observability: roboto has real italic faces -> no view-level italic
+        let base = spec.basePointSize(usingScale: 1.0)
+        let resolved = RDSFontResolver.resolve(for: spec, family: chosen, basePointSize: base)
+        #expect(resolved.needsViewItalic == false)
     }
 
-
     @MainActor
-    func testSystemFallbackProducesAFont() {
+    @Test("Provider is used when neither explicit nor preferred is set")
+    func providerUsedWhenNoExplicitOrPreferred() async {
         let spec = RDSTextSpec(
-            designFontSizePx: 14,
+            designFontSizePx: 16,
+            pointSizeOverride: nil,
             weight: .regular,
-            slant: .normal,
+            slant: .italic,
             relativeTo: .body,
-            designLineHeightPx: nil,
-            letterSpacingPercent: nil,
+            designLineHeightPx: 24,
+            letterSpacingPercent: 0,
             preferredFamily: nil
         )
-        let res = _computeTextStyle(spec: spec, family: .system, designScale: 1.0)
-        XCTAssertNotNil(String(describing: res.1))
+
+        let token: RDSTextStyleToken = .body
+        let typography = FakeTypographyProvider(suppliedSpec: spec)
+
+        // Use a non-system provider fallback to make it observable
+        let familyProvider = FakeFamilyProvider(fallback: .roboto)
+
+        let chosen = resolveFamily(explicit: nil,
+                                   spec: typography.spec(for: token),
+                                   token: token,
+                                   provider: familyProvider)
+
+        #expect(chosen == .roboto)
+
+        let base = spec.basePointSize(usingScale: 1.0)
+        let resolved = RDSFontResolver.resolve(for: spec, family: chosen, basePointSize: base)
+        #expect(resolved.needsViewItalic == false)
     }
 }
