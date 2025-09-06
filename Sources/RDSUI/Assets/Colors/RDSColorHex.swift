@@ -95,7 +95,7 @@ public enum RDSColorHex {
     ///   - hex: The HEX string to parse.
     ///   - colorSpace: Target color space (defaults to `.sRGB`).
     /// - Returns: A SwiftUI `Color` or `nil` if parsing fails.
-    public static func color(from hex: String, colorSpace: RGBColorSpace = .sRGB) -> Color? {
+    public static func color(from hex: String, colorSpace: Color.RGBColorSpace = .sRGB) -> Color? {
         do {
             let c = try parse(hex)
             return Color(colorSpace, red: c.r, green: c.g, blue: c.b, opacity: c.a)
@@ -133,7 +133,7 @@ public enum RDSColorHex {
     ///   - colorSpace: Color space used to resolve channels (defaults to `.sRGB`).
     ///   - includeAlpha: If true, includes `AA`.
     /// - Returns: `#RRGGBB` or `#RRGGBBAA`, or `nil` if the color cannot be resolved.
-    public static func string(from color: Color, colorSpace: RGBColorSpace = .sRGB, includeAlpha: Bool = false) -> String? {
+    public static func string(from color: Color, colorSpace: Color.RGBColorSpace = .sRGB, includeAlpha: Bool = false) -> String? {
         #if canImport(UIKit)
         // UIKit bridge for system colors (iOS)
         let ui = UIColor(color)
