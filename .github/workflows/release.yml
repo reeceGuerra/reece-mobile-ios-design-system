@@ -5,19 +5,24 @@ on:
     tags:
       - 'v0.*'                  # Publish when pushing v0.x.y tags
   release:
-    types: [created, published] # Also run when release is created from the UI
-  workflow_dispatch:            # Allow manual runs if needed
+    types: [created, published] # Run when release is created/published from the UI
+  workflow_dispatch:            # Allow manual runs
+    inputs:
+      tag:
+        description: 'Tag to release (v0.x.y)'
+        required: false
+        type: string
 
 permissions:
   contents: write
 
 concurrency:
-  group: release-${{ github.ref || github.event.release.tag_name }}
+  group: release-${{ github.ref || github.event.release.tag_name || inputs.tag }}
   cancel-in-progress: true
 
 env:
-  # Resolve tag for both push and release events
-  TAG_NAME: ${{ github.ref_type == 'tag' && github.ref_name || github.event.release.tag_name }}
+  # Resolve tag for push/release/dispatch events
+  TAG_NAME: ${{ github.ref_type == 'tag' && github.ref_name || github.event.release.tag_name || inputs.tag }}
   SCHEME: RDSUI
   WORKSPACE: ReeceDesignSystem.xcworkspace
   DESTINATION: platform=iOS Simulator,name=iPhone 15
@@ -25,17 +30,23 @@ env:
 
 jobs:
   build-test:
-    # Run on tag pushes v0.* or on release events whose tag matches v0.*
-    if: startsWith(github.ref, 'refs/tags/v0.') || (github.event_name == 'release' && startsWith(github.event.release.tag_name, 'v0.'))
+    # Allow when: pushing tag v0.*, release with tag v0.*, or manual dispatch with input v0.*
+    if: |
+      startsWith(github.ref, 'refs/tags/v0.')
+      || (github.event_name == 'release' && startsWith(github.event.release.tag_name, 'v0.'))
+      || (github.event_name == 'workflow_dispatch' && startsWith(inputs.tag, 'v0.'))
     name: Build & Test (Xcode iOS Simulator)
     runs-on: macos-15
 
     steps:
       - uses: actions/checkout@v4
 
-      # Use Xcode 16.4 (required for your project format / iOS 17 SDK)
+      # Use Xcode 16.4 (required for iOS 17 SDK on macos-15 runners)
       - name: Select Xcode 16.4
         run: sudo xcode-select -s "/Applications/Xcode_16.4.app/Contents/Developer"
+
+      - name: Install xcpretty
+        run: sudo gem install xcpretty --no-document
 
       - name: Cache SwiftPM
         uses: actions/cache@v4
@@ -77,15 +88,19 @@ jobs:
             -destination "$DESTINATION" \
             -sdk "$SDK" \
             -configuration Release \
+            -enableCodeCoverage YES \
             -skipPackagePluginValidation \
             test | xcpretty
 
-  release:
+  github-release:
     needs: build-test
-    # Same condition as build-test to keep logic aligned
-    if: startsWith(github.ref, 'refs/tags/v0.') || (github.event_name == 'release' && startsWith(github.event.release.tag_name, 'v0.'))
+    if: |
+      startsWith(github.ref, 'refs/tags/v0.')
+      || (github.event_name == 'release' && startsWith(github.event.release.tag_name, 'v0.'))
+      || (github.event_name == 'workflow_dispatch' && startsWith(inputs.tag, 'v0.'))
     name: GitHub Release
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
