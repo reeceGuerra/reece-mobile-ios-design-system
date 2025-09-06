@@ -8,7 +8,7 @@ import SwiftUI
 import RDSUI
 
 struct RDSThemeMenuView: View {
-    @Environment(\.reeceTheme) private var themeMode: Binding<RDSThemeMode>
+    @Environment(\.rdsTheme) private var themeMode: Binding<RDSThemeMode>
     @Environment(\.colorScheme) private var systemScheme
     
     var body: some View {

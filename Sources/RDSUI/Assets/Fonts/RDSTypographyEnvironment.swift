@@ -16,7 +16,7 @@ public struct RDSFontFamilyKey: EnvironmentKey {
 
 public extension EnvironmentValues {
     /// Global default font family used by Reece Typography when no explicit override is provided.
-    var reeceFontFamily: RDSFontFamily {
+    var rdsFontFamily: RDSFontFamily {
         get { self[RDSFontFamilyKey.self] }
         set { self[RDSFontFamilyKey.self] = newValue }
     }
@@ -26,7 +26,7 @@ public extension View {
     /// Sets the default Reece font family for this view hierarchy.
     /// - Parameter family: The font family to propagate through the environment.
     /// - Returns: A view configured with the given default font family.
-    func reeceFontFamily(_ family: RDSFontFamily) -> some View {
-        environment(\.reeceFontFamily, family)
+    func rdsFontFamily(_ family: RDSFontFamily) -> some View {
+        environment(\.rdsFontFamily, family)
     }
 }

@@ -82,7 +82,7 @@ public struct RDSTextModifier: ViewModifier {
     private let designScale: CGFloat?
 
     /// Global default font family provided by the SwiftUI environment.
-    @Environment(\.reeceFontFamily) private var envFamily
+    @Environment(\.rdsFontFamily) private var envFamily
 
     /// Creates a modifier that styles text according to a Reece token.
     ///
@@ -152,7 +152,7 @@ public extension View {
     ///   - family: Optional explicit font family override. If `nil`, the environment is used.
     ///   - designScale: Optional design px → pt scale factor used during resolution.
     /// - Returns: A view styled with Reece Typography rules.
-    func reeceText(_ token: RDSTextStyleToken,
+    func rdsText(_ token: RDSTextStyleToken,
                    slant: RDSFontSlant? = nil,
                    color: Color? = nil,
                    family: RDSFontFamily? = nil,

@@ -44,7 +44,7 @@ private struct FontFamilyRow: View {
         HStack(alignment: .center, spacing: 6) {
             // Title rendered using the family in a headline token
             Text(item.displayName)
-                .reeceText(.h5M, family: item.family)
+                .rdsText(.h5M, family: item.family)
             Spacer()
             Image(systemName: "chevron.right")
                 .foregroundStyle(.gray)
@@ -57,7 +57,7 @@ private struct FontFamilyRow: View {
 
 struct FontsView: View {
     @Environment(\.colorScheme) private var systemScheme
-    @Environment(\.reeceTheme) private var themeMode: Binding<RDSThemeMode>
+    @Environment(\.rdsTheme) private var themeMode: Binding<RDSThemeMode>
     @EnvironmentObject private var router: RDSNavRouter
     let onSelect: (DemoFontFamily) -> Void
     
@@ -80,9 +80,9 @@ struct FontsView: View {
             .listStyle(.insetGrouped)
             .scrollContentBackground(.hidden)
             .background(background)
-            .reeceText(.body)
+            .rdsText(.body)
         }
-        .reeceNavigationBar(title: "Reece DS - Typography", trailing: {
+        .rdsNavigationBar(title: "Reece DS - Typography", trailing: {
             RDSThemeMenuView()
         })
     }
@@ -92,6 +92,6 @@ struct FontsView: View {
     NavigationStack {
         FontsView(onSelect: { _ in })
             .environmentObject(RDSNavRouter())
-            .environment(\.reeceTheme, .constant(.system))
+            .environment(\.rdsTheme, .constant(.system))
     }
 }

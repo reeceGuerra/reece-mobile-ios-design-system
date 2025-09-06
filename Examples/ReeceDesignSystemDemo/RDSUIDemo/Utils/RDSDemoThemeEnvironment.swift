@@ -20,12 +20,12 @@ private struct RDSCellBackgroundKey: EnvironmentKey {
 
 public extension EnvironmentValues {
     /// Background temático heredable por la jerarquía de vistas.
-    var reeceBackground: Color? {
+    var rdsBackground: Color? {
         get { self[RDSBackgroundKey.self] }
         set { self[RDSBackgroundKey.self] = newValue }
     }
     /// Background para filas de listas (listRowBackground) heredable.
-    var reeceCellBackground: Color? {
+    var rdsCellBackground: Color? {
         get { self[RDSCellBackgroundKey.self] }
         set { self[RDSCellBackgroundKey.self] = newValue }
     }
@@ -35,12 +35,12 @@ public extension EnvironmentValues {
 
 public extension View {
     /// Inyecta un background temático en el environment.
-    func reeceBackground(_ color: Color?) -> some View {
-        environment(\.reeceBackground, color)
+    func rdsBackground(_ color: Color?) -> some View {
+        environment(\.rdsBackground, color)
     }
     /// Inyecta un background para filas de listas en el environment.
-    func reeceCellBackground(_ color: Color?) -> some View {
-        environment(\.reeceCellBackground, color)
+    func rdsCellBackground(_ color: Color?) -> some View {
+        environment(\.rdsCellBackground, color)
     }
 
     /// Aplica el background temático heredado (si existe) a esta vista.
@@ -58,14 +58,14 @@ public extension View {
 // MARK: - Internal modifiers
 
 private struct _RDSApplyThemedBackground: ViewModifier {
-    @Environment(\.reeceBackground) private var bg
+    @Environment(\.rdsBackground) private var bg
     func body(content: Content) -> some View {
         if let bg { content.background(bg) } else { content }
     }
 }
 
 private struct _RDSApplyThemedListRowBackground: ViewModifier {
-    @Environment(\.reeceCellBackground) private var cellBg
+    @Environment(\.rdsCellBackground) private var cellBg
     func body(content: Content) -> some View {
         if let cellBg { content.listRowBackground(cellBg) } else { content }
     }

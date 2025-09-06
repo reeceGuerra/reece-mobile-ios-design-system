@@ -17,7 +17,7 @@ struct RDSDesignSystemDemoApp: App {
     var body: some Scene {
         WindowGroup {
             AppRootView()
-                .reeceFontFamily(.roboto)
+                .rdsFontFamily(.roboto)
         }
     }
 }

@@ -18,12 +18,12 @@ struct RDSRouteKey: EnvironmentKey {
 }
 
 extension EnvironmentValues {
-    var reeceTheme: Binding<RDSThemeMode> {
+    var rdsTheme: Binding<RDSThemeMode> {
         get { self[RDSThemeKey.self] }
         set { self[RDSThemeKey.self] = newValue }
     }
     
-    var reeceRoute: RDSRoute {
+    var rdsRoute: RDSRoute {
         get { self[RDSRouteKey.self] }
         set { self[RDSRouteKey.self] = newValue }
     }
@@ -36,8 +36,8 @@ extension EnvironmentValues {
 /// - Colores reactivos al scheme efectivo.
 struct RDSNavBar<Leading: View, Trailing: View>: View {
     @Environment(\.colorScheme) private var systemScheme
-    @Environment(\.reeceTheme) private var themeMode: Binding<RDSThemeMode>
-    @Environment(\.reeceRoute) private var router: RDSRoute
+    @Environment(\.rdsTheme) private var themeMode: Binding<RDSThemeMode>
+    @Environment(\.rdsRoute) private var router: RDSRoute
     
     let title: String
     let showBack: Bool

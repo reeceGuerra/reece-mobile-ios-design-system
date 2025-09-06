@@ -40,11 +40,11 @@ struct AppRootView: View {
                 .tint(tintColor)
                 .scrollContentBackground(.hidden)
                 .background(background)
-                .reeceBackground(background)
-                .reeceCellBackground(cellBg)
-                .reeceText(.body)
+                .rdsBackground(background)
+                .rdsCellBackground(cellBg)
+                .rdsText(.body)
             }
-            .reeceNavigationBar(
+            .rdsNavigationBar(
                 title: "Reece DS",
                 showBack: false, trailing:  {
                     RDSThemeMenuView()
@@ -83,7 +83,7 @@ struct AppRootView: View {
         .toolbarVisibility(.hidden, for: .navigationBar)
         .preferredColorScheme(themeMode.preferredOverride)
         .environmentObject(router)
-        .environment(\.reeceTheme, $themeMode)
+        .environment(\.rdsTheme, $themeMode)
     }
 }
 

@@ -9,7 +9,7 @@ import SwiftUI
 import RDSUI
 
 struct SecondaryView: View {
-    @Environment(\.reeceTheme) private var themeMode: Binding<RDSThemeMode>
+    @Environment(\.rdsTheme) private var themeMode: Binding<RDSThemeMode>
     @Environment(\.colorScheme) private var systemScheme
     let onSelect: (PaletteTone) -> Void
 
@@ -91,7 +91,7 @@ struct SecondaryView: View {
             .padding()
         }
         .applyThemedBackground()
-        .reeceNavigationBar(title: "Secondary Family", trailing: {
+        .rdsNavigationBar(title: "Secondary Family", trailing: {
             RDSThemeMenuView()
         })
     }

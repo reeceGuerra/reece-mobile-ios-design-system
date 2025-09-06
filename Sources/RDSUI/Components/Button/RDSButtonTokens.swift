@@ -251,14 +251,12 @@ public struct RDSButtonTypographyTokens: RDSButtonTypographyProvider {
 
     /// Returns the SwiftUI `Font` to be used for a given button size.
     /// Map sizes to your RDSTypography tokens (e.g., buttonM, buttonS).
-    public func font(for size: RDSButtonSize) -> Font {
+    public func textStyleToken(for size: RDSButtonSize) -> RDSTextStyleToken {
         switch size {
         case .small:
-            // TODO: wire RDSTypography (e.g., RDSTextStyleToken.buttonS)
-            return .system(size: 12, weight: .medium)
+            return .buttonS
         case .default, .iconLeft, .iconRight, .large:
-            // TODO: wire RDSTypography (e.g., RDSTextStyleToken.buttonM)
-            return .system(size: 14, weight: .semibold)
+            return .buttonM
         }
     }
 

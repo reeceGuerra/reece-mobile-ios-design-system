@@ -98,7 +98,7 @@ public extension Color {
     /// - Parameters:
     ///   - scheme: Optional scheme override (.light / .dark).
     ///   - includeAlpha: If true, returns "#RRGGBBAA"; otherwise "#RRGGBB".
-    func reeceHexString(
+    func rdsHexString(
         scheme: ColorScheme? = nil,
         includeAlpha: Bool = false
     ) -> String? {

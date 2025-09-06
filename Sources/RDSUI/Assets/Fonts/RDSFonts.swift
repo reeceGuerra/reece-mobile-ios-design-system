@@ -244,7 +244,7 @@ private func _fontFileExists(named: String) -> Bool {
 // MARK: - Bundle resolution (SPM vs App target)
 
 extension Bundle {
-    @MainActor public static var reeceBundle: Bundle = {
+    @MainActor public static var rdsBundle: Bundle = {
 #if SWIFT_PACKAGE
         .module
 #else

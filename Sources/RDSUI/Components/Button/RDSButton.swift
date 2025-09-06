@@ -59,7 +59,7 @@ public struct RDSButtonPalette: Equatable {
     public let borderColor: Color
     public let selectionColor: Color
     public let underline: Bool
-
+    
     /// Initializes a palette.
     /// - Parameters:
     ///   - backgroundColor: Color for the button background.
@@ -103,11 +103,11 @@ public protocol RDSButtonPaletteProvider {
 /// It deduplicates repeated palettes using private helper methods and aliases.
 /// Replace the `TODO` color placeholders with your `RDSColors` tokens.
 public struct RDSDefaultButtonPalettes: RDSButtonPaletteProvider {
-
+    
     public init() {}
-
+    
     // MARK: Private Helpers (replace placeholders with RDSColors tokens)
-
+    
     // Primary-like solids (used by Primary.Default & aliased by Alternative.Default)
     private func primaryDefaultNormal() -> RDSButtonPalette {
         RDSButtonPalette(
@@ -141,7 +141,7 @@ public struct RDSDefaultButtonPalettes: RDSButtonPaletteProvider {
             underline: false
         )
     }
-
+    
     // Alternative.Default: custom normal; other states alias Primary.Default
     private func alternativeDefaultNormal() -> RDSButtonPalette {
         RDSButtonPalette(
@@ -151,7 +151,7 @@ public struct RDSDefaultButtonPalettes: RDSButtonPaletteProvider {
             underline: false
         )
     }
-
+    
     // Secondary.Default (outline-like)
     private func secondaryDefaultNormal() -> RDSButtonPalette {
         RDSButtonPalette(
@@ -185,7 +185,7 @@ public struct RDSDefaultButtonPalettes: RDSButtonPaletteProvider {
             underline: false
         )
     }
-
+    
     // Primary.TextLink (underline = true; white/clear background/border)
     private func primaryTextLinkNormal() -> RDSButtonPalette {
         RDSButtonPalette(
@@ -219,7 +219,7 @@ public struct RDSDefaultButtonPalettes: RDSButtonPaletteProvider {
             underline: true
         )
     }
-
+    
     // Secondary.TextLink (underline = false; white/clear background/border)
     private func secondaryTextLinkNormal() -> RDSButtonPalette {
         RDSButtonPalette(
@@ -253,45 +253,45 @@ public struct RDSDefaultButtonPalettes: RDSButtonPaletteProvider {
             underline: false
         )
     }
-
+    
     public func palette(
         for variant: RDSButtonVariant,
         type: RDSButtonType,
         state: RDSButtonState
     ) -> RDSButtonPalette {
         switch (variant, type, state) {
-
+            
         case (.primary, .default, .normal):       return primaryDefaultNormal()
         case (.primary, .default, .highlighted):  return primaryDefaultHighlighted()
         case (.primary, .default, .disabled):     return primaryDefaultDisabled()
         case (.primary, .default, .loading):      return primaryDefaultDisabled() // same visuals; spinner used
         case (.primary, .default, .confirmed):    return primaryDefaultConfirmed()
-
+            
         case (.primary, .textLink, .normal):      return primaryTextLinkNormal()
         case (.primary, .textLink, .highlighted): return primaryTextLinkHighlighted()
         case (.primary, .textLink, .disabled):    return primaryTextLinkDisabled()
         case (.primary, .textLink, .loading):     return primaryTextLinkDisabled() // same visuals; spinner used
         case (.primary, .textLink, .confirmed):   return primaryTextLinkConfirmed()
-
+            
         case (.secondary, .default, .normal):     return secondaryDefaultNormal()
         case (.secondary, .default, .highlighted):return secondaryDefaultHighlighted()
         case (.secondary, .default, .disabled):   return secondaryDefaultDisabled()
         case (.secondary, .default, .loading):    return secondaryDefaultDisabled() // same visuals; spinner used
         case (.secondary, .default, .confirmed):  return secondaryDefaultConfirmed()
-
+            
         case (.secondary, .textLink, .normal):    return secondaryTextLinkNormal()
         case (.secondary, .textLink, .highlighted):return secondaryTextLinkHighlighted()
         case (.secondary, .textLink, .disabled):  return secondaryTextLinkDisabled()
         case (.secondary, .textLink, .loading):   return secondaryTextLinkDisabled() // same visuals; spinner used
         case (.secondary, .textLink, .confirmed): return secondaryTextLinkConfirmed()
-
+            
         case (.alternative, .default, .normal):    return alternativeDefaultNormal()
         case (.alternative, .default, .highlighted):return primaryDefaultHighlighted() // alias
         case (.alternative, .default, .disabled):  return primaryDefaultDisabled()     // alias
         case (.alternative, .default, .loading):   return primaryDefaultDisabled()     // alias
         case (.alternative, .default, .confirmed): return primaryDefaultConfirmed()    // alias
-
-        // Alternative.TextLink does not exist by design.
+            
+            // Alternative.TextLink does not exist by design.
         default:
             // Fallback to a sensible default to avoid crash in case of unsupported combos.
             return primaryDefaultNormal()
@@ -299,17 +299,17 @@ public struct RDSDefaultButtonPalettes: RDSButtonPaletteProvider {
     }
 }
 
-// MARK: - Typography Hook
+// MARK: - Typography (Token-based)
 
 /// Provides the text style for each button size.
 /// By default it returns system fonts sized to match typical "buttonM" / "buttonS" styles.
 /// Replace the implementation to wire your `RDSTypography` tokens.
 public protocol RDSButtonTypographyProvider {
-    /// Returns the SwiftUI `Font` to be used for a given button size.
+    /// Returns the RDSUI `textStyleToken` to be used for a given button size.
     /// - Parameter size: The RDSButtonSize.
-    /// - Returns: A `Font` to style the title text.
-    func font(for size: RDSButtonSize) -> Font
-
+    /// - Returns: A `RDSTextStyleToken` to style the title text.
+    func textStyleToken(for size: RDSButtonSize) -> RDSTextStyleToken
+    
     /// Whether the text should be scaled down slightly to prevent truncation on fixed widths.
     /// - Parameter size: The RDSButtonSize.
     func minimumScaleFactor(for size: RDSButtonSize) -> CGFloat
@@ -321,21 +321,16 @@ public protocol RDSButtonTypographyProvider {
 ///   - `.small` -> "buttonS" token
 public struct RDSDefaultButtonTypography: RDSButtonTypographyProvider {
     public init() {}
-
-    public func font(for size: RDSButtonSize) -> Font {
+    
+    public func textStyleToken(for size: RDSButtonSize) -> RDSTextStyleToken {
         switch size {
         case .small:
-            // TODO: Replace with RDSTypography token, e.g. RDSTextStyleToken.buttonS
-            return .system(size: 12, weight: .medium, design: .default)
-        case .default, .iconLeft, .iconRight:
-            // TODO: Replace with RDSTypography token, e.g. RDSTextStyleToken.buttonM
-            return .system(size: 14, weight: .semibold, design: .default)
-        case .large:
-            // TODO: Replace with RDSTypography token, e.g. RDSTextStyleToken.buttonM (larger container)
-            return .system(size: 14, weight: .semibold, design: .default)
+            return .buttonS
+        case .default, .iconLeft, .iconRight, .large:
+            return .buttonM
         }
     }
-
+    
     public func minimumScaleFactor(for size: RDSButtonSize) -> CGFloat {
         // Fixed widths may need slight scaling for longer labels.
         switch size {
@@ -367,9 +362,9 @@ public struct RDSDefaultButtonTypography: RDSButtonTypographyProvider {
 /// - In `.loading`, content is replaced by a centered `ProgressView` tinted with `selectionColor`.
 /// - Text underline is controlled by the palette (`underline`).
 public struct RDSButton: View {
-
+    
     // MARK: Public API
-
+    
     public let title: String
     public let variant: RDSButtonVariant
     public let type: RDSButtonType
@@ -377,10 +372,10 @@ public struct RDSButton: View {
     public let state: RDSButtonState
     public let icon: Image?
     public let action: () -> Void
-
+    
     public var paletteProvider: RDSButtonPaletteProvider
     public var typographyProvider: RDSButtonTypographyProvider
-
+    
     /// Creates a new RDSButton.
     /// - Parameters:
     ///   - title: The button title (centered).
@@ -413,16 +408,16 @@ public struct RDSButton: View {
         self.typographyProvider = typographyProvider
         self.action = action
     }
-
+    
     // MARK: - Body
-
+    
     public var body: some View {
         let palette = paletteProvider.palette(for: variant, type: type, state: state)
         let dimensions = Self.dimensions(for: size)
-
+        
         // Non-interactive states:
         let isInteractive = !(state == .disabled || state == .loading)
-
+        
         Button(action: {
             guard isInteractive else { return }
             action()
@@ -447,9 +442,9 @@ public struct RDSButton: View {
         )
         .clipShape(RoundedRectangle(cornerRadius: 2, style: .continuous))
     }
-
+    
     // MARK: - Content
-
+    
     @ViewBuilder
     private func content(palette: RDSButtonPalette) -> some View {
         HStack(spacing: 0) {
@@ -457,14 +452,14 @@ public struct RDSButton: View {
                 iconView(icon, color: palette.selectionColor)
                 Spacer().frame(width: 12)
             }
-
+            
             Text(title)
-                .font(typographyProvider.font(for: size))
+                .rdsText(typographyProvider.textStyleToken(for: size))
                 .minimumScaleFactor(typographyProvider.minimumScaleFactor(for: size))
                 .foregroundStyle(palette.selectionColor)
                 .underline(palette.underline)
                 .lineLimit(1)
-
+            
             if size == .iconRight, let icon {
                 Spacer().frame(width: 12)
                 iconView(icon, color: palette.selectionColor)
@@ -475,9 +470,9 @@ public struct RDSButton: View {
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.isButton)
     }
-
+    
     // MARK: - Helpers
-
+    
     /// Renders the 20x20pt icon colored with `selectionColor`.
     private func iconView(_ image: Image, color: Color) -> some View {
         image
@@ -487,7 +482,7 @@ public struct RDSButton: View {
             .foregroundStyle(color)
             .accessibilityHidden(true)
     }
-
+    
     /// Fixed dimensions per size.
     private static func dimensions(for size: RDSButtonSize) -> (width: CGFloat, height: CGFloat) {
         switch size {
