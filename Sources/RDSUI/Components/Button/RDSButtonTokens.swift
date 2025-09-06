@@ -107,8 +107,8 @@ public struct RDSButtonTokensPaletteProvider: RDSButtonPaletteProvider {
     private func secondaryDefault_normal() -> RDSButtonPalette {
         RDSButtonPalette(
             backgroundColor: RDSColors.secondary.White.color(using: scheme),
-            borderColor:     RDSColors.primary.DarkBlue(.t100, using: scheme),
-            selectionColor:  RDSColors.primary.DarkBlue(.t100, using: scheme),
+            borderColor:     RDSColors.primary.DarkBlue.color(.t100, using: scheme),
+            selectionColor:  RDSColors.primary.DarkBlue.color(.t100, using: scheme),
             underline: false
         )
     }
@@ -146,7 +146,7 @@ public struct RDSButtonTokensPaletteProvider: RDSButtonPaletteProvider {
         RDSButtonPalette(
             backgroundColor: RDSColors.secondary.White.color(using: scheme),
             borderColor:     RDSColors.secondary.White.color(using: scheme),
-            selectionColor:  RDSColors.primary.DarkBlue(.t100, using: scheme),
+            selectionColor:  RDSColors.primary.DarkBlue.color(.t100, using: scheme),
             underline: false
         )
     }

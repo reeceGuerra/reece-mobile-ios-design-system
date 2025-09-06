@@ -81,6 +81,7 @@ public struct RDSButtonPalette: Equatable {
 
 /// Provides palettes for any (variant, type, state) combination.
 /// Supply your own to theme/brand the button without modifying the view.
+@MainActor
 public protocol RDSButtonPaletteProvider {
     /// Returns the palette for a given configuration.
     /// - Parameters:
