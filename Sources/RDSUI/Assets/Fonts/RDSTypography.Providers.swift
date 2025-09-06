@@ -17,20 +17,19 @@
 //
 //  - Or rely on defaults (RDSTypographyTokensProvider + RDSDefaultFontFamilyProvider).
 //
-
 import SwiftUI
 
 // MARK: - Provider Protocols
 
 /// Provides the typography spec (design-driven) for a given token.
 /// Implement this to plug a different token source without touching the modifier.
-public protocol RDSTypographyTokenProviding {
+public protocol RDSTypographyTokenProviding: Sendable {
     func spec(for token: RDSTextStyleToken) -> RDSTypographySpec
 }
 
 /// Resolves the preferred font family for a given token.
 /// Implement this to override typography families per brand/app.
-public protocol RDSFontFamilyProviding {
+public protocol RDSFontFamilyProviding: Sendable {
     func resolvePreferredFamily(for token: RDSTextStyleToken) -> RDSFontFamily
 }
 
@@ -57,11 +56,13 @@ public struct RDSDefaultFontFamilyProvider: RDSFontFamilyProviding {
 // MARK: - Environment Wiring
 
 private struct _RDSTypographyProviderKey: EnvironmentKey {
-    static let defaultValue: RDSTypographyTokenProviding = RDSTypographyTokensProvider()
+    // Computed (no static stored state), and the existential is Sendable.
+    static var defaultValue: RDSTypographyTokenProviding { RDSTypographyTokensProvider() }
 }
 
 private struct _RDSFontFamilyProviderKey: EnvironmentKey {
-    static let defaultValue: RDSFontFamilyProviding = RDSDefaultFontFamilyProvider()
+    // Computed (no static stored state), and the existential is Sendable.
+    static var defaultValue: RDSFontFamilyProviding { RDSDefaultFontFamilyProvider() }
 }
 
 public extension EnvironmentValues {
