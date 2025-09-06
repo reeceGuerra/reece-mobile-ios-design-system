@@ -7,35 +7,35 @@
 
 import SwiftUI
 
-/// Provides palettes for any (variant, type, state) combination.
-/// Supply your own to theme/brand the button without modifying the view.
+// MARK: - Palette Provider
+
+/// Provides palettes for a given button configuration.
+///
+/// Conform to this protocol to customize the look of ``RDSButton`` without
+/// modifying the view itself. Typical implementations map design tokens
+/// (e.g., from `RDSColors`) to concrete SwiftUI colors.
 @MainActor
 public protocol RDSButtonPaletteProvider {
-    /// Returns the palette for a given configuration.
+    /// Resolves a palette for the specified configuration.
     /// - Parameters:
-    ///   - variant: The visual variant.
-    ///   - type: The type within the variant.
-    ///   - state: The visual state.
-    /// - Returns: The resolved palette.
-    func palette(
-        for variant: RDSButtonVariant,
-        type: RDSButtonType,
-        state: RDSButtonState
-    ) -> RDSButtonPalette
+    ///   - variant: Visual variant (e.g., `.primary`, `.secondary`, `.alternative`).
+    ///   - type: Visual type inside the variant (e.g., `.default`, `.textLink`).
+    ///   - state: External control state.
+    /// - Returns: A resolved ``RDSButtonPalette``.
+    func palette(for variant: RDSButtonVariant,
+                 type: RDSButtonType,
+                 state: RDSButtonState) -> RDSButtonPalette
 }
 
-// MARK: - Typography (Token-based)
+// MARK: - Typography Provider
 
-/// Provides the text style for each button size.
-/// By default it returns system fonts sized to match typical "buttonM" / "buttonS" styles.
-/// Replace the implementation to wire your `RDSTypography` tokens.
+/// Provides text style tokens and scale behavior for button sizes.
+///
+/// Conform to this protocol to connect your typography system to `RDSButton`.
 public protocol RDSButtonTypographyProvider {
-    /// Returns the RDSUI `textStyleToken` to be used for a given button size.
-    /// - Parameter size: The RDSButtonSize.
-    /// - Returns: A `RDSTextStyleToken` to style the title text.
+    /// Returns the text style token to use for a given size.
     func textStyleToken(for size: RDSButtonSize) -> RDSTextStyleToken
     
-    /// Whether the text should be scaled down slightly to prevent truncation on fixed widths.
-    /// - Parameter size: The RDSButtonSize.
+    /// Returns a minimum scale factor to mitigate truncation on fixed widths.
     func minimumScaleFactor(for size: RDSButtonSize) -> CGFloat
 }
