@@ -5,7 +5,6 @@
 //  Created by Carlos Lopez on 02/09/25.
 //  Optimized 03/09/25
 //
-// ADD COMMENT
 //  Font resolution for the Design System with slant/italic support.
 //  Supports:
 //    • System fonts (default) with Dynamic Type
