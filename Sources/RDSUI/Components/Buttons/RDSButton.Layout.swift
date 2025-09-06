@@ -8,8 +8,13 @@
 import SwiftUI
 
 extension RDSButton {
+    
     // MARK: - Content
     
+    /// Builds the visible content of the button (text + optional icon).
+    ///
+    /// - Parameter palette: Palette resolved for the current configuration.
+    /// - Returns: A horizontal stack with icon/text/icon depending on size.
     @ViewBuilder
     internal func content(palette: RDSButtonPalette) -> some View {
         HStack(spacing: 0) {
@@ -38,7 +43,11 @@ extension RDSButton {
     
     // MARK: - Helpers
     
-    /// Renders the 20x20pt icon colored with `selectionColor`.
+    /// Renders a 20×20pt icon tinted with the given color.
+    /// - Parameters:
+    ///   - image: The image to render.
+    ///   - color: The foreground color applied to the icon.
+    /// - Returns: A resizable, scaled icon view.
     internal func iconView(_ image: Image, color: Color) -> some View {
         image
             .resizable()
@@ -48,7 +57,9 @@ extension RDSButton {
             .accessibilityHidden(true)
     }
     
-    /// Fixed dimensions per size.
+    /// Resolves fixed dimensions for each button size.
+    /// - Parameter size: The `RDSButtonSize` variant.
+    /// - Returns: A tuple of `(width, height)` in points.
     internal static func dimensions(for size: RDSButtonSize) -> (width: CGFloat, height: CGFloat) {
         switch size {
         case .default:   return (135, 40)
