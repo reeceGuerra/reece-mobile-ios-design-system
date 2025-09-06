@@ -100,8 +100,11 @@ public enum RDSColorHex {
 
     /// Formats RGBA components to a HEX string.
     public static func string(r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat = 1.0, includeAlpha: Bool = false) -> String {
-        func clamp8(_ v: CGFloat) -> UInt8 { UInt8(max(0, min(1, v)) * 255.0) }
-        let R = clamp8(r), G = clamp8(g), B = clamp8(b), A = clamp8(a)
+        @inline(__always) func q(_ v: CGFloat) -> UInt8 {
+            let clamped = max(0, min(1, v))
+            return UInt8((clamped * 255).rounded())   // ← antes era UInt8(clamped * 255) (truncaba)
+        }
+        let R = q(r), G = q(g), B = q(b), A = q(a)
         return includeAlpha
             ? String(format: "#%02X%02X%02X%02X", R, G, B, A)
             : String(format: "#%02X%02X%02X", R, G, B)
