@@ -13,25 +13,16 @@ import SwiftUI
 import UIKit
 #endif
 
-/// Tests that design system icons actually render visible pixels when drawn with SwiftUI.
-/// This helps catch issues with "empty" or incorrectly exported PDFs.
+/// Tests that every design system icon actually renders visible pixels when drawn with SwiftUI.
+/// This helps catch issues with "empty" or incorrectly exported PDFs across the whole catalog.
 @MainActor
 struct RDSIconRenderTests {
 
-    /// Renders a sample of icons and checks that the resulting bitmap is not fully transparent.
+    /// Renders **all** icons and checks that each resulting bitmap is not fully transparent.
     /// - Note: Uses `ImageRenderer` (iOS 17+/macOS 14+) and runs on the main actor because `ImageRenderer` is main-actor isolated.
     @Test
-    func iconsRenderNonEmptyBitmaps() throws {
-        let sampleIcons: [RDSIcon] = [
-            .camera1,
-            .shoppingCart,
-            .creditCardVisa,
-            .search,
-            .clock
-        ]
-
-        for icon in sampleIcons {
-            // Build a SwiftUI view (not a plain Image) to apply template + tint
+    func allIconsRenderNonEmptyBitmaps() throws {
+        for icon in RDSIcon.allCases {
             let view = Image(rds: icon)
                 .renderingMode(.template)
                 .foregroundStyle(.black)
