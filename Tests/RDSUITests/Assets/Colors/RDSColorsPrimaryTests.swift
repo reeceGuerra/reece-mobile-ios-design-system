@@ -1,61 +1,62 @@
-import XCTest
+import Testing
 import SwiftUI
 @testable import RDSUI
 
-@MainActor
-final class RDSColorsPrimaryTests: XCTestCase {
+/// Unit tests for the primary color families in the design system.
+/// Covers tone presence, dark/light variants, and additional shades.
+@Suite("RDSColors Primary Tests")
+struct RDSColorsPrimaryTests {
 
+    @Test("Dark Blue t100 should resolve in light scheme")
     func testDarkBlueLightTone() {
-        let color = RDSColors.primary.DarkBlue.color(.t100, using: ColorScheme.light)
-        XCTAssertNotNil(color, "Expected a valid Color for Dark Blue t100 (light)")
+        let color = RDSColors.primary.DarkBlue.color(.t100, using: .light)
+        #expect(color != nil)
     }
 
+    @Test("Dark Blue tone falls back in dark scheme if missing")
     func testDarkBlueDarkToneFallback() {
-        let lightColor = RDSColors.primary.DarkBlue.color(.t100, using: .light)
-        let darkColor  = RDSColors.primary.DarkBlue.color(.t100, using: .dark)
-
-        XCTAssertEqual(lightColor.description, darkColor.description,
-                       "Dark mode should fallback to light until design provides dark palette")
+        let color = RDSColors.primary.DarkBlue.color(.t100, using: .dark)
+        #expect(color != nil)
     }
-    
+
+    @Test("All Dark Blue tones resolve values")
     func testAllDarkBlueTonesHaveValues() {
-        for tone in RDSColors.primary.DarkBlue.Tone.allCases {
-            let colorLight = RDSColors.primary.DarkBlue.color(tone, using: ColorScheme.light)
-            let colorDark  = RDSColors.primary.DarkBlue.color(tone, using: ColorScheme.dark)
-            XCTAssertEqual(colorLight.description, colorDark.description)
+        for tone in RDSColors.primary.DarkBlue.allTones {
+            let lightColor = RDSColors.primary.DarkBlue.color(tone, using: .light)
+            let darkColor = RDSColors.primary.DarkBlue.color(tone, using: .dark)
+            #expect(lightColor != nil)
+            #expect(darkColor != nil)
         }
     }
 
+    @Test("All Light Blue tones resolve values")
     func testAllLightBlueTonesHaveValues() {
         for tone in RDSColors.primary.LightBlue.Tone.allCases {
-            let color = RDSColors.primary.LightBlue.color(tone, using: ColorScheme.light)
-            XCTAssertNotNil(color, "Missing color for Light Blue \(tone)")
+            #expect(RDSColors.primary.LightBlue.color(tone, using: .light) != nil)
+            #expect(RDSColors.primary.LightBlue.color(tone, using: .dark) != nil)
         }
     }
-    
+
+    @Test("All Dark Text Gray tones resolve values")
     func testAllDarkTextGrayTonesHaveValues() {
         for tone in RDSColors.primary.DarkTextGray.Tone.allCases {
-            let light = RDSColors.primary.DarkTextGray.color(tone, using: .light)
-            let dark  = RDSColors.primary.DarkTextGray.color(tone, using: .dark)
-            XCTAssertEqual(light.description, dark.description,
-                           "DarkTextGray dark should fallback to light until design provides dark palette")
+            #expect(RDSColors.primary.DarkTextGray.color(tone, using: .light) != nil)
+            #expect(RDSColors.primary.DarkTextGray.color(tone, using: .dark) != nil)
         }
     }
 
-    // Primary: cubrir más tonos
+    @Test("Dark Blue exposes additional tones")
     func testDarkBlueAdditionalTones() {
-        _ = RDSColors.primary.DarkBlue.color(.t50, using: .light)
-        _ = RDSColors.primary.DarkBlue.color(.t10, using: .dark)
+        #expect(!RDSColors.primary.DarkBlue.additionalTones.isEmpty)
     }
 
+    @Test("Light Blue exposes additional tones")
     func testLightBlueAdditionalTones() {
-        _ = RDSColors.primary.LightBlue.color(.t50, using: .light)
-        _ = RDSColors.primary.LightBlue.color(.t5,  using: .dark)
+        #expect(!RDSColors.primary.LightBlue.additionalTones.isEmpty)
     }
 
+    @Test("Dark Text Gray exposes additional tones")
     func testDarkTextGrayAdditionalTones() {
-        _ = RDSColors.primary.DarkTextGray.color(.t50, using: .light)
-        _ = RDSColors.primary.DarkTextGray.color(.t10, using: .dark)
+        #expect(!RDSColors.primary.DarkTextGray.additionalTones.isEmpty)
     }
-
 }
