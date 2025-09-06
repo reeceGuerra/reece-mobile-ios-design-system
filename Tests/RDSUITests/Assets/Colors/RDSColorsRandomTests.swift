@@ -5,93 +5,67 @@
 //  Created by Carlos Lopez on 03/09/25.
 //
 
-
-import XCTest
+import Testing
 import SwiftUI
-#if canImport(UIKit)
-import UIKit
-#endif
-
-#if canImport(AppKit) && !targetEnvironment(macCatalyst)
-import AppKit
-#endif
-
 @testable import RDSUI
 
-final class RDSColorsRandomTests: XCTestCase {
+/// Tests for the `RDSColors.random(using:)` utility.
+/// Ensures opaque output for both schemes and guards against `.clear`.
+@MainActor
+@Suite("RDSColors Random Tests")
+struct RDSColorsRandomTests {
 
     // MARK: - Helpers
 
-    /// Convierte un `SwiftUI.Color` a RGBA (device RGB) para poder compararlo en tests.
-    private func rgba(_ color: Color) -> (r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat)? {
-        #if canImport(UIKit)
-        let ui = UIColor(color)
-        guard let rgb = ui.cgColor.converted(to: CGColorSpaceCreateDeviceRGB(),
-                                             intent: .defaultIntent,
-                                             options: nil) else { return nil }
-        let comps = rgb.components ?? []
-        // cgColor puede venir con 2 (grayscale) o 4 componentes
-        if comps.count == 4 {
-            return (comps[0], comps[1], comps[2], comps[3])
-        } else if comps.count == 2 {
-            return (comps[0], comps[0], comps[0], comps[1])
-        } else {
-            return nil
-        }
-        #elseif canImport(AppKit)
-        let ns = NSColor(color)
-        guard let rgb = ns.usingColorSpace(.deviceRGB) else { return nil }
-        return (rgb.redComponent, rgb.greenComponent, rgb.blueComponent, rgb.alphaComponent)
-        #else
-        return nil
-        #endif
+    /// Extract RGBA components in sRGB (0...1). If extraction fails, returns zeros.
+    private func rgba(_ color: Color) -> (r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat) {
+        // `RDSColorExport.rgba(from:)` returns an optional tuple of CGFloats.
+        let comps = RDSColorExport.rgba(from: color) ?? (r: 0, g: 0, b: 0, a: 0)
+        return comps
     }
 
-    /// Redondea componentes para evitar ruido de punto flotante al comparar.
-    private func quantize(_ rgba: (CGFloat, CGFloat, CGFloat, CGFloat), places: Int = 3)
-    -> (Int, Int, Int, Int) {
-        func q(_ x: CGFloat) -> Int {
-            let p = pow(10.0, Double(places))
-            return Int((Double(x) * p).rounded())
-        }
-        return (q(rgba.0), q(rgba.1), q(rgba.2), q(rgba.3))
+    /// Rounds a value to the given number of decimal places (useful for stable expectations).
+    private func quantize(_ value: CGFloat, places: Int) -> CGFloat {
+        let p = pow(10 as CGFloat, CGFloat(places))
+        return (value * p).rounded() / p
+    }
+
+    /// Convenience to detect `.clear`.
+    private func isClear(_ color: Color) -> Bool {
+        RDSColorExport.hex(from: color, includeAlpha: true) == "#00000000"
     }
 
     // MARK: - Tests
 
-    @MainActor
+    @Test("random() returns an opaque color in Light scheme")
     func test_random_returnsOpaqueColor_inLight() {
-        let c = RDSColors.random(using: .light)
-        guard let comps = rgba(c) else {
-            XCTFail("Could not extract RGBA from random color (light).")
-            return
+        for _ in 0..<60 {
+            let c = RDSColors.random(using: .light)
+            let comps = rgba(c)
+            // Opaque alpha
+            #expect(quantize(comps.a, places: 3) == 1.0)
+            // Not clear fallback
+            #expect(!isClear(c))
         }
-        XCTAssertGreaterThan(comps.a, 0.0, "Expected non-transparent color (light).")
     }
 
-    @MainActor
+    @Test("random() returns an opaque color in Dark scheme")
     func test_random_returnsOpaqueColor_inDark() {
-        let c = RDSColors.random(using: .dark)
-        guard let comps = rgba(c) else {
-            XCTFail("Could not extract RGBA from random color (dark).")
-            return
+        for _ in 0..<60 {
+            let c = RDSColors.random(using: .dark)
+            let comps = rgba(c)
+            #expect(quantize(comps.a, places: 3) == 1.0)
+            #expect(!isClear(c))
         }
-        XCTAssertGreaterThan(comps.a, 0.0, "Expected non-transparent color (dark).")
     }
 
-    @MainActor
+    @Test("random() consistently avoids clear across schemes")
     func test_random_isDeterministicallyNonClear_acrossSchemes() {
-        // Ninguno de los colores definidos usa transparencia, por lo que alpha debe ser 1.
-        // (Si en el futuro agregas tokens con alpha < 1, ajusta esta aserción.)
-        for scheme in [ColorScheme.light, .dark] {
-            for _ in 0..<30 {
-                let c = RDSColors.random(using: scheme)
-                guard let comps = rgba(c) else {
-                    XCTFail("Could not extract RGBA in scheme \(scheme).")
-                    return
-                }
-                XCTAssertEqual(quantize(comps).3, 1000, "Expected opaque color (alpha ~ 1.0).")
-            }
+        for _ in 0..<60 {
+            let light = RDSColors.random(using: .light)
+            let dark  = RDSColors.random(using: .dark)
+            #expect(!isClear(light))
+            #expect(!isClear(dark))
         }
     }
 }
