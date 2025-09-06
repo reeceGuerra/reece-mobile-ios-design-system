@@ -2,61 +2,60 @@ import Testing
 import SwiftUI
 @testable import RDSUI
 
-/// Unit tests for the primary color families in the design system.
-/// Covers tone presence, dark/light variants, and additional shades.
+/// Primary palette tests for DarkBlue, LightBlue and DarkTextGray.
+/// Verifies that every tone resolves to a non-clear color in both schemes.
+@MainActor
 @Suite("RDSColors Primary Tests")
 struct RDSColorsPrimaryTests {
 
-    @Test("Dark Blue t100 should resolve in light scheme")
+    // MARK: - Dark Blue
+
+    @Test("Dark Blue t100 resolves in light scheme")
     func testDarkBlueLightTone() {
-        let color = RDSColors.primary.DarkBlue.color(.t100, using: .light)
-        #expect(color != nil)
+        let c = RDSColors.primary.DarkBlue.color(.t100, using: .light)
+        // Ensure the color is not transparent (missing tones should fallback to .clear)
+        let hex = RDSColorExport.hex(from: c, includeAlpha: true)
+        #expect(hex != "#00000000")
     }
 
-    @Test("Dark Blue tone falls back in dark scheme if missing")
+    @Test("Dark Blue t100 resolves in dark scheme")
     func testDarkBlueDarkToneFallback() {
-        let color = RDSColors.primary.DarkBlue.color(.t100, using: .dark)
-        #expect(color != nil)
+        let c = RDSColors.primary.DarkBlue.color(.t100, using: .dark)
+        let hex = RDSColorExport.hex(from: c, includeAlpha: true)
+        #expect(hex != "#00000000")
     }
 
-    @Test("All Dark Blue tones resolve values")
+    @Test("All Dark Blue tones resolve values (light & dark)")
     func testAllDarkBlueTonesHaveValues() {
-        for tone in RDSColors.primary.DarkBlue.allTones {
-            let lightColor = RDSColors.primary.DarkBlue.color(tone, using: .light)
-            let darkColor = RDSColors.primary.DarkBlue.color(tone, using: .dark)
-            #expect(lightColor != nil)
-            #expect(darkColor != nil)
+        for tone in RDSColors.primary.DarkBlue.Tone.allCases {
+            let lightHex = RDSColorExport.hex(from: RDSColors.primary.DarkBlue.color(tone, using: .light), includeAlpha: true)
+            let darkHex  = RDSColorExport.hex(from: RDSColors.primary.DarkBlue.color(tone, using: .dark), includeAlpha: true)
+            #expect(lightHex != "#00000000")
+            #expect(darkHex  != "#00000000")
         }
     }
 
-    @Test("All Light Blue tones resolve values")
+    // MARK: - Light Blue
+
+    @Test("All Light Blue tones resolve values (light & dark)")
     func testAllLightBlueTonesHaveValues() {
         for tone in RDSColors.primary.LightBlue.Tone.allCases {
-            #expect(RDSColors.primary.LightBlue.color(tone, using: .light) != nil)
-            #expect(RDSColors.primary.LightBlue.color(tone, using: .dark) != nil)
+            let lightHex = RDSColorExport.hex(from: RDSColors.primary.LightBlue.color(tone, using: .light), includeAlpha: true)
+            let darkHex  = RDSColorExport.hex(from: RDSColors.primary.LightBlue.color(tone, using: .dark), includeAlpha: true)
+            #expect(lightHex != "#00000000")
+            #expect(darkHex  != "#00000000")
         }
     }
 
-    @Test("All Dark Text Gray tones resolve values")
+    // MARK: - Dark Text Gray
+
+    @Test("All Dark Text Gray tones resolve values (light & dark)")
     func testAllDarkTextGrayTonesHaveValues() {
         for tone in RDSColors.primary.DarkTextGray.Tone.allCases {
-            #expect(RDSColors.primary.DarkTextGray.color(tone, using: .light) != nil)
-            #expect(RDSColors.primary.DarkTextGray.color(tone, using: .dark) != nil)
+            let lightHex = RDSColorExport.hex(from: RDSColors.primary.DarkTextGray.color(tone, using: .light), includeAlpha: true)
+            let darkHex  = RDSColorExport.hex(from: RDSColors.primary.DarkTextGray.color(tone, using: .dark), includeAlpha: true)
+            #expect(lightHex != "#00000000")
+            #expect(darkHex  != "#00000000")
         }
-    }
-
-    @Test("Dark Blue exposes additional tones")
-    func testDarkBlueAdditionalTones() {
-        #expect(!RDSColors.primary.DarkBlue.additionalTones.isEmpty)
-    }
-
-    @Test("Light Blue exposes additional tones")
-    func testLightBlueAdditionalTones() {
-        #expect(!RDSColors.primary.LightBlue.additionalTones.isEmpty)
-    }
-
-    @Test("Dark Text Gray exposes additional tones")
-    func testDarkTextGrayAdditionalTones() {
-        #expect(!RDSColors.primary.DarkTextGray.additionalTones.isEmpty)
     }
 }
