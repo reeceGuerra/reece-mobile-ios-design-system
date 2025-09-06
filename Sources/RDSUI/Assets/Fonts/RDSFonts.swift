@@ -24,7 +24,6 @@
 //  ------------
 //  For custom fonts we use `Font.custom(name:size:relativeTo:)` to preserve Dynamic Type.
 //  For system fonts we return `.system(size:weight:design:)`.
-//
 //  Notes
 //  -----
 //  • Add new families by extending `RDSFontFamily` and `assetsMap(for:)`.
