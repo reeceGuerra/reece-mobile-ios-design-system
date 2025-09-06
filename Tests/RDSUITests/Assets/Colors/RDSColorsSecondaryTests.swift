@@ -27,12 +27,12 @@ struct RDSColorsSecondaryTests {
         return s.dropFirst().allSatisfy { ("0"..."9").contains($0) || ("a"..."f").contains($0) || ("A"..."F").contains($0) }
     }
 
-    private func expectNonClearBothSchemes(_ colorProducer: (ColorScheme) -> Color, file: StaticString = #fileID, line: UInt = #line) {
+    /// Asserts that producer(.light) and producer(.dark) yield non-clear, HEX-convertible colors.
+    private func expectNonClearBothSchemes(_ colorProducer: (ColorScheme) -> Color, context: String) {
         let light = hex(colorProducer(.light))
         let dark  = hex(colorProducer(.dark))
-        // Conversion should be available and not clear
-        #expect(light != "#00000000" && isValidHex9(light), "\(light) should be non-clear HEX", sourceLocation: .init(fileID: file, line: line))
-        #expect(dark  != "#00000000" && isValidHex9(dark),  "\(dark) should be non-clear HEX",  sourceLocation: .init(fileID: file, line: line))
+        #expect(light != "#00000000" && isValidHex9(light), "\(context) (light) → \(light)")
+        #expect(dark  != "#00000000" && isValidHex9(dark),  "\(context) (dark) → \(dark)")
     }
 
     // MARK: - Orange
@@ -40,9 +40,9 @@ struct RDSColorsSecondaryTests {
     @Test("All Orange tones resolve (light & dark)")
     func orange_allTones() {
         for tone in RDSColors.secondary.Orange.Tone.allCases {
-            expectNonClearBothSchemes { scheme in
+            expectNonClearBothSchemes({ scheme in
                 RDSColors.secondary.Orange.color(tone, using: scheme)
-            }
+            }, context: "Secondary.Orange.\(tone)")
         }
     }
 
@@ -51,9 +51,9 @@ struct RDSColorsSecondaryTests {
     @Test("All TextGray tones resolve (light & dark)")
     func textGray_allTones() {
         for tone in RDSColors.secondary.TextGray.Tone.allCases {
-            expectNonClearBothSchemes { scheme in
+            expectNonClearBothSchemes({ scheme in
                 RDSColors.secondary.TextGray.color(tone, using: scheme)
-            }
+            }, context: "Secondary.TextGray.\(tone)")
         }
     }
 
@@ -62,9 +62,9 @@ struct RDSColorsSecondaryTests {
     @Test("All MediumGrey tones resolve (light & dark)")
     func mediumGrey_allTones() {
         for tone in RDSColors.secondary.MediumGrey.Tone.allCases {
-            expectNonClearBothSchemes { scheme in
+            expectNonClearBothSchemes({ scheme in
                 RDSColors.secondary.MediumGrey.color(tone, using: scheme)
-            }
+            }, context: "Secondary.MediumGrey.\(tone)")
         }
     }
 
@@ -73,9 +73,9 @@ struct RDSColorsSecondaryTests {
     @Test("All LightGray tones resolve (light & dark)")
     func lightGray_allTones() {
         for tone in RDSColors.secondary.LightGray.Tone.allCases {
-            expectNonClearBothSchemes { scheme in
+            expectNonClearBothSchemes({ scheme in
                 RDSColors.secondary.LightGray.color(tone, using: scheme)
-            }
+            }, context: "Secondary.LightGray.\(tone)")
         }
     }
 
@@ -83,22 +83,22 @@ struct RDSColorsSecondaryTests {
 
     @Test("White resolves (light & dark)")
     func white_singleTone() {
-        expectNonClearBothSchemes { scheme in
+        expectNonClearBothSchemes({ scheme in
             RDSColors.secondary.White.color(using: scheme)
-        }
+        }, context: "Secondary.White")
     }
 
     @Test("OffWhite resolves (light & dark)")
     func offWhite_singleTone() {
-        expectNonClearBothSchemes { scheme in
+        expectNonClearBothSchemes({ scheme in
             RDSColors.secondary.OffWhite.color(using: scheme)
-        }
+        }, context: "Secondary.OffWhite")
     }
 
     @Test("Black resolves (light & dark)")
     func black_singleTone() {
-        expectNonClearBothSchemes { scheme in
+        expectNonClearBothSchemes({ scheme in
             RDSColors.secondary.Black.color(using: scheme)
-        }
+        }, context: "Secondary.Black")
     }
 }
