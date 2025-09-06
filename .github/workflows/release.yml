@@ -3,10 +3,10 @@ name: Release (pre-1.0, tags v0.* or UI)
 on:
   push:
     tags:
-      - 'v0.*'                  # Publish when pushing v0.x.y tags
+      - 'v0.*'
   release:
-    types: [created, published] # Run when release is created/published from the UI
-  workflow_dispatch:            # Allow manual runs
+    types: [created, published]
+  workflow_dispatch:
     inputs:
       tag:
         description: 'Tag to release (v0.x.y)'
@@ -21,16 +21,15 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  # Resolve tag for push/release/dispatch events
+  # Tag efectivo para push/release/dispatch
   TAG_NAME: ${{ github.ref_type == 'tag' && github.ref_name || github.event.release.tag_name || inputs.tag }}
-  SCHEME: RDSUI
+  # Workspace y destino del simulador (ajusta OS si lo necesitas)
   WORKSPACE: ReeceDesignSystem.xcworkspace
   DESTINATION: platform=iOS Simulator,name=iPhone 15
   SDK: iphonesimulator
 
 jobs:
   build-test:
-    # Allow when: pushing tag v0.*, release with tag v0.*, or manual dispatch with input v0.*
     if: |
       startsWith(github.ref, 'refs/tags/v0.')
       || (github.event_name == 'release' && startsWith(github.event.release.tag_name, 'v0.'))
@@ -41,7 +40,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Use Xcode 16.4 (required for iOS 17 SDK on macos-15 runners)
       - name: Select Xcode 16.4
         run: sudo xcode-select -s "/Applications/Xcode_16.4.app/Contents/Developer"
 
@@ -64,8 +62,34 @@ jobs:
           swift --version
           xcodebuild -version
 
-      - name: List schemes
+      - name: List schemes (for debugging)
         run: xcodebuild -list -workspace "$WORKSPACE"
+
+      # 🔎 Detecta automáticamente un scheme válido del workspace
+      - name: Resolve scheme from workspace
+        id: scheme
+        run: |
+          set -e
+          xcodebuild -list -workspace "$WORKSPACE" -json > schemes.json
+          SCHEME_RESOLVED=$(python3 - <<'PY'
+import json, os, sys
+data=json.load(open('schemes.json'))
+schemes = data.get('workspace',{}).get('schemes',[])
+# Preferir uno que termine con "-Package"; si no, cualquiera que contenga "RDS" o "Reece"; si no, el primero.
+cands = [s for s in schemes if s.endswith('-Package')] or \
+        [s for s in schemes if ('RDS' in s or 'Reece' in s)] or \
+        schemes
+print(cands[0] if cands else "")
+PY
+)
+          if [ -z "$SCHEME_RESOLVED" ]; then
+            echo "::error::No shared schemes found in workspace $WORKSPACE"
+            echo "Found JSON:"
+            cat schemes.json
+            exit 1
+          fi
+          echo "Resolved scheme: $SCHEME_RESOLVED"
+          echo "SCHEME=$SCHEME_RESOLVED" >> "$GITHUB_ENV"
 
       - name: Build (iOS Simulator)
         run: |
