@@ -10,21 +10,60 @@ permissions:
 
 jobs:
   build-test:
-    runs-on: macos-latest
+    runs-on: macos-15   # Xcode 16.4 está disponible en macos-15
+
+    env:
+      SCHEME: RDSUI
+      WORKSPACE: ReeceDesignSystem.xcworkspace
+      DESTINATION: platform=iOS Simulator,name=iPhone 15
+      SDK: iphonesimulator
+
     steps:
       - uses: actions/checkout@v4
+
+      # Seleccionar Xcode 16.4 explícitamente
+      - name: Select Xcode 16.4
+        run: sudo xcode-select -s "/Applications/Xcode_16.4.app/Contents/Developer"
+
       - name: Cache SwiftPM
         uses: actions/cache@v4
         with:
           path: |
             ~/.swiftpm
             ~/Library/Caches/org.swift.swiftpm
+            ~/Library/Developer/Xcode/DerivedData
           key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
           restore-keys: |
             ${{ runner.os }}-spm-
-      - name: Swift version
-        run: swift --version
-      - name: Build (debug)
-        run: swift build
-      - name: Test
-        run: swift test --parallel
+
+      - name: Toolchain versions
+        run: |
+          swift --version
+          xcodebuild -version
+
+      # Listar schemes del workspace para depurar si cambia el nombre
+      - name: List schemes
+        run: |
+          xcodebuild -list -workspace "$WORKSPACE"
+
+      # Build con iOS Simulator (compila .xcassets)
+      - name: Build (iOS Simulator)
+        run: |
+          xcodebuild \
+            -workspace "$WORKSPACE" \
+            -scheme "$SCHEME" \
+            -destination "$DESTINATION" \
+            -sdk "$SDK" \
+            -skipPackagePluginValidation \
+            build | xcpretty
+
+      # Test con iOS Simulator
+      - name: Test (iOS Simulator)
+        run: |
+          xcodebuild \
+            -workspace "$WORKSPACE" \
+            -scheme "$SCHEME" \
+            -destination "$DESTINATION" \
+            -sdk "$SDK" \
+            -skipPackagePluginValidation \
+            test | xcpretty

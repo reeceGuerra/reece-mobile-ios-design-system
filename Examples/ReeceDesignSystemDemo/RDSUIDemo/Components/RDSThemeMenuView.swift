@@ -12,18 +12,18 @@ struct RDSThemeMenuView: View {
     @Environment(\.colorScheme) private var systemScheme
     
     var body: some View {
-        let menuBg: Color =  themeMode.resolve(using: systemScheme) == .dark
+        let menuBg: Color =  themeMode.wrappedValue.resolve(systemScheme) == .dark
         ? Color.white.opacity(0.12)
         : Color.black.opacity(0.08)
         
-        let menuBorder: Color = themeMode.resolve(using: systemScheme) == .dark
+        let menuBorder: Color = themeMode.wrappedValue.resolve(systemScheme) == .dark
         ? Color.white.opacity(0.22)
         : Color.black.opacity(0.18)
         
-        let menuIcon: String = themeMode.resolve(using: systemScheme) == .dark
+        let menuIcon: String = themeMode.wrappedValue.resolve(systemScheme) == .dark
         ? "moon.stars.fill"
         : "sun.max.fill"
-        let textColor = themeMode.resolve(using: systemScheme) == .dark
+        let textColor = themeMode.wrappedValue.resolve(systemScheme) == .dark
         ? Color.white.opacity(0.92)
         : Color.black.opacity(0.9)
         

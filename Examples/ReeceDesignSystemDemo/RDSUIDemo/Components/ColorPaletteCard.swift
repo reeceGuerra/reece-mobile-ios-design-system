@@ -20,7 +20,7 @@ public struct PaletteTone: Identifiable, Hashable, Sendable {
     }
 
     /// Color SwiftUI derivado del HEX (usa tu extensión `Color(hex:)` del package).
-    public var color: Color { Color(hex: hex) }
+    public var color: Color { Color.rds(hex) }
 }
 
 /// Card que muestra un título y una pila de bandas con los tonos.
@@ -60,7 +60,7 @@ public struct ColorPaletteCard: View {
                 ForEach(Array(show.enumerated()), id: \.element.id) { idx, tone in
                     ZStack {
                         tone.color
-                        Text(RDSColorExport.hexString(for: tone.color, scheme: systemScheme, includeAlpha: false) ?? tone.hex.uppercased())
+                        Text(RDSColorExport.hex(from: tone.color) ?? tone.hex.uppercased())
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(RDSColorContrast.onColor(for: tone.color, scheme: systemScheme))
                             .shadow(radius: 0.5)

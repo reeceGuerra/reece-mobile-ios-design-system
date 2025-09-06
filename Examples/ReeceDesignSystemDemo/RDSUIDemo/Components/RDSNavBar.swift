@@ -48,12 +48,12 @@ struct RDSNavBar<Leading: View, Trailing: View>: View {
     
     // Derivados de UI (idénticos a tu toolbar previo)
     private var backgroundColor: Color {
-        themeMode.resolve(using: systemScheme) == .dark
+        themeMode.wrappedValue.resolve(systemScheme) == .dark
         ? Color(white: 0.30)
         : Color(white: 0.90)
     }
     private var textColor: Color {
-        themeMode.resolve(using: systemScheme) == .dark
+        themeMode.wrappedValue.resolve(systemScheme) == .dark
         ? Color.white.opacity(0.92)
         : Color.black.opacity(0.9)
     }
