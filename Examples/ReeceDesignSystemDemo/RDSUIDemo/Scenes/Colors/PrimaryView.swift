@@ -19,7 +19,7 @@ struct PrimaryView: View {
                     title: "Dark Blue",
                     tones: RDSColors.primary.DarkBlue.Tone.allCases.map { tone in
                         let c = RDSColors.primary.DarkBlue.color(tone, using: systemScheme)
-                        let hex = RDSColorExport.hexString(for: c, scheme: systemScheme) ?? "#N/A"
+                        let hex = RDSColorExport.hex(from: c) ?? "#N/A"
                         return PaletteTone(hex, name: "DarkBlue Tone \(tone.rawValue)")
                     },
                     maxBands: RDSColors.primary.DarkBlue.Tone.allCases.count,
@@ -31,7 +31,7 @@ struct PrimaryView: View {
                     title: "Light Blue",
                     tones: RDSColors.primary.LightBlue.Tone.allCases.map { tone in
                         let c = RDSColors.primary.LightBlue.color(tone, using: systemScheme)
-                        let hex = RDSColorExport.hexString(for: c, scheme: systemScheme) ?? "#N/A"
+                        let hex = RDSColorExport.hex(from: c) ?? "#N/A"
                         return PaletteTone(hex, name: "LightBlue Tone \(tone.rawValue)")
                     },
                     maxBands: RDSColors.primary.LightBlue.Tone.allCases.count,
@@ -43,7 +43,7 @@ struct PrimaryView: View {
                     title: "Dark Text Gray",
                     tones: RDSColors.primary.DarkTextGray.Tone.allCases.map { tone in
                         let c = RDSColors.primary.DarkTextGray.color(tone, using: systemScheme)
-                        let hex = RDSColorExport.hexString(for: c, scheme: systemScheme) ?? "#N/A"
+                        let hex = RDSColorExport.hex(from: c) ?? "#N/A"
                         return PaletteTone(hex, name: "Dark Text Gray Tone \(tone.rawValue)")
                     },
                     maxBands: RDSColors.primary.DarkTextGray.Tone.allCases.count,

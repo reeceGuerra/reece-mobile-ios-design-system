@@ -62,8 +62,8 @@ struct FontsView: View {
     let onSelect: (DemoFontFamily) -> Void
     
     var body: some View {
-        let cellBg = themeMode.resolve(using: systemScheme) == .dark ? Color(white: 0.50) : Color.white
-        let background = themeMode.resolve(using: systemScheme) == .dark ? Color(white: 0.30) : Color(white: 0.90)
+        let cellBg = themeMode.wrappedValue.resolve(systemScheme) == .dark ? Color(white: 0.50) : Color.white
+        let background = themeMode.wrappedValue.resolve(systemScheme) == .dark ? Color(white: 0.30) : Color(white: 0.90)
         ZStack {
             List {
                 Section(footer: Text("Tap a family to explore it in detail")) {

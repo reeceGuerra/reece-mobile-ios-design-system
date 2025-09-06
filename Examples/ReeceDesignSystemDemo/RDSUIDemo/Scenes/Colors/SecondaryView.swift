@@ -20,7 +20,7 @@ struct SecondaryView: View {
                     title: "Orange",
                     tones: RDSColors.secondary.Orange.Tone.allCases.map { tone in
                         let c = RDSColors.secondary.Orange.color(tone, using: systemScheme)
-                        let hex = RDSColorExport.hexString(for: c, scheme: systemScheme) ?? "#N/A"
+                        let hex = RDSColorExport.hex(from: c) ?? "#N/A"
                         return PaletteTone(hex, name: "Orange Tone \(tone.rawValue)")
                     },
                     maxBands: RDSColors.secondary.Orange.Tone.allCases.count,
@@ -32,7 +32,7 @@ struct SecondaryView: View {
                     title: "Text Gray",
                     tones: RDSColors.secondary.TextGray.Tone.allCases.map { tone in
                         let c = RDSColors.secondary.TextGray.color(tone, using: systemScheme)
-                        let hex = RDSColorExport.hexString(for: c, scheme: systemScheme) ?? "#N/A"
+                        let hex = RDSColorExport.hex(from: c) ?? "#N/A"
                         return PaletteTone(hex, name: "TextGray Tone \(tone.rawValue)")
                     },
                     maxBands: RDSColors.secondary.TextGray.Tone.allCases.count,
@@ -44,7 +44,7 @@ struct SecondaryView: View {
                     title: "Medium Gray",
                     tones: RDSColors.secondary.MediumGrey.Tone.allCases.map { tone in
                         let c = RDSColors.secondary.MediumGrey.color(tone, using: systemScheme)
-                        let hex = RDSColorExport.hexString(for: c, scheme: systemScheme) ?? "#N/A"
+                        let hex = RDSColorExport.hex(from: c) ?? "#N/A"
                         return PaletteTone(hex, name: "Medium Gray Tone \(tone.rawValue)")
                     },
                     maxBands: RDSColors.secondary.MediumGrey.Tone.allCases.count,
@@ -56,7 +56,7 @@ struct SecondaryView: View {
                     title: "Light Gray",
                     tones: RDSColors.secondary.LightGray.Tone.allCases.map { tone in
                         let c = RDSColors.secondary.LightGray.color(tone, using: systemScheme)
-                        let hex = RDSColorExport.hexString(for: c, scheme: systemScheme) ?? "#N/A"
+                        let hex = RDSColorExport.hex(from: c) ?? "#N/A"
                         return PaletteTone(hex, name: "Light Gray Tone \(tone.rawValue)")
                     },
                     maxBands: RDSColors.secondary.LightGray.Tone.allCases.count,
@@ -66,7 +66,7 @@ struct SecondaryView: View {
                 
                 ColorPaletteCard(
                     title: "White",
-                    tones: [.init(RDSColorExport.hexString(for: RDSColors.secondary.White.color(using: systemScheme)) ?? "#N/A", name: "White")],
+                    tones: [.init(RDSColorExport.hex(from: RDSColors.secondary.White.color(using: systemScheme)) ?? "#N/A", name: "White")],
                     maxBands: 1,
                 ) { tapped in
                     onSelect(tapped)
@@ -74,7 +74,7 @@ struct SecondaryView: View {
                 
                 ColorPaletteCard(
                     title: "OffWhite",
-                    tones: [.init(RDSColorExport.hexString(for: RDSColors.secondary.OffWhite.color(using: systemScheme)) ?? "#N/A", name: "OffWhite")],
+                    tones: [.init(RDSColorExport.hex(from: RDSColors.secondary.OffWhite.color(using: systemScheme)) ?? "#N/A", name: "OffWhite")],
                     maxBands: 1,
                 ) { tapped in
                     onSelect(tapped)
@@ -82,7 +82,7 @@ struct SecondaryView: View {
                 
                 ColorPaletteCard(
                     title: "Black",
-                    tones: [.init(RDSColorExport.hexString(for: RDSColors.secondary.Black.color(using: systemScheme)) ?? "#N/A", name: "Black")],
+                    tones: [.init(RDSColorExport.hex(from: RDSColors.secondary.Black.color(using: systemScheme)) ?? "#N/A", name: "Black")],
                     maxBands: 1,
                 ) { tapped in
                     onSelect(tapped)

@@ -25,7 +25,7 @@ struct ColorDetailView: View {
         RDSColorContrast.onColor(for: color, scheme: systemScheme)
     }
     private var hexText: String {
-        RDSColorExport.hexString(for: color, scheme: systemScheme, includeAlpha: false) ?? "#N/A"
+        RDSColorExport.hex(from: color) ?? "#N/A"
     }
 
     var body: some View {
