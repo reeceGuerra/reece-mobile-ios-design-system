@@ -22,10 +22,8 @@ concurrency:
 
 env:
   TAG_NAME: ${{ github.ref_type == 'tag' && github.ref_name || github.event.release.tag_name || inputs.tag }}
-  WORKSPACE: ReeceDesignSystem.xcworkspace
   SDK: iphonesimulator
-  BUILD_SCHEME: ReeceDesignSystemDemo   # <- compila
-  TEST_SCHEME: RDSUI                    # <- tiene Test action
+  SCHEME: RDSUI
 
 jobs:
   build-test:
@@ -33,7 +31,7 @@ jobs:
       startsWith(github.ref, 'refs/tags/v0.')
       || (github.event_name == 'release' && startsWith(github.event.release.tag_name, 'v0.'))
       || (github.event_name == 'workflow_dispatch' && startsWith(inputs.tag, 'v0.'))
-    name: Build & Test (Xcode iOS Simulator)
+    name: Build & Test (SPM on iOS Simulator)
     runs-on: macos-15
 
     steps:
@@ -61,37 +59,34 @@ jobs:
           swift --version
           xcodebuild -version
 
-      - name: List schemes (for debugging)
-        run: xcodebuild -list -workspace "$WORKSPACE"
+      - name: List SPM schemes (for debugging)
+        run: xcodebuild -list
 
-      # Resolver dinámicamente un simulador iOS válido y exportar DESTINATION
       - name: Resolve iOS Simulator destination
         id: resolve-destination
         run: |
           set -e
           xcrun simctl list devices available -j > devices.json
-          SCHEME_DEST=$(python3 -c "import json, os, sys; d=json.load(open('devices.json')); c=[(r, v.get('name',''), v['udid']) for r,devs in d.get('devices',{}).items() if 'iOS' in r for v in devs if v.get('isAvailable',True) and 'iPhone' in v.get('name','')]; c.sort(key=lambda t:(t[0],t[1])); r,name,udid=c[-1]; osver=r.split('.')[-1].replace('iOS-','').replace('-','.'); dest=f'platform=iOS Simulator,OS={osver},id={udid}'; print(dest)")
-          echo "DESTINATION=$SCHEME_DEST" >> "$GITHUB_ENV"
-          echo "Resolved simulator DESTINATION=$SCHEME_DEST"
+          DEST=$(python3 -c "import json; d=json.load(open('devices.json')); c=[(r, v.get('name',''), v['udid']) for r,devs in d.get('devices',{}).items() if 'iOS' in r for v in devs if v.get('isAvailable',True) and 'iPhone' in v.get('name','')]; c.sort(key=lambda t:(t[0],t[1])); r,name,udid=c[-1]; osver=r.split('.')[-1].replace('iOS-','').replace('-','.'); print(f'platform=iOS Simulator,OS={osver},id={udid}')")
+          echo "DESTINATION=$DEST" >> "$GITHUB_ENV"
+          echo "Resolved simulator DESTINATION=$DEST"
 
-      - name: Build (iOS Simulator) — $BUILD_SCHEME
+      - name: Build (SPM)
         run: |
           set -eo pipefail
           xcodebuild \
-            -workspace "$WORKSPACE" \
-            -scheme "$BUILD_SCHEME" \
+            -scheme "$SCHEME" \
             -destination "$DESTINATION" \
             -sdk "$SDK" \
             -configuration Release \
             -skipPackagePluginValidation \
             build | xcpretty
 
-      - name: Test (iOS Simulator) — $TEST_SCHEME
+      - name: Test (SPM on iOS Simulator)
         run: |
           set -eo pipefail
           xcodebuild \
-            -workspace "$WORKSPACE" \
-            -scheme "$TEST_SCHEME" \
+            -scheme "$SCHEME" \
             -destination "$DESTINATION" \
             -sdk "$SDK" \
             -configuration Release \
@@ -107,10 +102,8 @@ jobs:
       || (github.event_name == 'workflow_dispatch' && startsWith(inputs.tag, 'v0.'))
     name: GitHub Release
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-
       - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v2
         with:
