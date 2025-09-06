@@ -4,63 +4,91 @@
 //
 //  Created by Carlos Lopez on 05/09/25.
 //
+//  Notes:
+//  - Public enums constitute the stable API surface consumed by apps.
+//  - `RDSButtonPalette` is an immutable value type describing resolved colors for a given configuration.
+//
 
 import SwiftUI
 
-// MARK: - RDSButton Public API
+// MARK: - Variants & Types
 
 /// Visual variant of the button.
-/// - Primary: Solid background + border, selection color for text/icon.
-/// - Secondary: Outline-like; text/icon/border share color; background is white/clear.
-/// - Alternative: Solid background + border, selection color for text/icon.
+///
+/// Variants control the overall look-and-feel (fill vs outline) and map to different
+/// color tokens in the palette provider.
 public enum RDSButtonVariant: Equatable {
+    /// Filled button with strong emphasis.
     case primary
+    /// Outline-like button; lighter emphasis than `.primary`.
     case secondary
+    /// Alternative filled button used for contextual emphasis.
     case alternative
 }
 
-/// Visual type inside a variant.
-/// - default: Standard filled/outlined button depending on variant.
-/// - textLink: Text-only style as defined by design system rules.
+/// Visual presentation **type** inside a variant.
+///
+/// Types let a given variant render either as a standard button or as a text-only style.
 public enum RDSButtonType: Equatable {
+    /// Standard button for the chosen variant (filled or outlined depending on variant).
     case `default`
+    /// Text-only style (e.g., link-like button) following the design system rules.
     case textLink
 }
 
+// MARK: - Size
+
 /// Fixed layout configurations (width/height and icon placement).
-/// Only `.iconLeft` and `.iconRight` render an icon if provided.
+///
+/// Only `.iconLeft` and `.iconRight` render the optional `icon` if provided.
 public enum RDSButtonSize: Equatable {
-    case `default`    // 135x40, no icon
-    case large        // 151x56, no icon
-    case small        // 108x30, no icon
-    case iconLeft     // 148x40, icon leading
-    case iconRight    // 148x40, icon trailing
+    /// 135x40, no icon.
+    case `default`
+    /// 151x56, no icon.
+    case large
+    /// 108x30, no icon.
+    case small
+    /// 148x40, icon leading.
+    case iconLeft
+    /// 148x40, icon trailing.
+    case iconRight
 }
 
-/// External button state as specified by design.
-/// - normal: Default visual state.
-/// - highlighted: Pressed/hovered/highlighted visual state.
-/// - disabled: Non-interactive. Same interaction as `loading`.
-/// - loading: Non-interactive with a centered spinner (uses `selectionColor` as tint).
-/// - confirmed: Success acknowledgment visual state.
+// MARK: - State
+
+/// External, design-specified control state.
+///
+/// Drives interactivity and the selected palette.
 public enum RDSButtonState: Equatable {
+    /// Normal, enabled, idle.
     case normal
+    /// Pressed/highlighted/hovered state (platform-dependent visual feedback).
     case highlighted
+    /// Non-interactive and de-emphasized.
     case disabled
+    /// Busy state; interaction is blocked; a spinner is typically shown.
     case loading
+    /// Positive acknowledgment state (e.g., success after an action).
     case confirmed
 }
 
-/// Immutable color palette used by `RDSButton`.
-/// `selectionColor` is applied to both text and icon.
-/// `underline` is used for text decoration (e.g., Primary.TextLink).
+// MARK: - Palette
+
+/// Resolved colors and text decoration for a button configuration.
+///
+/// Instances are typically created by ``RDSButtonPaletteProvider`` implementations
+/// (e.g., `RDSButtonTokens`) based on `variant`, `type`, `state`, and color scheme.
 public struct RDSButtonPalette: Equatable {
+    /// Background fill color.
     public let backgroundColor: Color
+    /// 1pt border color.
     public let borderColor: Color
+    /// Color applied to text, icon, and spinner (when loading).
     public let selectionColor: Color
+    /// Whether the title text is underlined (used by certain text/link styles).
     public let underline: Bool
     
-    /// Initializes a palette.
+    /// Creates a palette value.
     /// - Parameters:
     ///   - backgroundColor: Color for the button background.
     ///   - borderColor: Color for the 1pt border stroke.
