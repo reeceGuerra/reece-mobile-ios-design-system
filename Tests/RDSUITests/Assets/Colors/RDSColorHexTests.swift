@@ -11,9 +11,9 @@ import SwiftUI
 
 @Suite("RDSColorHex parsing & formatting")
 struct RDSColorHexTests {
-
+    
     // MARK: - Error cases
-
+    
     @Test("Rejects unsupported lengths")
     func rejectsUnsupportedLengths() {
         do {
@@ -25,7 +25,7 @@ struct RDSColorHexTests {
             #expect(Bool(false), "Unexpected error type: \(error)")
         }
     }
-
+    
     @Test("Rejects non-hex characters (captures first invalid chunk)")
     func rejectsNonHexCharacters() {
         do {
@@ -43,9 +43,9 @@ struct RDSColorHexTests {
             #expect(Bool(false), "Unexpected error type: \(error)")
         }
     }
-
+    
     // MARK: - Valid parsing forms
-
+    
     @Test("Parses short RGB (#RGB) expanding nibbles")
     func parsesShortRGB() throws {
         // #1A2 → (0x11, 0xAA, 0x22)
@@ -56,7 +56,7 @@ struct RDSColorHexTests {
         #expect(abs(c.b - (34.0/255.0)) <= tol)
         #expect(abs(c.a - 1.0) <= tol)
     }
-
+    
     @Test("Parses short RGBA (#RGBA) expanding nibbles")
     func parsesShortRGBA() throws {
         // #1A2F → (0x11, 0xAA, 0x22, 0xFF)
@@ -67,7 +67,7 @@ struct RDSColorHexTests {
         #expect(abs(c.b - (34.0/255.0)) <= tol)
         #expect(abs(c.a - 1.0) <= tol)
     }
-
+    
     @Test("Parses full RGB (#RRGGBB)")
     func parsesFullRGB() throws {
         let c = try RDSColorHex.parse("#0859A8")
@@ -75,67 +75,46 @@ struct RDSColorHexTests {
         #expect(abs(c.a - 1.0) <= tol)
         #expect(c.r >= 0 && c.r <= 1 && c.g >= 0 && c.g <= 1 && c.b >= 0 && c.b <= 1)
     }
-
+    
     @Test("Parses full RGBA (#RRGGBBAA)")
     func parsesFullRGBA() throws {
         let c = try RDSColorHex.parse("#0859A8FF")
         let tol: CGFloat = 0.0001
         #expect(abs(c.a - 1.0) <= tol)
     }
-
+    
     // MARK: - Formatting
-
+    
     @Test("Formats RGBA components to uppercase HEX")
     func formatsComponentsToHEX() {
         // 0x40 = round(0.25 * 255), 0x7A ≈ round(0.48 * 255), 0x26 ≈ round(0.15 * 255)
         let s1 = RDSColorHex.string(r: 0.25, g: 0.48, b: 0.15, includeAlpha: false)
         let s2 = RDSColorHex.string(r: 0.25, g: 0.48, b: 0.15, a: 1.0, includeAlpha: true)
-
+        
         #expect(s1 == "#407A26")
         #expect(s2 == "#407A26FF")
     }
-
-    @Test("Formats SwiftUI.Color to HEX in sRGB")
-        func formatsSwiftUIColorToHEX() {
-            // RED
-            let hexRed = RDSColorHex.string(from: .red, colorSpace: .sRGB, includeAlpha: false)
-            #expect(hexRed != nil)
-            if let h = hexRed {
-                let (r,g,b,a) = try! RDSColorHex.parse(h)
-                #expect(r > 0.95 && g < 0.05 && b < 0.05)   // ~pure red
-                #expect(abs(a - 1.0) <= 0.01)
-            }
-
-            // GREEN
-            let hexGreen = RDSColorHex.string(from: .green, colorSpace: .sRGB, includeAlpha: false)
-            #expect(hexGreen != nil)
-            if let h = hexGreen {
-                let (r,g,b,a) = try! RDSColorHex.parse(h)
-                #expect(g > 0.95 && r < 0.05 && b < 0.05)   // ~pure green
-                #expect(abs(a - 1.0) <= 0.01)
-            }
-
-            // BLUE
-            let hexBlue = RDSColorHex.string(from: .blue, colorSpace: .sRGB, includeAlpha: false)
-            #expect(hexBlue != nil)
-            if let h = hexBlue {
-                let (r,g,b,a) = try! RDSColorHex.parse(h)
-                #expect(b > 0.95 && r < 0.05 && g < 0.05)   // ~pure blue
-                #expect(abs(a - 1.0) <= 0.01)
-            }
-
-            // Alpha variant: 50% red
-            let hexHalfRed = RDSColorHex.string(from: .red.opacity(0.5), colorSpace: .sRGB, includeAlpha: true)
-            #expect(hexHalfRed != nil)
-            if let h = hexHalfRed {
-                let (r,g,b,a) = try! RDSColorHex.parse(h)
-                #expect(r > 0.95 && g < 0.05 && b < 0.05)   // still red
-                #expect(abs(a - 0.5) <= 0.02)               // ~50% alpha (allow rounding tolerance)
-            }
-        }
-
+    
+    @Test("Formats SwiftUI.Color to HEX in sRGB (deterministic via HEX→Color→HEX)")
+    func formatsSwiftUIColorToHEX() {
+        // RED
+        let redColor = RDSColorHex.color(from: "#FF0000", colorSpace: .sRGB)!
+        #expect(RDSColorHex.string(from: redColor, colorSpace: .sRGB, includeAlpha: false) == "#FF0000")
+        
+        // GREEN
+        let greenColor = RDSColorHex.color(from: "#00FF00", colorSpace: .sRGB)!
+        #expect(RDSColorHex.string(from: greenColor, colorSpace: .sRGB, includeAlpha: false) == "#00FF00")
+        
+        // BLUE
+        let blueColor = RDSColorHex.color(from: "#0000FF", colorSpace: .sRGB)!
+        #expect(RDSColorHex.string(from: blueColor, colorSpace: .sRGB, includeAlpha: false) == "#0000FF")
+        
+        // 50% alpha red
+        let halfRed = RDSColorHex.color(from: "#FF000080", colorSpace: .sRGB)!
+        #expect(RDSColorHex.string(from: halfRed, colorSpace: .sRGB, includeAlpha: true) == "#FF000080")
+    }
     // MARK: - Round-trip (HEX → Color → HEX)
-
+    
     @Test("Round-trips HEX → Color → HEX (RGB)")
     func roundTrip_RGB() {
         let original = "#407A26"
@@ -146,7 +125,7 @@ struct RDSColorHexTests {
         let hex = RDSColorHex.string(from: c, colorSpace: .sRGB, includeAlpha: false)
         #expect(hex == original)
     }
-
+    
     @Test("Round-trips HEX → Color → HEX (RGBA)")
     func roundTrip_RGBA() {
         let original = "#407A26CC"
