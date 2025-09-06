@@ -21,9 +21,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  # Tag efectivo para push/release/dispatch
   TAG_NAME: ${{ github.ref_type == 'tag' && github.ref_name || github.event.release.tag_name || inputs.tag }}
-  # Workspace y destino del simulador (ajusta OS si lo necesitas)
   WORKSPACE: ReeceDesignSystem.xcworkspace
   DESTINATION: platform=iOS Simulator,name=iPhone 15
   SDK: iphonesimulator
@@ -65,27 +63,16 @@ jobs:
       - name: List schemes (for debugging)
         run: xcodebuild -list -workspace "$WORKSPACE"
 
-      # 🔎 Detecta automáticamente un scheme válido del workspace
+      # ✅ Resuelve scheme sin heredoc (evita errores YAML)
       - name: Resolve scheme from workspace
         id: scheme
         run: |
           set -e
           xcodebuild -list -workspace "$WORKSPACE" -json > schemes.json
-          SCHEME_RESOLVED=$(python3 - <<'PY'
-import json, os, sys
-data=json.load(open('schemes.json'))
-schemes = data.get('workspace',{}).get('schemes',[])
-# Preferir uno que termine con "-Package"; si no, cualquiera que contenga "RDS" o "Reece"; si no, el primero.
-cands = [s for s in schemes if s.endswith('-Package')] or \
-        [s for s in schemes if ('RDS' in s or 'Reece' in s)] or \
-        schemes
-print(cands[0] if cands else "")
-PY
-)
+          SCHEME_RESOLVED=$(python3 -c "import json; d=json.load(open('schemes.json')); s=d.get('workspace',{}).get('schemes',[]); c=[x for x in s if x.endswith('-Package')] or [x for x in s if ('RDS' in x or 'Reece' in x)] or s; print(c[0] if c else '')")
           if [ -z "$SCHEME_RESOLVED" ]; then
             echo "::error::No shared schemes found in workspace $WORKSPACE"
-            echo "Found JSON:"
-            cat schemes.json
+            echo "Found JSON:" && cat schemes.json
             exit 1
           fi
           echo "Resolved scheme: $SCHEME_RESOLVED"
@@ -135,4 +122,3 @@ PY
           generate_release_notes: true
           prerelease: true
           fail_on_unmatched_files: false
-# noop
