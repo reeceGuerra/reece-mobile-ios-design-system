@@ -1,50 +1,31 @@
-name: Release
+name: SPM Test (reusable)
 
 on:
-  push:
-    tags:
-      - 'v0.*'
-  release:
-    types: [created, published]
-  workflow_dispatch:
+  workflow_call:
     inputs:
-      tag:
-        description: 'Tag to release (v0.x.y)'
-        required: false
+      xcode_version:
         type: string
-
-permissions:
-  contents: write
-
-concurrency:
-  group: release-${{ github.ref || github.event.release.tag_name || inputs.tag }}
-  cancel-in-progress: true
-
-env:
-  TAG_NAME: ${{ github.ref_type == 'tag' && github.ref_name || github.event.release.tag_name || inputs.tag }}
-  SDK: iphonesimulator
-  SCHEME: RDSUI
+        default: "16.4"
+      scheme:
+        type: string
+        default: "RDSUI"
+      sdk:
+        type: string
+        default: "iphonesimulator"
 
 jobs:
-  # 1) Corre los tests reusando el workflow de CI
-  ci-tests:
-    uses: ./.github/workflows/_spm-test.yml
-    with:
-      xcode_version: "16.4"
-      scheme: "RDSUI"
-      sdk: "iphonesimulator"
-    secrets: inherit
-
-  # 2) Solo si ci-tests pasa, construimos en Release
-  build-release:
-    name: Build (SPM, Release)
-    needs: ci-tests
+  test:
+    name: Test (SPM on iOS Simulator)
     runs-on: macos-15
+    env:
+      SDK: ${{ inputs.sdk }}
+      SCHEME: ${{ inputs.scheme }}
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Select Xcode 16.4
-        run: sudo xcode-select -s "/Applications/Xcode_16.4.app/Contents/Developer"
+      - name: Select Xcode ${{ inputs.xcode_version }}
+        run: sudo xcode-select -s "/Applications/Xcode_${{ inputs.xcode_version }}.app/Contents/Developer"
 
       - name: Install xcpretty
         run: sudo gem install xcpretty --no-document
@@ -60,12 +41,21 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-spm-
 
+      - name: Toolchain versions
+        run: |
+          swift --version
+          xcodebuild -version
+
+      # Fuerza modo Package: oculta temporalmente el .xcworkspace si existe
       - name: Temporarily hide workspace (force SPM mode)
         run: |
           if [ -d "ReeceDesignSystem.xcworkspace" ]; then
             mv ReeceDesignSystem.xcworkspace ReeceDesignSystem.xcworkspace.bak
             echo "Workspace hidden to force SPM build."
           fi
+
+      - name: List SPM schemes (for debugging)
+        run: xcodebuild -list
 
       - name: Resolve iOS Simulator destination
         id: resolve-destination
@@ -76,31 +66,15 @@ jobs:
           echo "DESTINATION=$DEST" >> "$GITHUB_ENV"
           echo "Resolved simulator DESTINATION=$DEST"
 
-      - name: Build (SPM, Release)
-        env:
-          SCHEME: RDSUI
-          SDK: iphonesimulator
+      # Solo test (construye en Debug y compila for testing)
+      - name: Test (SPM on iOS Simulator, Debug)
         run: |
           set -eo pipefail
           xcodebuild \
             -scheme "$SCHEME" \
             -destination "$DESTINATION" \
             -sdk "$SDK" \
-            -configuration Release \
+            -configuration Debug \
+            -enableCodeCoverage YES \
             -skipPackagePluginValidation \
-            build | xcpretty
-
-  # 3) Publica el release en GitHub
-  github-release:
-    name: GitHub Release
-    needs: build-release
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Create or Update GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ env.TAG_NAME }}
-          generate_release_notes: true
-          prerelease: true
-          fail_on_unmatched_files: false
+            test | xcpretty
