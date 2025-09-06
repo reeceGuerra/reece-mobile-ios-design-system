@@ -23,6 +23,7 @@ concurrency:
 env:
   TAG_NAME: ${{ github.ref_type == 'tag' && github.ref_name || github.event.release.tag_name || inputs.tag }}
   WORKSPACE: ReeceDesignSystem.xcworkspace
+  SCHEME: RDSUI
   SDK: iphonesimulator
 
 jobs:
@@ -61,21 +62,6 @@ jobs:
 
       - name: List schemes (for debugging)
         run: xcodebuild -list -workspace "$WORKSPACE"
-
-      # Resolve a valid shared scheme from the workspace
-      - name: Resolve scheme from workspace
-        id: scheme
-        run: |
-          set -e
-          xcodebuild -list -workspace "$WORKSPACE" -json > schemes.json
-          SCHEME_RESOLVED=$(python3 -c "import json; d=json.load(open('schemes.json')); s=d.get('workspace',{}).get('schemes',[]); c=[x for x in s if x.endswith('-Package')] or [x for x in s if ('RDS' in x or 'Reece' in x)] or s; print(c[0] if c else '')")
-          if [ -z "$SCHEME_RESOLVED" ]; then
-            echo '::error::No shared schemes found in workspace '"$WORKSPACE"
-            echo 'Found JSON:' && cat schemes.json
-            exit 1
-          fi
-          echo "Resolved scheme: $SCHEME_RESOLVED"
-          echo "SCHEME=$SCHEME_RESOLVED" >> "$GITHUB_ENV"
 
       # ✅ Dynamically resolve an available iOS Simulator (OS + UDID) and export DESTINATION
       - name: Resolve iOS Simulator destination
