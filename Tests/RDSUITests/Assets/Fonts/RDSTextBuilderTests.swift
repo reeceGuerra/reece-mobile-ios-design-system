@@ -24,7 +24,7 @@ final class RDSTextBuilderTests: XCTestCase {
                             family: RDSFontFamily? = nil,
                             scale: CGFloat? = 1.0) -> some View {
         Text("Hello Reece!")
-            .rdsText(token, slant: slant, color: color, family: family, designScale: scale)
+            .rdsTextStyle(token, slant: slant, color: color, family: family, designScale: scale)
     }
 
     // MARK: - ViewModifier API

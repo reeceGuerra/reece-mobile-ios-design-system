@@ -226,7 +226,7 @@ public struct RDSButton: View {
             }
             
             Text(title)
-                .rdsText(typographyProvider.textStyleToken(for: size))
+                .rdsTextStyle(typographyProvider.textStyleToken(for: size))
                 .minimumScaleFactor(typographyProvider.minimumScaleFactor(for: size))
                 .foregroundStyle(palette.selectionColor)
                 .underline(palette.underline)

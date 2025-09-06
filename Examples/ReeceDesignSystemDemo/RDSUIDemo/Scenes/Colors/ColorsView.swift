@@ -39,7 +39,7 @@ struct ColorsView: View {
             .background(background)
             .rdsBackground(background)
             .rdsCellBackground(cellBg)
-            .rdsText(.body)
+            .rdsTextStyle(.body)
         }
         .rdsNavigationBar(
             title: "Reece DS - Colors", trailing:  {

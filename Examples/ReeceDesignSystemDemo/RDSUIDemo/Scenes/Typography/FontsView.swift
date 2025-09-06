@@ -44,7 +44,7 @@ private struct FontFamilyRow: View {
         HStack(alignment: .center, spacing: 6) {
             // Title rendered using the family in a headline token
             Text(item.displayName)
-                .rdsText(.h5M, family: item.family)
+                .rdsTextStyle(.h5M, family: item.family)
             Spacer()
             Image(systemName: "chevron.right")
                 .foregroundStyle(.gray)
@@ -80,7 +80,7 @@ struct FontsView: View {
             .listStyle(.insetGrouped)
             .scrollContentBackground(.hidden)
             .background(background)
-            .rdsText(.body)
+            .rdsTextStyle(.body)
         }
         .rdsNavigationBar(title: "Reece DS - Typography", trailing: {
             RDSThemeMenuView()

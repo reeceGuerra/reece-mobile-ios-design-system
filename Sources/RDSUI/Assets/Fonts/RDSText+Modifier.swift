@@ -152,7 +152,7 @@ public extension View {
     ///   - family: Optional explicit font family override. If `nil`, the environment is used.
     ///   - designScale: Optional design px → pt scale factor used during resolution.
     /// - Returns: A view styled with Reece Typography rules.
-    func rdsText(_ token: RDSTextStyleToken,
+    func rdsTextStyle(_ token: RDSTextStyleToken,
                    slant: RDSFontSlant? = nil,
                    color: Color? = nil,
                    family: RDSFontFamily? = nil,
