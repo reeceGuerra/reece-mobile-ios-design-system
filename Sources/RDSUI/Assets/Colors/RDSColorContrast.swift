@@ -32,12 +32,12 @@ public enum RDSColorContrast {
         scheme: ColorScheme? = nil,
         threshold: Double = 0.57
     ) -> Color {
-        guard let c = RDSColorExport.resolvedPlatformColor(from: background, scheme: scheme) else {
+        guard let c = RDSColorExport.rgba(from: background) else {
             return .white
         }
 
         // Relative luminance in sRGB
-        let r = Double(c.red), g = Double(c.green), b = Double(c.blue)
+        let r = Double(c.r), g = Double(c.g), b = Double(c.b)
         let luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b
         return luminance > threshold ? .black : .white
     }

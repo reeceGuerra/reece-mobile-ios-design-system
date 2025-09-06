@@ -9,7 +9,7 @@ import SwiftUI
 import RDSUI
 
 struct SupportView: View {
-    @Environment(\.reeceTheme) private var themeMode: Binding<RDSThemeMode>
+    @Environment(\.rdsTheme) private var themeMode: Binding<RDSThemeMode>
     @Environment(\.colorScheme) private var systemScheme
     let onSelect: (PaletteTone) -> Void
 
@@ -99,7 +99,7 @@ struct SupportView: View {
             .padding()
         }
         .applyThemedBackground()
-        .reeceNavigationBar(title: "Support Familty", trailing: {
+        .rdsNavigationBar(title: "Support Familty", trailing: {
             RDSThemeMenuView()
         })
     }

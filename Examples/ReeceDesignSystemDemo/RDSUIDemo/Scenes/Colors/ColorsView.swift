@@ -9,7 +9,7 @@ import RDSUI
 
 struct ColorsView: View {
     @Environment(\.colorScheme) private var systemScheme
-    @Environment(\.reeceTheme) private var themeMode: Binding<RDSThemeMode>
+    @Environment(\.rdsTheme) private var themeMode: Binding<RDSThemeMode>
     @EnvironmentObject private var router: RDSNavRouter
     @StateObject private var vm = ColorsViewModel()
     
@@ -37,11 +37,11 @@ struct ColorsView: View {
             .tint(tintColor)
             .scrollContentBackground(.hidden)
             .background(background)
-            .reeceBackground(background)
-            .reeceCellBackground(cellBg)
-            .reeceText(.body)
+            .rdsBackground(background)
+            .rdsCellBackground(cellBg)
+            .rdsTextStyle(.body)
         }
-        .reeceNavigationBar(
+        .rdsNavigationBar(
             title: "Reece DS - Colors", trailing:  {
                 RDSThemeMenuView()
         })
@@ -51,5 +51,5 @@ struct ColorsView: View {
 #Preview {
     ColorsView()
         .environmentObject(RDSNavRouter())
-        .environment(\.reeceTheme, .constant(.system))
+        .environment(\.rdsTheme, .constant(.system))
 }

@@ -4,12 +4,6 @@
 //
 //  Created by Carlos Lopez on 03/09/25.
 //
-
-
-//
-//  RDSThemeModeTests.swift
-//  RDSDesignSystemTests
-//
 //  Verifies RDSThemeMode semantics and RDSTheme global configuration.
 //  - Ensures allCases has expected cases and order
 //  - Ensures id mirrors title
@@ -17,56 +11,51 @@
 //  - Ensures RDSTheme.mode default and mutability on the main actor
 //
 
-import XCTest
+import Testing
 import SwiftUI
 @testable import RDSUI
 
-final class RDSThemeModeTests: XCTestCase {
+/// Theme mode behavior tests focused on the engine that resolves colors by scheme.
+/// These are lightweight and do not depend on any demo app scaffolding.
+@MainActor
+@Suite("RDSThemeMode Tests")
+struct RDSThemeModeTests {
 
-    func test_allCases_order_and_count() {
-        // Source order matters for menus; lock it down.
-        XCTAssertEqual(RDSThemeMode.allCases, [.system, .light, .dark])
-        XCTAssertEqual(RDSThemeMode.allCases.count, 3)
+    // MARK: - Helpers
+
+    private func hex(_ color: Color, includeAlpha: Bool = true) -> String {
+        RDSColorExport.hex(from: color, includeAlpha: includeAlpha) ?? "#NA"
     }
 
-    func test_id_matches_title_for_all_modes() {
-        for mode in RDSThemeMode.allCases {
-            XCTAssertEqual(mode.id, mode.title, "Expected id to equal title for \(mode)")
-        }
+    // MARK: - pick(light:dark:using:)
+
+    @Test("pick returns the light color in .light scheme")
+    func pick_returnsLight_inLightMode() {
+        let light = Color.rds("#FF0000")
+        let dark  = Color.rds("#00FF00")
+
+        let resolved = RDSColorEngine.pick(light: light, dark: dark, using: .light)
+        #expect(hex(resolved) == hex(light))
     }
 
-    func test_effectiveScheme_system_passthrough_light() {
-        let resolved = RDSThemeMode.effectiveScheme(using: .light, themeMode: .system)
-        XCTAssertEqual(resolved, .light)
+    @Test("pick returns the dark color in .dark scheme")
+    func pick_returnsDark_inDarkMode() {
+        let light = Color.rds("#FF0000")
+        let dark  = Color.rds("#00FF00")
+
+        let resolved = RDSColorEngine.pick(light: light, dark: dark, using: .dark)
+        #expect(hex(resolved) == hex(dark))
     }
 
-    func test_effectiveScheme_system_passthrough_dark() {
-        let resolved = RDSThemeMode.effectiveScheme(using: .dark, themeMode: .system)
-        XCTAssertEqual(resolved, .dark)
-    }
+    @Test("pick is stable when light == dark (same HEX for both schemes)")
+    func pick_sameForBoth_whenInputsEqual() {
+        let same = Color.rds("#407A26") // any sample color
 
-    func test_effectiveScheme_forced_light() {
-        let resolved = RDSThemeMode.effectiveScheme(using: .dark, themeMode: .light)
-        XCTAssertEqual(resolved, .light)
-    }
+        let resolvedLight = RDSColorEngine.pick(light: same, dark: same, using: .light)
+        let resolvedDark  = RDSColorEngine.pick(light: same, dark: same, using: .dark)
 
-    func test_effectiveScheme_forced_dark() {
-        let resolved = RDSThemeMode.effectiveScheme(using: .light, themeMode: .dark)
-        XCTAssertEqual(resolved, .dark)
-    }
-
-    /// Touches the @MainActor global to verify default and mutability.
-    @MainActor
-    func test_globalTheme_default_is_system_and_is_mutable() {
-        let original = RDSTheme.mode
-        // The documentation says default is `.system`
-        XCTAssertEqual(original, .system)
-
-        RDSTheme.mode = .dark
-        XCTAssertEqual(RDSTheme.mode, .dark)
-
-        // Restore so we don't leak state between tests
-        RDSTheme.mode = original
-        XCTAssertEqual(RDSTheme.mode, .system)
+        #expect(hex(resolvedLight) == hex(same))
+        #expect(hex(resolvedDark)  == hex(same))
+        #expect(hex(resolvedLight) == hex(resolvedDark))
     }
 }

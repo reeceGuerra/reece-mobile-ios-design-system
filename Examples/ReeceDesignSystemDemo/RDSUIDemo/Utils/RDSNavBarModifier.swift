@@ -35,7 +35,7 @@ struct RDSNavBarModifier: ViewModifier {
 }
 
 extension View {
-    func reeceNavigationBar(
+    func rdsNavigationBar(
         title: String,
         showBack: Bool = true,
         overrideBackground: Color? = nil,

@@ -8,22 +8,22 @@ import SwiftUI
 import RDSUI
 
 struct RDSThemeMenuView: View {
-    @Environment(\.reeceTheme) private var themeMode: Binding<RDSThemeMode>
+    @Environment(\.rdsTheme) private var themeMode: Binding<RDSThemeMode>
     @Environment(\.colorScheme) private var systemScheme
     
     var body: some View {
-        let menuBg: Color =  RDSThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode.wrappedValue) == .dark
+        let menuBg: Color =  themeMode.resolve(using: systemScheme) == .dark
         ? Color.white.opacity(0.12)
         : Color.black.opacity(0.08)
         
-        let menuBorder: Color = RDSThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode.wrappedValue) == .dark
+        let menuBorder: Color = themeMode.resolve(using: systemScheme) == .dark
         ? Color.white.opacity(0.22)
         : Color.black.opacity(0.18)
         
-        let menuIcon: String = RDSThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode.wrappedValue) == .dark
+        let menuIcon: String = themeMode.resolve(using: systemScheme) == .dark
         ? "moon.stars.fill"
         : "sun.max.fill"
-        let textColor = RDSThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode.wrappedValue) == .dark
+        let textColor = themeMode.resolve(using: systemScheme) == .dark
         ? Color.white.opacity(0.92)
         : Color.black.opacity(0.9)
         

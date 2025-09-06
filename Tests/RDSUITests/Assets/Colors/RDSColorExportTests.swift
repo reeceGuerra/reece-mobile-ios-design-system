@@ -5,40 +5,55 @@
 //  Created by Carlos Lopez on 31/08/25.
 //
 
-
-import XCTest
+import Testing
 import SwiftUI
 @testable import RDSUI
 
-final class RDSColorExportTests: XCTestCase {
+@Suite("RDSColorExport")
+struct RDSColorExportTests {
 
-    func testHexRoundTrip_RGB_NoAlpha() {
-        let original = "#407A26" // sample de tu paleta (Green 100)
-        let color = Color(hex: original) // ya existente en tu package
-        let hex = RDSColorExport.hexString(for: color, includeAlpha: false)
-
-        XCTAssertNotNil(hex)
-        XCTAssertEqual(hex, original.uppercased())
+    @Test("HEX round-trip RGB (#RRGGBB)")
+    func hexRoundTrip_RGB_NoAlpha() {
+        let original = "#407A26" // green sample
+        guard let color = RDSColorHex.color(from: original) else {
+            #expect(false, "Failed to parse HEX \(original)")
+            return
+        }
+        let hex = RDSColorExport.hex(from: color, includeAlpha: false)
+        #expect(hex != nil)
+        #expect(hex == original.uppercased())
     }
 
-    func testHexRoundTrip_RGBA_WithAlpha() {
-        let original = "#FF00FF80" // fucsia 50% alpha
-        let color = Color(hex: original)
-        let hex = RDSColorExport.hexString(for: color, includeAlpha: true)
-
-        XCTAssertNotNil(hex)
-        XCTAssertEqual(hex, original.uppercased())
+    @Test("HEX round-trip RGBA (#RRGGBBAA)")
+    func hexRoundTrip_RGBA_WithAlpha() {
+        let original = "#FF00FF80" // fuchsia with 50% alpha
+        guard let color = RDSColorHex.color(from: original) else {
+            #expect(false, "Failed to parse HEX \(original)")
+            return
+        }
+        let hex = RDSColorExport.hex(from: color, includeAlpha: true)
+        #expect(hex != nil)
+        #expect(hex == original.uppercased())
     }
 
-    func testSchemeAwareExport_UsesProvidedScheme() {
-        // Simula dos colores distintos para Light/Dark (ejemplo simple)
-        // En tu caso real vendrán de RDSColors.pick(using:)
-        let light = Color(hex: "#FFFFFF")
-        let dark  = Color(hex: "#000000")
+    @Test("Extract RGBA components (sRGB)")
+    func rgbaExtraction_sRGB() {
+        let original = "#3366CCBF" // blue with ~75% alpha
+        guard let color = RDSColorHex.color(from: original) else {
+            #expect(false, "Failed to parse HEX \(original)")
+            return
+        }
+        let rgba = RDSColorExport.rgba(from: color)
+        #expect(rgba != nil)
 
-        // Si pides scheme .light, debe exportar blanco
-        XCTAssertEqual(RDSColorExport.hexString(for: light, scheme: .light), "#FFFFFF")
-        // Si pides scheme .dark, debe exportar negro
-        XCTAssertEqual(RDSColorExport.hexString(for: dark, scheme: .dark), "#000000")
+        // Compare against parsed components with a small tolerance
+        let (r, g, b, a) = try! RDSColorHex.parse(original)
+        let tol: CGFloat = 0.01
+        if let comps = rgba {
+            #expect(abs(comps.r - r) <= tol)
+            #expect(abs(comps.g - g) <= tol)
+            #expect(abs(comps.b - b) <= tol)
+            #expect(abs(comps.a - a) <= tol)
+        }
     }
 }

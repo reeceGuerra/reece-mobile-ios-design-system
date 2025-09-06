@@ -127,6 +127,12 @@ public struct RDSTextSpec: Sendable {
     }
 }
 
+// MARK: - Backwards-compat alias (stable type name for providers)
+
+/// Stable alias for the design spec used by typography providers.
+/// Keep this name in public API to avoid ripple renames.
+public typealias RDSTypographySpec = RDSTextSpec
+
 // MARK: - Tokens (defaults; adjust to your design source)
 
 public enum RDSTextStyleToken: CaseIterable, Sendable {
@@ -140,35 +146,57 @@ public enum RDSTextStyleToken: CaseIterable, Sendable {
 }
 
 public extension RDSTextStyleToken {
+    /// Default spec mapping for built-in tokens.
     var spec: RDSTextSpec {
         switch self {
-        case .h1B: return .init(designFontSizePx: 48.83, weight: .weight(700), slant: .normal, relativeTo: .largeTitle, designLineHeightPx: 56, letterSpacingPercent: 0.75)
-        case .h1M: return .init(designFontSizePx: 48.83, weight: .weight(500), slant: .normal, relativeTo: .largeTitle, designLineHeightPx: 56, letterSpacingPercent: 0.75)
-        case .h1R: return .init(designFontSizePx: 48.83, weight: .weight(400), slant: .normal, relativeTo: .largeTitle, designLineHeightPx: 56, letterSpacingPercent: 0.75)
-
-        case .h2B: return .init(designFontSizePx: 39.06, weight: .weight(700), slant: .normal, relativeTo: .title, designLineHeightPx: 46, letterSpacingPercent: 0.75)
-        case .h2M: return .init(designFontSizePx: 39.06, weight: .weight(500), slant: .normal, relativeTo: .title, designLineHeightPx: 46, letterSpacingPercent: 0.75)
-        case .h2R: return .init(designFontSizePx: 39.06, weight: .weight(400), slant: .normal, relativeTo: .title, designLineHeightPx: 46, letterSpacingPercent: 0.75)
-
-        case .h3B: return .init(designFontSizePx: 31.25, weight: .weight(700), slant: .normal, relativeTo: .title2, designLineHeightPx: 37, letterSpacingPercent: 0.75)
-        case .h3M: return .init(designFontSizePx: 31.25, weight: .weight(500), slant: .normal, relativeTo: .title2, designLineHeightPx: 37, letterSpacingPercent: 0.75)
-        case .h3R: return .init(designFontSizePx: 31.25, weight: .weight(400), slant: .normal, relativeTo: .title2, designLineHeightPx: 37, letterSpacingPercent: 0.75)
-
-        case .h4B: return .init(designFontSizePx: 25, weight: .weight(700), slant: .normal, relativeTo: .title3, designLineHeightPx: 30, letterSpacingPercent: 0.75)
-        case .h4M: return .init(designFontSizePx: 25, weight: .weight(500), slant: .normal, relativeTo: .title3, designLineHeightPx: 30, letterSpacingPercent: 0.75)
-        case .h4R: return .init(designFontSizePx: 25, weight: .weight(400), slant: .normal, relativeTo: .title3, designLineHeightPx: 30, letterSpacingPercent: 0.75)
-
-        case .h5B: return .init(designFontSizePx: 20, weight: .weight(700), slant: .normal, relativeTo: .headline,   designLineHeightPx: 24, letterSpacingPercent: 0.75)
-        case .h5M: return .init(designFontSizePx: 20, weight: .weight(500), slant: .normal, relativeTo: .subheadline,designLineHeightPx: 24, letterSpacingPercent: 0.75)
-        case .h5R: return .init(designFontSizePx: 20, weight: .weight(400), slant: .normal, relativeTo: .subheadline,designLineHeightPx: 24, letterSpacingPercent: 0.75)
-
-        case .buttonM: return .init(designFontSizePx: 16, weight: .weight(500), slant: .normal, relativeTo: .body, designLineHeightPx: 24, letterSpacingPercent: 0.5)
-        case .buttonS: return .init(designFontSizePx: 14, weight: .weight(500), slant: .normal, relativeTo: .body, designLineHeightPx: 22, letterSpacingPercent: 0.5)
-
-        case .body:   return .init(designFontSizePx: 16, weight: .weight(400), slant: .normal, relativeTo: .body,    designLineHeightPx: 24, letterSpacingPercent: 0.5)
-        case .caption:return .init(designFontSizePx: 12.8, weight: .weight(400), slant: .normal, relativeTo: .caption, designLineHeightPx: 16.2, letterSpacingPercent: 0.0)
-        case .code:   return .init(designFontSizePx: 12, weight: .weight(400), slant: .normal, relativeTo: .caption2, designLineHeightPx: 16, letterSpacingPercent: 0.0)
+        case .h1B: return .init(designFontSizePx: 48.83, weight: .weight(700), slant: .normal, relativeTo: .largeTitle, designLineHeightPx: 56,   letterSpacingPercent: 0.75)
+        case .h1M: return .init(designFontSizePx: 48.83, weight: .weight(500), slant: .normal, relativeTo: .largeTitle, designLineHeightPx: 56,   letterSpacingPercent: 0.75)
+        case .h1R: return .init(designFontSizePx: 48.83, weight: .weight(400), slant: .normal, relativeTo: .largeTitle, designLineHeightPx: 56,   letterSpacingPercent: 0.75)
+            
+        case .h2B: return .init(designFontSizePx: 39.06, weight: .weight(700), slant: .normal, relativeTo: .title,      designLineHeightPx: 46,   letterSpacingPercent: 0.75)
+        case .h2M: return .init(designFontSizePx: 39.06, weight: .weight(500), slant: .normal, relativeTo: .title,      designLineHeightPx: 46,   letterSpacingPercent: 0.75)
+        case .h2R: return .init(designFontSizePx: 39.06, weight: .weight(400), slant: .normal, relativeTo: .title,      designLineHeightPx: 46,   letterSpacingPercent: 0.75)
+            
+        case .h3B: return .init(designFontSizePx: 31.25, weight: .weight(700), slant: .normal, relativeTo: .title2,     designLineHeightPx: 37,   letterSpacingPercent: 0.75)
+        case .h3M: return .init(designFontSizePx: 31.25, weight: .weight(500), slant: .normal, relativeTo: .title2,     designLineHeightPx: 37,   letterSpacingPercent: 0.75)
+        case .h3R: return .init(designFontSizePx: 31.25, weight: .weight(400), slant: .normal, relativeTo: .title2,     designLineHeightPx: 37,   letterSpacingPercent: 0.75)
+            
+        case .h4B: return .init(designFontSizePx: 25,    weight: .weight(700), slant: .normal, relativeTo: .title3,     designLineHeightPx: 30,   letterSpacingPercent: 0.75)
+        case .h4M: return .init(designFontSizePx: 25,    weight: .weight(500), slant: .normal, relativeTo: .title3,     designLineHeightPx: 30,   letterSpacingPercent: 0.75)
+        case .h4R: return .init(designFontSizePx: 25,    weight: .weight(400), slant: .normal, relativeTo: .title3,     designLineHeightPx: 30,   letterSpacingPercent: 0.75)
+            
+        case .h5B: return .init(designFontSizePx: 20,    weight: .weight(700), slant: .normal, relativeTo: .headline,   designLineHeightPx: 24,   letterSpacingPercent: 0.75)
+        case .h5M: return .init(designFontSizePx: 20,    weight: .weight(500), slant: .normal, relativeTo: .subheadline,designLineHeightPx: 24,   letterSpacingPercent: 0.75)
+        case .h5R: return .init(designFontSizePx: 20,    weight: .weight(400), slant: .normal, relativeTo: .subheadline,designLineHeightPx: 24,   letterSpacingPercent: 0.75)
+            
+        case .buttonM: return .init(designFontSizePx: 16, weight: .weight(500), slant: .normal, relativeTo: .body,      designLineHeightPx: 24,   letterSpacingPercent: 0.5)
+        case .buttonS: return .init(designFontSizePx: 14, weight: .weight(500), slant: .normal, relativeTo: .body,      designLineHeightPx: 22,   letterSpacingPercent: 0.5)
+            
+        case .body:    return .init(designFontSizePx: 16,   weight: .weight(400), slant: .normal, relativeTo: .body,    designLineHeightPx: 24,   letterSpacingPercent: 0.5)
+        case .caption: return .init(designFontSizePx: 12.8, weight: .weight(400), slant: .normal, relativeTo: .caption, designLineHeightPx: 16.2, letterSpacingPercent: 0.0)
+        case .code:    return .init(designFontSizePx: 12,   weight: .weight(400), slant: .normal, relativeTo: .caption2,designLineHeightPx: 16,   letterSpacingPercent: 0.0)
         }
     }
 }
 
+// MARK: - Public namespace for providers (stable API)
+
+/// Public facade for typography providers.
+/// Providers should depend on these static functions instead of reading token extensions directly.
+enum RDSTypography {
+    /// Returns the spec for a given token (stable API for providers).
+    public static func spec(for token: RDSTextStyleToken) -> RDSTypographySpec {
+        token.spec
+    }
+    
+    /// Returns the preferred font family for a given token, if any.
+    /// Default: `nil` (falls back to environment or system in providers).
+    public static func preferredFamily(for token: RDSTextStyleToken) -> RDSFontFamily? {
+        switch token {
+        case .buttonM, .buttonS:
+            return nil // or `.system` / `.roboto` if your design requires it
+        default:
+            return nil
+        }
+    }
+}

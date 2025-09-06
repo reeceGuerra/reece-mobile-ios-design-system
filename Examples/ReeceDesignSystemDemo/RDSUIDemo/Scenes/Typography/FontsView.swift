@@ -44,7 +44,7 @@ private struct FontFamilyRow: View {
         HStack(alignment: .center, spacing: 6) {
             // Title rendered using the family in a headline token
             Text(item.displayName)
-                .reeceText(.h5M, family: item.family)
+                .rdsTextStyle(.h5M, family: item.family)
             Spacer()
             Image(systemName: "chevron.right")
                 .foregroundStyle(.gray)
@@ -57,13 +57,13 @@ private struct FontFamilyRow: View {
 
 struct FontsView: View {
     @Environment(\.colorScheme) private var systemScheme
-    @Environment(\.reeceTheme) private var themeMode: Binding<RDSThemeMode>
+    @Environment(\.rdsTheme) private var themeMode: Binding<RDSThemeMode>
     @EnvironmentObject private var router: RDSNavRouter
     let onSelect: (DemoFontFamily) -> Void
     
     var body: some View {
-        let cellBg = RDSThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode.wrappedValue) == .dark ? Color(white: 0.50) : Color.white
-        let background = RDSThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode.wrappedValue) == .dark ? Color(white: 0.30) : Color(white: 0.90)
+        let cellBg = themeMode.resolve(using: systemScheme) == .dark ? Color(white: 0.50) : Color.white
+        let background = themeMode.resolve(using: systemScheme) == .dark ? Color(white: 0.30) : Color(white: 0.90)
         ZStack {
             List {
                 Section(footer: Text("Tap a family to explore it in detail")) {
@@ -80,9 +80,9 @@ struct FontsView: View {
             .listStyle(.insetGrouped)
             .scrollContentBackground(.hidden)
             .background(background)
-            .reeceText(.body)
+            .rdsTextStyle(.body)
         }
-        .reeceNavigationBar(title: "Reece DS - Typography", trailing: {
+        .rdsNavigationBar(title: "Reece DS - Typography", trailing: {
             RDSThemeMenuView()
         })
     }
@@ -92,6 +92,6 @@ struct FontsView: View {
     NavigationStack {
         FontsView(onSelect: { _ in })
             .environmentObject(RDSNavRouter())
-            .environment(\.reeceTheme, .constant(.system))
+            .environment(\.rdsTheme, .constant(.system))
     }
 }
