@@ -23,8 +23,9 @@ concurrency:
 env:
   TAG_NAME: ${{ github.ref_type == 'tag' && github.ref_name || github.event.release.tag_name || inputs.tag }}
   WORKSPACE: ReeceDesignSystem.xcworkspace
-  SCHEME: RDSUI
   SDK: iphonesimulator
+  BUILD_SCHEME: ReeceDesignSystemDemo   # <- compila
+  TEST_SCHEME: RDSUI                    # <- tiene Test action
 
 jobs:
   build-test:
@@ -63,7 +64,7 @@ jobs:
       - name: List schemes (for debugging)
         run: xcodebuild -list -workspace "$WORKSPACE"
 
-      # ✅ Dynamically resolve an available iOS Simulator (OS + UDID) and export DESTINATION
+      # Resolver dinámicamente un simulador iOS válido y exportar DESTINATION
       - name: Resolve iOS Simulator destination
         id: resolve-destination
         run: |
@@ -73,24 +74,24 @@ jobs:
           echo "DESTINATION=$SCHEME_DEST" >> "$GITHUB_ENV"
           echo "Resolved simulator DESTINATION=$SCHEME_DEST"
 
-      - name: Build (iOS Simulator)
+      - name: Build (iOS Simulator) — $BUILD_SCHEME
         run: |
           set -eo pipefail
           xcodebuild \
             -workspace "$WORKSPACE" \
-            -scheme "$SCHEME" \
+            -scheme "$BUILD_SCHEME" \
             -destination "$DESTINATION" \
             -sdk "$SDK" \
             -configuration Release \
             -skipPackagePluginValidation \
             build | xcpretty
 
-      - name: Test (iOS Simulator)
+      - name: Test (iOS Simulator) — $TEST_SCHEME
         run: |
           set -eo pipefail
           xcodebuild \
             -workspace "$WORKSPACE" \
-            -scheme "$SCHEME" \
+            -scheme "$TEST_SCHEME" \
             -destination "$DESTINATION" \
             -sdk "$SDK" \
             -configuration Release \
