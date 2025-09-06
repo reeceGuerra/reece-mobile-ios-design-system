@@ -243,12 +243,25 @@ private func _fontFileExists(named: String) -> Bool {
 
 // MARK: - Bundle resolution (SPM vs App target)
 
+// NOTE: This accessor is intentionally INTERNAL.
+// Do not expose the package bundle to clients; they must use the public RDSUI APIs.
+// Keeping this internal prevents direct asset lookups like `Image("...", bundle: ...)` from outside the module.
+
 extension Bundle {
-    @MainActor public static var rdsBundle: Bundle = {
-#if SWIFT_PACKAGE
-        .module
-#else
-        .main
-#endif
+    /// Returns the resource bundle for the RDSUI package.
+    ///
+    /// - Important: Internal on purpose to avoid exposing assets to clients.
+    /// - Returns: The bundle that contains RDSUI processed resources (xcassets, fonts, etc.).
+    static let rdsBundle: Bundle = {
+        #if SWIFT_PACKAGE
+        return .module
+        #else
+        // Fallback for non-SPM integration scenarios (e.g., sources copied into an app target).
+        // Uses a private token class to locate the bundle at runtime.
+        return Bundle(for: _RDSBundleToken.self)
+        #endif
     }()
 }
+
+/// Private token class used to resolve the bundle when not built via Swift Package Manager.
+private final class _RDSBundleToken {}
