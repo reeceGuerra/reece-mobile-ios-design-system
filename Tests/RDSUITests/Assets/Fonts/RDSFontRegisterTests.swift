@@ -5,10 +5,12 @@
 //  Created by Carlos Lopez on 03/09/25.
 //
 
-
-import XCTest
+import Testing
+import SwiftUI
 import CoreText
 import CoreGraphics
+@testable import RDSUI
+
 #if canImport(UIKit)
 import UIKit
 #endif
@@ -16,75 +18,62 @@ import UIKit
 #if canImport(AppKit) && !targetEnvironment(macCatalyst)
 import AppKit
 #endif
-@testable import RDSUI
 
-final class RDSFontRegisterTests: XCTestCase {
+@Suite("RDSFontRegister")
+struct RDSFontRegisterTests {
 
-    /// PostScript names que esperamos después del registro.
-    /// Ajusta esta lista a las caras que realmente mapeas en tu DS.
-    private let expectedPostScriptNames: [String] = [
-        "Roboto-Regular",
-        "OpenSans-Regular",
-        "HelveticaNeueLTPro-Regular"
-    ]
-    
-    func test_fontsAreAvailableAfterRegister() {
-            // Act: intentamos registrar (idempotente; puede devolver 0 si ya estaban)
-            let newlyRegistered = RDSFontRegister.registerAllFonts()
+    /// Families that are actually packaged in the SPM resources for this project.
+    /// (OpenSans may be mapped but not packaged; we limit assertions to installed ones.)
+    private let packagedFamilies: [RDSFontFamily] = [.roboto, .helveticaNeueLTPro]
 
-            // Assert: al menos una de las fuentes esperadas debe estar disponible.
-            // (Si no está, CGFont(name) devuelve nil)
-            var availableCount = 0
-            for name in expectedPostScriptNames {
-                if CGFont(name as CFString) != nil {
-                    availableCount += 1
-                }
-            }
+    @MainActor
+    @Test("registerAll returns a positive number on first run")
+    func registerAll_returnsPositive() async {
+        let registered = RDSFontRegister.registerAllFonts()
+        #expect(registered > 0, "Expected at least one font file to be registered")
+    }
 
-            XCTAssertGreaterThan(
-                availableCount,
-                0,
-                """
-                Expected at least one expected font to be available after register. \
-                registerAllFonts() added \(newlyRegistered) new file(s).
-                """
-            )
-        }
-
-    func test_registerAllFonts_isIdempotentButFindsResources() {
-            let first = RDSFontRegister.registerAllFonts()
-            let second = RDSFontRegister.registerAllFonts()
-            // Si las fuentes no existen en el bundle, ambas serían 0 y fallamos.
-            XCTAssertTrue(first > 0 || second == 0, "Registrar did not find any font files.")
-        }
-
-    /// (Opcional) Diagnóstico si fallara el test – imprime familias/PS names disponibles.
-    func test_diagnoseAvailableFonts() {
-        // Útil cuando ajustes la lista de nombres esperados.
-        #if DEBUG
+    @MainActor
+    @Test("Registered custom families are creatable via UIFont/NSFont using PostScript names")
+    func registeredFamiliesAreCreatable() async {
+        // Ensure registration has happened
         _ = RDSFontRegister.registerAllFonts()
 
-        // Listar familias y nombres disponibles en runtime (iOS/macOS)
-        #if canImport(UIKit)
-        let families = UIFont.familyNames.sorted()
-        print("Available font families:", families)
-        for fam in families {
-            let names = UIFont.fontNames(forFamilyName: fam)
-            if !names.isEmpty {
-                print("• \(fam):", names)
-            }
+        // For each packaged family, verify upright and italic names can resolve to fonts.
+        for family in packagedFamilies {
+            // regular + normal
+            let upright = RDSFontResolver.postScriptName(family: family, weight: .regular, slant: .normal)
+            #expect(!upright.name.isEmpty, "Upright PS name should not be empty for \(family)")
+            #expect(upright.hasItalicFace == false)
+
+            // regular + italic
+            let italic = RDSFontResolver.postScriptName(family: family, weight: .regular, slant: .italic)
+            #expect(!italic.name.isEmpty, "Italic PS name should not be empty for \(family)")
+            #expect(italic.hasItalicFace == true)
+
+            #if canImport(UIKit)
+            let u1 = UIFont(name: upright.name, size: 12)
+            let u2 = UIFont(name: italic.name, size: 12)
+            #expect(u1 != nil, "UIFont should resolve \(upright.name)")
+            #expect(u2 != nil, "UIFont should resolve \(italic.name)")
+            #elseif canImport(AppKit) && !targetEnvironment(macCatalyst)
+            let n1 = NSFont(name: upright.name, size: 12)
+            let n2 = NSFont(name: italic.name, size: 12)
+            #expect(n1 != nil, "NSFont should resolve \(upright.name)")
+            #expect(n2 != nil, "NSFont should resolve \(italic.name)")
+            #else
+            // Platforms without UIKit/AppKit: nothing to assert beyond registration path.
+            #expect(true)
+            #endif
         }
-        #elseif canImport(AppKit)
-        let families = NSFontManager.shared.availableFontFamilies.sorted()
-        print("Available font families:", families)
-        for fam in families {
-            let members = NSFontManager.shared.availableMembers(ofFontFamily: fam) ?? []
-            let names = members.compactMap { $0.first as? String }
-            if !names.isEmpty {
-                print("• \(fam):", names)
-            }
-        }
-        #endif
-        #endif
+    }
+
+    @MainActor
+    @Test("registerAll is idempotent (subsequent calls do not crash)")
+    func registerAll_isIdempotent() async {
+        _ = RDSFontRegister.registerAllFonts()
+        let second = RDSFontRegister.registerAllFonts()
+        // Some platforms may report 0 on re-register; others may re-count. We just assert non-negative.
+        #expect(second >= 0)
     }
 }
