@@ -5,7 +5,6 @@
 //  Created by Carlos Lopez on 06/09/25.
 //
 
-
 import Testing
 import SwiftUI
 #if canImport(UIKit)
@@ -68,8 +67,9 @@ struct RDSButtonTests {
     @Test("iconView(_:color:) builds for SF Symbol and selectionColor")
     func iconView_builds() {
         let btn = makeButton(icon: Image(systemName: "checkmark"))
-        // Provoca la construcción del subárbol de ícono
-        _ = btn.iconView(btn.icon, color: Color.rds("#FFFFFF"))
+        // `iconView` espera un `Image` no opcional → pasar uno directo
+        let img = Image(systemName: "checkmark")
+        _ = btn.iconView(img, color: Color.rds("#FFFFFF"))
         #expect(true)
     }
 
@@ -110,12 +110,10 @@ struct RDSButtonTests {
 
             // Hosting para forzar evaluación del body y modifiers
             let host = UIHostingController(rootView: button)
-            // Añadir y remover vista para simular ciclo mínimo de vida
             let window = UIWindow(frame: UIScreen.main.bounds)
             window.rootViewController = host
             window.makeKeyAndVisible()
 
-            // Si llegamos aquí, el árbol se construyó sin crashear
             #expect(host.view != nil, "Host view must be created")
         }
     }
@@ -130,7 +128,7 @@ struct RDSButtonTests {
             let host = UIHostingController(rootView: btn)
             #expect(host.view != nil)
             #else
-            _ = btn.body  // en plataformas sin UIKit, al menos tocar la propiedad
+            _ = btn.body
             #expect(true)
             #endif
         }
