@@ -59,7 +59,7 @@ jobs:
           swift --version
           xcodebuild -version
 
-      # 👇 Fuerza modo Package: oculta temporalmente el .xcworkspace si existe
+      # Fuerza modo Package: oculta temporalmente el .xcworkspace si existe
       - name: Temporarily hide workspace (force SPM mode)
         run: |
           if [ -d "ReeceDesignSystem.xcworkspace" ]; then
@@ -79,7 +79,8 @@ jobs:
           echo "DESTINATION=$DEST" >> "$GITHUB_ENV"
           echo "Resolved simulator DESTINATION=$DEST"
 
-      - name: Build (SPM)
+      # Build en Release (binarios de distribución)
+      - name: Build (SPM, Release)
         run: |
           set -eo pipefail
           xcodebuild \
@@ -90,14 +91,15 @@ jobs:
             -skipPackagePluginValidation \
             build | xcpretty
 
-      - name: Test (SPM on iOS Simulator)
+      # ✅ Tests en Debug (compila for testing)
+      - name: Test (SPM on iOS Simulator, Debug)
         run: |
           set -eo pipefail
           xcodebuild \
             -scheme "$SCHEME" \
             -destination "$DESTINATION" \
             -sdk "$SDK" \
-            -configuration Release \
+            -configuration Debug \
             -enableCodeCoverage YES \
             -skipPackagePluginValidation \
             test | xcpretty
