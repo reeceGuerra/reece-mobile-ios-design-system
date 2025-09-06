@@ -95,201 +95,163 @@ public protocol RDSButtonPaletteProvider {
     ) -> RDSButtonPalette
 }
 
-// MARK: - Default Palette Provider (with de-duplication)
+// MARK: - Default Palette Provider (Stateless & De-duplicated)
 
 /// Default palette provider for RDSButton.
-/// This implementation deduplicates repeated palettes using shared constants.
-/// Replace the `TODO` token stubs with your `RDSColors` tokens.
-@MainActor
-public final class RDSDefaultButtonPalettes: RDSButtonPaletteProvider {
-
-    public static let shared = RDSDefaultButtonPalettes()
-
-    // MARK: Constants (Replace with your RDSColors tokens)
-
-    // NOTE:
-    // All color values below are placeholders to keep this file self-contained.
-    // Replace them with your concrete tokens from RDSColors, e.g.:
-    // let PrimaryBG = RDSColors.primary.DarkBlue.color(.t600, using: scheme)
-    // Use fixed colors if you need the file to compile before wiring the tokens.
-
-    // Primary-like solids (used by Primary.Default & Alternative.Default)
-    private let kPrimaryBG_Normal     = Color(red: 0.00, green: 0.31, blue: 0.56) // TODO: RDSColors primary solid
-    private let kPrimaryBorder_Normal = Color(red: 0.00, green: 0.31, blue: 0.56) // TODO: RDSColors primary border
-    private let kPrimarySel_Normal    = Color.white                                // TODO: RDSColors selection on primary
-
-    private let kPrimaryBG_Highlight  = Color(red: 0.00, green: 0.26, blue: 0.47) // TODO: Hover/Pressed
-    private let kPrimaryBorder_High   = Color(red: 0.00, green: 0.26, blue: 0.47) // TODO
-    private let kPrimarySel_High      = Color.white
-
-    private let kPrimaryBG_Disabled   = Color(red: 0.90, green: 0.93, blue: 0.96) // TODO: Disabled bg
-    private let kPrimaryBorder_Dis    = Color(red: 0.90, green: 0.93, blue: 0.96) // TODO: Disabled border
-    private let kPrimarySel_Dis       = Color(red: 0.60, green: 0.65, blue: 0.70) // TODO: Disabled label
-
-    private let kPrimaryBG_Confirmed  = Color(red: 0.00, green: 0.55, blue: 0.31) // TODO: Success bg
-    private let kPrimaryBorder_Conf   = Color(red: 0.00, green: 0.55, blue: 0.31) // TODO: Success border
-    private let kPrimarySel_Conf      = Color.white
-
-    // Alternative specific normal (if differs from Primary normal)
-    private let kAlternativeBG_Normal = Color(red: 0.07, green: 0.44, blue: 0.75) // TODO: Alternative bg normal
-    private let kAlternativeBorder_Normal = Color(red: 0.07, green: 0.44, blue: 0.75)
-    private let kAlternativeSel_Normal = Color.white
-
-    // Secondary (outline-like)
-    private let kSecondaryBG_Clear    = Color.white      // or .clear depending on your DS
-    private let kSecondaryBorder_Norm = Color(red: 0.00, green: 0.31, blue: 0.56) // TODO
-    private let kSecondarySel_Norm    = Color(red: 0.00, green: 0.31, blue: 0.56) // TODO
-
-    private let kSecondaryBorder_High = Color(red: 0.00, green: 0.26, blue: 0.47) // TODO
-    private let kSecondarySel_High    = Color(red: 0.00, green: 0.26, blue: 0.47) // TODO
-
-    private let kSecondaryBorder_Dis  = Color(red: 0.85, green: 0.88, blue: 0.92) // TODO
-    private let kSecondarySel_Dis     = Color(red: 0.60, green: 0.65, blue: 0.70) // TODO
-
-    private let kSecondaryBorder_Conf = Color(red: 0.00, green: 0.55, blue: 0.31) // TODO
-    private let kSecondarySel_Conf    = Color(red: 0.00, green: 0.55, blue: 0.31) // TODO
-
-    // TextLink backgrounds (white/clear) and per-variant selections
-    private let kLinkBG = Color.white              // or .clear per your design
-    private let kLinkBorder = Color.white          // or .clear per your design
-
-    private let kPrimaryLinkSel_Norm = Color(red: 0.00, green: 0.31, blue: 0.56) // TODO
-    private let kPrimaryLinkSel_High = Color(red: 0.00, green: 0.26, blue: 0.47) // TODO
-    private let kPrimaryLinkSel_Dis  = Color(red: 0.60, green: 0.65, blue: 0.70) // TODO
-    private let kPrimaryLinkSel_Conf = Color(red: 0.00, green: 0.55, blue: 0.31) // TODO
-
-    private let kSecondaryLinkSel_Norm = Color(red: 0.00, green: 0.31, blue: 0.56) // TODO
-    private let kSecondaryLinkSel_High = Color(red: 0.07, green: 0.44, blue: 0.75) // TODO
-    private let kSecondaryLinkSel_Dis  = Color(red: 0.60, green: 0.65, blue: 0.70) // TODO
-    private let kSecondaryLinkSel_Conf = Color(red: 0.00, green: 0.55, blue: 0.31) // TODO
-
-    // MARK: Shared Palettes (De-duplicated)
-
-    private lazy var kPalette_PrimaryDefault_Normal = RDSButtonPalette(
-        backgroundColor: kPrimaryBG_Normal,
-        borderColor:     kPrimaryBorder_Normal,
-        selectionColor:  kPrimarySel_Normal,
-        underline: false
-    )
-
-    private lazy var kPalette_PrimaryDefault_Highlighted = RDSButtonPalette(
-        backgroundColor: kPrimaryBG_Highlight,
-        borderColor:     kPrimaryBorder_High,
-        selectionColor:  kPrimarySel_High,
-        underline: false
-    )
-
-    private lazy var kPalette_PrimaryDefault_Disabled = RDSButtonPalette(
-        backgroundColor: kPrimaryBG_Disabled,
-        borderColor:     kPrimaryBorder_Dis,
-        selectionColor:  kPrimarySel_Dis,
-        underline: false
-    )
-
-    // Loading == Disabled in visuals; spinner shown with selectionColor.
-    private lazy var kPalette_PrimaryDefault_Loading = kPalette_PrimaryDefault_Disabled
-
-    private lazy var kPalette_PrimaryDefault_Confirmed = RDSButtonPalette(
-        backgroundColor: kPrimaryBG_Confirmed,
-        borderColor:     kPrimaryBorder_Conf,
-        selectionColor:  kPrimarySel_Conf,
-        underline: false
-    )
-
-    // Alternative.Default aliasing most states to Primary.Default
-    private lazy var kPalette_AlternativeDefault_Normal = RDSButtonPalette(
-        backgroundColor: kAlternativeBG_Normal,
-        borderColor:     kAlternativeBorder_Normal,
-        selectionColor:  kAlternativeSel_Normal,
-        underline: false
-    )
-    private lazy var kPalette_AlternativeDefault_Highlighted = kPalette_PrimaryDefault_Highlighted
-    private lazy var kPalette_AlternativeDefault_Disabled    = kPalette_PrimaryDefault_Disabled
-    private lazy var kPalette_AlternativeDefault_Loading     = kPalette_PrimaryDefault_Loading
-    private lazy var kPalette_AlternativeDefault_Confirmed   = kPalette_PrimaryDefault_Confirmed
-
-    // Secondary.Default (outline-like)
-    private lazy var kPalette_SecondaryDefault_Normal = RDSButtonPalette(
-        backgroundColor: kSecondaryBG_Clear,
-        borderColor:     kSecondaryBorder_Norm,
-        selectionColor:  kSecondarySel_Norm,
-        underline: false
-    )
-    private lazy var kPalette_SecondaryDefault_Highlighted = RDSButtonPalette(
-        backgroundColor: kSecondaryBG_Clear,
-        borderColor:     kSecondaryBorder_High,
-        selectionColor:  kSecondarySel_High,
-        underline: false
-    )
-    private lazy var kPalette_SecondaryDefault_Disabled = RDSButtonPalette(
-        backgroundColor: kSecondaryBG_Clear,
-        borderColor:     kSecondaryBorder_Dis,
-        selectionColor:  kSecondarySel_Dis,
-        underline: false
-    )
-    private lazy var kPalette_SecondaryDefault_Loading  = kPalette_SecondaryDefault_Disabled
-    private lazy var kPalette_SecondaryDefault_Confirmed = RDSButtonPalette(
-        backgroundColor: kSecondaryBG_Clear,
-        borderColor:     kSecondaryBorder_Conf,
-        selectionColor:  kSecondarySel_Conf,
-        underline: false
-    )
-
-    // Primary.TextLink (underline true; white/clear background/border)
-    private lazy var kPalette_PrimaryTextLink_Normal = RDSButtonPalette(
-        backgroundColor: kLinkBG,
-        borderColor:     kLinkBorder,
-        selectionColor:  kPrimaryLinkSel_Norm,
-        underline: true
-    )
-    private lazy var kPalette_PrimaryTextLink_Highlighted = RDSButtonPalette(
-        backgroundColor: kLinkBG,
-        borderColor:     kLinkBorder,
-        selectionColor:  kPrimaryLinkSel_High,
-        underline: true
-    )
-    private lazy var kPalette_PrimaryTextLink_Disabled = RDSButtonPalette(
-        backgroundColor: kLinkBG,
-        borderColor:     kLinkBorder,
-        selectionColor:  kPrimaryLinkSel_Dis,
-        underline: true
-    )
-    private lazy var kPalette_PrimaryTextLink_Loading  = kPalette_PrimaryTextLink_Disabled
-    private lazy var kPalette_PrimaryTextLink_Confirmed = RDSButtonPalette(
-        backgroundColor: kLinkBG,
-        borderColor:     kLinkBorder,
-        selectionColor:  kPrimaryLinkSel_Conf,
-        underline: true
-    )
-
-    // Secondary.TextLink (underline false; white/clear background/border)
-    private lazy var kPalette_SecondaryTextLink_Normal = RDSButtonPalette(
-        backgroundColor: kLinkBG,
-        borderColor:     kLinkBorder,
-        selectionColor:  kSecondaryLinkSel_Norm,
-        underline: false
-    )
-    private lazy var kPalette_SecondaryTextLink_Highlighted = RDSButtonPalette(
-        backgroundColor: kLinkBG,
-        borderColor:     kLinkBorder,
-        selectionColor:  kSecondaryLinkSel_High,
-        underline: false
-    )
-    private lazy var kPalette_SecondaryTextLink_Disabled = RDSButtonPalette(
-        backgroundColor: kLinkBG,
-        borderColor:     kLinkBorder,
-        selectionColor:  kSecondaryLinkSel_Dis,
-        underline: false
-    )
-    private lazy var kPalette_SecondaryTextLink_Loading  = kPalette_SecondaryTextLink_Disabled
-    private lazy var kPalette_SecondaryTextLink_Confirmed = RDSButtonPalette(
-        backgroundColor: kLinkBG,
-        borderColor:     kLinkBorder,
-        selectionColor:  kSecondaryLinkSel_Conf,
-        underline: false
-    )
+/// This implementation is **stateless** to be concurrency-friendly under strict checks.
+/// It deduplicates repeated palettes using private helper methods and aliases.
+/// Replace the `TODO` color placeholders with your `RDSColors` tokens.
+public struct RDSDefaultButtonPalettes: RDSButtonPaletteProvider {
 
     public init() {}
+
+    // MARK: Private Helpers (replace placeholders with RDSColors tokens)
+
+    // Primary-like solids (used by Primary.Default & aliased by Alternative.Default)
+    private func primaryDefaultNormal() -> RDSButtonPalette {
+        RDSButtonPalette(
+            backgroundColor: Color(red: 0.00, green: 0.31, blue: 0.56), // TODO
+            borderColor:     Color(red: 0.00, green: 0.31, blue: 0.56), // TODO
+            selectionColor:  .white,                                     // TODO
+            underline: false
+        )
+    }
+    private func primaryDefaultHighlighted() -> RDSButtonPalette {
+        RDSButtonPalette(
+            backgroundColor: Color(red: 0.00, green: 0.26, blue: 0.47), // TODO
+            borderColor:     Color(red: 0.00, green: 0.26, blue: 0.47), // TODO
+            selectionColor:  .white,                                     // TODO
+            underline: false
+        )
+    }
+    private func primaryDefaultDisabled() -> RDSButtonPalette {
+        RDSButtonPalette(
+            backgroundColor: Color(red: 0.90, green: 0.93, blue: 0.96), // TODO
+            borderColor:     Color(red: 0.90, green: 0.93, blue: 0.96), // TODO
+            selectionColor:  Color(red: 0.60, green: 0.65, blue: 0.70), // TODO
+            underline: false
+        )
+    }
+    private func primaryDefaultConfirmed() -> RDSButtonPalette {
+        RDSButtonPalette(
+            backgroundColor: Color(red: 0.00, green: 0.55, blue: 0.31), // TODO
+            borderColor:     Color(red: 0.00, green: 0.55, blue: 0.31), // TODO
+            selectionColor:  .white,                                     // TODO
+            underline: false
+        )
+    }
+
+    // Alternative.Default: custom normal; other states alias Primary.Default
+    private func alternativeDefaultNormal() -> RDSButtonPalette {
+        RDSButtonPalette(
+            backgroundColor: Color(red: 0.07, green: 0.44, blue: 0.75), // TODO
+            borderColor:     Color(red: 0.07, green: 0.44, blue: 0.75), // TODO
+            selectionColor:  .white,                                     // TODO
+            underline: false
+        )
+    }
+
+    // Secondary.Default (outline-like)
+    private func secondaryDefaultNormal() -> RDSButtonPalette {
+        RDSButtonPalette(
+            backgroundColor: .white,                                     // or .clear per DS
+            borderColor:     Color(red: 0.00, green: 0.31, blue: 0.56),  // TODO
+            selectionColor:  Color(red: 0.00, green: 0.31, blue: 0.56),  // TODO
+            underline: false
+        )
+    }
+    private func secondaryDefaultHighlighted() -> RDSButtonPalette {
+        RDSButtonPalette(
+            backgroundColor: .white,                                     // or .clear
+            borderColor:     Color(red: 0.00, green: 0.26, blue: 0.47),  // TODO
+            selectionColor:  Color(red: 0.00, green: 0.26, blue: 0.47),  // TODO
+            underline: false
+        )
+    }
+    private func secondaryDefaultDisabled() -> RDSButtonPalette {
+        RDSButtonPalette(
+            backgroundColor: .white,                                     // or .clear
+            borderColor:     Color(red: 0.85, green: 0.88, blue: 0.92),  // TODO
+            selectionColor:  Color(red: 0.60, green: 0.65, blue: 0.70),  // TODO
+            underline: false
+        )
+    }
+    private func secondaryDefaultConfirmed() -> RDSButtonPalette {
+        RDSButtonPalette(
+            backgroundColor: .white,                                     // or .clear
+            borderColor:     Color(red: 0.00, green: 0.55, blue: 0.31),  // TODO
+            selectionColor:  Color(red: 0.00, green: 0.55, blue: 0.31),  // TODO
+            underline: false
+        )
+    }
+
+    // Primary.TextLink (underline = true; white/clear background/border)
+    private func primaryTextLinkNormal() -> RDSButtonPalette {
+        RDSButtonPalette(
+            backgroundColor: .white,                                     // or .clear
+            borderColor:     .white,                                     // or .clear
+            selectionColor:  Color(red: 0.00, green: 0.31, blue: 0.56),  // TODO
+            underline: true
+        )
+    }
+    private func primaryTextLinkHighlighted() -> RDSButtonPalette {
+        RDSButtonPalette(
+            backgroundColor: .white,                                     // or .clear
+            borderColor:     .white,                                     // or .clear
+            selectionColor:  Color(red: 0.00, green: 0.26, blue: 0.47),  // TODO
+            underline: true
+        )
+    }
+    private func primaryTextLinkDisabled() -> RDSButtonPalette {
+        RDSButtonPalette(
+            backgroundColor: .white,                                     // or .clear
+            borderColor:     .white,                                     // or .clear
+            selectionColor:  Color(red: 0.60, green: 0.65, blue: 0.70),  // TODO
+            underline: true
+        )
+    }
+    private func primaryTextLinkConfirmed() -> RDSButtonPalette {
+        RDSButtonPalette(
+            backgroundColor: .white,                                     // or .clear
+            borderColor:     .white,                                     // or .clear
+            selectionColor:  Color(red: 0.00, green: 0.55, blue: 0.31),  // TODO
+            underline: true
+        )
+    }
+
+    // Secondary.TextLink (underline = false; white/clear background/border)
+    private func secondaryTextLinkNormal() -> RDSButtonPalette {
+        RDSButtonPalette(
+            backgroundColor: .white,                                     // or .clear
+            borderColor:     .white,                                     // or .clear
+            selectionColor:  Color(red: 0.00, green: 0.31, blue: 0.56),  // TODO
+            underline: false
+        )
+    }
+    private func secondaryTextLinkHighlighted() -> RDSButtonPalette {
+        RDSButtonPalette(
+            backgroundColor: .white,                                     // or .clear
+            borderColor:     .white,                                     // or .clear
+            selectionColor:  Color(red: 0.07, green: 0.44, blue: 0.75),  // TODO
+            underline: false
+        )
+    }
+    private func secondaryTextLinkDisabled() -> RDSButtonPalette {
+        RDSButtonPalette(
+            backgroundColor: .white,                                     // or .clear
+            borderColor:     .white,                                     // or .clear
+            selectionColor:  Color(red: 0.60, green: 0.65, blue: 0.70),  // TODO
+            underline: false
+        )
+    }
+    private func secondaryTextLinkConfirmed() -> RDSButtonPalette {
+        RDSButtonPalette(
+            backgroundColor: .white,                                     // or .clear
+            borderColor:     .white,                                     // or .clear
+            selectionColor:  Color(red: 0.00, green: 0.55, blue: 0.31),  // TODO
+            underline: false
+        )
+    }
 
     public func palette(
         for variant: RDSButtonVariant,
@@ -298,40 +260,40 @@ public final class RDSDefaultButtonPalettes: RDSButtonPaletteProvider {
     ) -> RDSButtonPalette {
         switch (variant, type, state) {
 
-        case (.primary, .default, .normal):       return kPalette_PrimaryDefault_Normal
-        case (.primary, .default, .highlighted):  return kPalette_PrimaryDefault_Highlighted
-        case (.primary, .default, .disabled):     return kPalette_PrimaryDefault_Disabled
-        case (.primary, .default, .loading):      return kPalette_PrimaryDefault_Loading
-        case (.primary, .default, .confirmed):    return kPalette_PrimaryDefault_Confirmed
+        case (.primary, .default, .normal):       return primaryDefaultNormal()
+        case (.primary, .default, .highlighted):  return primaryDefaultHighlighted()
+        case (.primary, .default, .disabled):     return primaryDefaultDisabled()
+        case (.primary, .default, .loading):      return primaryDefaultDisabled() // same visuals; spinner used
+        case (.primary, .default, .confirmed):    return primaryDefaultConfirmed()
 
-        case (.primary, .textLink, .normal):      return kPalette_PrimaryTextLink_Normal
-        case (.primary, .textLink, .highlighted): return kPalette_PrimaryTextLink_Highlighted
-        case (.primary, .textLink, .disabled):    return kPalette_PrimaryTextLink_Disabled
-        case (.primary, .textLink, .loading):     return kPalette_PrimaryTextLink_Loading
-        case (.primary, .textLink, .confirmed):   return kPalette_PrimaryTextLink_Confirmed
+        case (.primary, .textLink, .normal):      return primaryTextLinkNormal()
+        case (.primary, .textLink, .highlighted): return primaryTextLinkHighlighted()
+        case (.primary, .textLink, .disabled):    return primaryTextLinkDisabled()
+        case (.primary, .textLink, .loading):     return primaryTextLinkDisabled() // same visuals; spinner used
+        case (.primary, .textLink, .confirmed):   return primaryTextLinkConfirmed()
 
-        case (.secondary, .default, .normal):     return kPalette_SecondaryDefault_Normal
-        case (.secondary, .default, .highlighted):return kPalette_SecondaryDefault_Highlighted
-        case (.secondary, .default, .disabled):   return kPalette_SecondaryDefault_Disabled
-        case (.secondary, .default, .loading):    return kPalette_SecondaryDefault_Loading
-        case (.secondary, .default, .confirmed):  return kPalette_SecondaryDefault_Confirmed
+        case (.secondary, .default, .normal):     return secondaryDefaultNormal()
+        case (.secondary, .default, .highlighted):return secondaryDefaultHighlighted()
+        case (.secondary, .default, .disabled):   return secondaryDefaultDisabled()
+        case (.secondary, .default, .loading):    return secondaryDefaultDisabled() // same visuals; spinner used
+        case (.secondary, .default, .confirmed):  return secondaryDefaultConfirmed()
 
-        case (.secondary, .textLink, .normal):    return kPalette_SecondaryTextLink_Normal
-        case (.secondary, .textLink, .highlighted):return kPalette_SecondaryTextLink_Highlighted
-        case (.secondary, .textLink, .disabled):  return kPalette_SecondaryTextLink_Disabled
-        case (.secondary, .textLink, .loading):   return kPalette_SecondaryTextLink_Loading
-        case (.secondary, .textLink, .confirmed): return kPalette_SecondaryTextLink_Confirmed
+        case (.secondary, .textLink, .normal):    return secondaryTextLinkNormal()
+        case (.secondary, .textLink, .highlighted):return secondaryTextLinkHighlighted()
+        case (.secondary, .textLink, .disabled):  return secondaryTextLinkDisabled()
+        case (.secondary, .textLink, .loading):   return secondaryTextLinkDisabled() // same visuals; spinner used
+        case (.secondary, .textLink, .confirmed): return secondaryTextLinkConfirmed()
 
-        case (.alternative, .default, .normal):    return kPalette_AlternativeDefault_Normal
-        case (.alternative, .default, .highlighted):return kPalette_AlternativeDefault_Highlighted
-        case (.alternative, .default, .disabled):  return kPalette_AlternativeDefault_Disabled
-        case (.alternative, .default, .loading):   return kPalette_AlternativeDefault_Loading
-        case (.alternative, .default, .confirmed): return kPalette_AlternativeDefault_Confirmed
+        case (.alternative, .default, .normal):    return alternativeDefaultNormal()
+        case (.alternative, .default, .highlighted):return primaryDefaultHighlighted() // alias
+        case (.alternative, .default, .disabled):  return primaryDefaultDisabled()     // alias
+        case (.alternative, .default, .loading):   return primaryDefaultDisabled()     // alias
+        case (.alternative, .default, .confirmed): return primaryDefaultConfirmed()    // alias
 
         // Alternative.TextLink does not exist by design.
         default:
             // Fallback to a sensible default to avoid crash in case of unsupported combos.
-            return kPalette_PrimaryDefault_Normal
+            return primaryDefaultNormal()
         }
     }
 }
@@ -426,7 +388,7 @@ public struct RDSButton: View {
     ///   - size: Fixed layout size (`default`, `large`, `small`, `iconLeft`, `iconRight`).
     ///   - state: Visual state (`normal`, `highlighted`, `disabled`, `loading`, `confirmed`).
     ///   - icon: Optional icon (`Image`). Only rendered for `.iconLeft` / `.iconRight`.
-    ///   - paletteProvider: Palette resolver. Defaults to `RDSDefaultButtonPalettes.shared`.
+    ///   - paletteProvider: Palette resolver. Defaults to a stateless provider instance.
     ///   - typographyProvider: Typography resolver. Defaults to `RDSDefaultButtonTypography()`.
     ///   - action: Closure executed on tap (no-op in `disabled`/`loading`).
     public init(
@@ -436,7 +398,7 @@ public struct RDSButton: View {
         size: RDSButtonSize,
         state: RDSButtonState,
         icon: Image? = nil,
-        paletteProvider: RDSButtonPaletteProvider = RDSDefaultButtonPalettes.shared,
+        paletteProvider: RDSButtonPaletteProvider = RDSDefaultButtonPalettes(),
         typographyProvider: RDSButtonTypographyProvider = RDSDefaultButtonTypography(),
         action: @escaping () -> Void
     ) {
@@ -489,8 +451,6 @@ public struct RDSButton: View {
 
     @ViewBuilder
     private func content(palette: RDSButtonPalette) -> some View {
-        let hasIcon = (size == .iconLeft || size == .iconRight) && icon != nil
-
         HStack(spacing: 0) {
             if size == .iconLeft, let icon {
                 iconView(icon, color: palette.selectionColor)
@@ -511,8 +471,6 @@ public struct RDSButton: View {
         }
         .padding(.vertical, 8)
         .padding(.horizontal, 24)
-        // If no icon allowed, ignore provided icon to respect size rules.
-        .opacity(1.0) // Keep a placeholder for future conditional styles if needed.
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.isButton)
     }
@@ -540,57 +498,3 @@ public struct RDSButton: View {
         }
     }
 }
-
-// MARK: - Previews (Optional)
-/*
-struct RDSButton_Previews: PreviewProvider {
-    static var previews: some View {
-        VStack(spacing: 16) {
-            RDSButton(
-                title: "Primary",
-                variant: .primary,
-                type: .default,
-                size: .default,
-                state: .normal
-            ) {}
-
-            RDSButton(
-                title: "Loading",
-                variant: .primary,
-                type: .default,
-                size: .iconRight,
-                state: .loading,
-                icon: Image(systemName: "arrow.clockwise")
-            ) {}
-
-            RDSButton(
-                title: "Text Link",
-                variant: .primary,
-                type: .textLink,
-                size: .default,
-                state: .normal
-            ) {}
-
-            RDSButton(
-                title: "Secondary",
-                variant: .secondary,
-                type: .default,
-                size: .small,
-                state: .highlighted
-            ) {}
-
-            RDSButton(
-                title: "Alternative",
-                variant: .alternative,
-                type: .default,
-                size: .iconLeft,
-                state: .confirmed,
-                icon: Image(systemName: "checkmark")
-            ) {}
-        }
-        .padding()
-        .previewLayout(.sizeThatFits)
-    }
-}
-*/
-
