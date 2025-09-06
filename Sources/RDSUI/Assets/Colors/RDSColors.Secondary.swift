@@ -35,16 +35,16 @@ public enum Secondary {
         }
 
         public static let light: [Tone: Color] = [
-            .t100: Color(hex: "#FFA500"),
-            .t90:  Color(hex: "#FFAE1A"),
-            .t80:  Color(hex: "#FFB733"),
-            .t70:  Color(hex: "#FFC04D"),
-            .t60:  Color(hex: "#FFC966"),
-            .t50:  Color(hex: "#FFD17F"),
-            .t40:  Color(hex: "#FFDB99"),
-            .t30:  Color(hex: "#FFE4B3"),
-            .t20:  Color(hex: "#FFEDCC"),
-            .t10:  Color(hex: "#FFF6E6")
+            .t100: Color("#FFA500"),
+            .t90:  Color("#FFAE1A"),
+            .t80:  Color("#FFB733"),
+            .t70:  Color("#FFC04D"),
+            .t60:  Color("#FFC966"),
+            .t50:  Color("#FFD17F"),
+            .t40:  Color("#FFDB99"),
+            .t30:  Color("#FFE4B3"),
+            .t20:  Color("#FFEDCC"),
+            .t10:  Color("#FFF6E6")
         ]
 
         #warning("Replace dark palette when design provides dedicated values for Secondary.Orange")
@@ -59,16 +59,16 @@ public enum Secondary {
         }
 
         public static let light: [Tone: Color] = [
-            .t100: Color(hex: "#606060"),
-            .t90:  Color(hex: "#717171"),
-            .t80:  Color(hex: "#808080"),
-            .t70:  Color(hex: "#909090"),
-            .t60:  Color(hex: "#A0A0A0"),
-            .t50:  Color(hex: "#AFAFAF"),
-            .t40:  Color(hex: "#C0C0C0"),
-            .t30:  Color(hex: "#D0D0D0"),
-            .t20:  Color(hex: "#DFDFDF"),
-            .t10:  Color(hex: "#F0F0F0")
+            .t100: Color("#606060"),
+            .t90:  Color("#717171"),
+            .t80:  Color("#808080"),
+            .t70:  Color("#909090"),
+            .t60:  Color("#A0A0A0"),
+            .t50:  Color("#AFAFAF"),
+            .t40:  Color("#C0C0C0"),
+            .t30:  Color("#D0D0D0"),
+            .t20:  Color("#DFDFDF"),
+            .t10:  Color("#F0F0F0")
         ]
 
         #warning("Replace dark palette when design provides dedicated values for Secondary.TextGray")
@@ -83,16 +83,16 @@ public enum Secondary {
         }
 
         public static let light: [Tone: Color] = [
-            .t100: Color(hex: "#CBCBCB"),
-            .t90:  Color(hex: "#D1D1D1"),
-            .t80:  Color(hex: "#D5D5D5"),
-            .t70:  Color(hex: "#DBDBDB"),
-            .t60:  Color(hex: "#E0E0E0"),
-            .t50:  Color(hex: "#E4E4E4"),
-            .t40:  Color(hex: "#EAEAEA"),
-            .t30:  Color(hex: "#F0F0F0"),
-            .t20:  Color(hex: "#F5F5F5"),
-            .t10:  Color(hex: "#FAFAFA")
+            .t100: Color("#CBCBCB"),
+            .t90:  Color("#D1D1D1"),
+            .t80:  Color("#D5D5D5"),
+            .t70:  Color("#DBDBDB"),
+            .t60:  Color("#E0E0E0"),
+            .t50:  Color("#E4E4E4"),
+            .t40:  Color("#EAEAEA"),
+            .t30:  Color("#F0F0F0"),
+            .t20:  Color("#F5F5F5"),
+            .t10:  Color("#FAFAFA")
         ]
 
         #warning("Replace dark palette when design provides dedicated values for Secondary.MediumGrey")
@@ -107,16 +107,16 @@ public enum Secondary {
         }
 
         public static let light: [Tone: Color] = [
-            .t100: Color(hex: "#F2F2F2"),
-            .t90:  Color(hex: "#F4F4F4"),
-            .t80:  Color(hex: "#F5F5F5"),
-            .t70:  Color(hex: "#F6F6F6"),
-            .t60:  Color(hex: "#F7F7F7"),
-            .t50:  Color(hex: "#F8F8F8"),
-            .t40:  Color(hex: "#FAFAFA"),
-            .t30:  Color(hex: "#FCFCFC"),
-            .t20:  Color(hex: "#FDFDFD"),
-            .t10:  Color(hex: "#FEFEFE")
+            .t100: Color("#F2F2F2"),
+            .t90:  Color("#F4F4F4"),
+            .t80:  Color("#F5F5F5"),
+            .t70:  Color("#F6F6F6"),
+            .t60:  Color("#F7F7F7"),
+            .t50:  Color("#F8F8F8"),
+            .t40:  Color("#FAFAFA"),
+            .t30:  Color("#FCFCFC"),
+            .t20:  Color("#FDFDFD"),
+            .t10:  Color("#FEFEFE")
         ]
 
         #warning("Replace dark palette when design provides dedicated values for Secondary.LightGray")
@@ -125,7 +125,7 @@ public enum Secondary {
 
     // MARK: - Single-tone colors
     public enum White {
-        private enum Palette { static let base: Color = Color(hex: "#FFFFFF") }
+        private enum Palette { static let base: Color = Color("#FFFFFF") }
         /// Single-tone color for **White**.
         /// - Returns: The same value for light/dark until design provides a separate dark token.
         @MainActor public static func color(using scheme: ColorScheme) -> Color {
@@ -135,7 +135,7 @@ public enum Secondary {
     }
 
     public enum OffWhite {
-        private enum Palette { static let base: Color = Color(hex: "#F5F1ED") }
+        private enum Palette { static let base: Color = Color("#F5F1ED") }
         /// Single-tone color for **Off-White**.
         @MainActor public static func color(using scheme: ColorScheme) -> Color {
             let base = Palette.base
@@ -144,7 +144,7 @@ public enum Secondary {
     }
 
     public enum Black {
-        private enum Palette { static let base: Color = Color(hex: "#000000") }
+        private enum Palette { static let base: Color = Color("#000000") }
         /// Single-tone color for **Black**.
         @MainActor public static func color(using scheme: ColorScheme) -> Color {
             let base = Palette.base

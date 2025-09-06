@@ -13,16 +13,16 @@ struct AppRootView: View {
     @State private var themeMode: RDSThemeMode = .system
 
     var body: some View {
-        let background = RDSThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode) == .dark
+        let background = themeMode.resolve(using: systemScheme) == .dark
         ? Color(white: 0.30)
         : Color(white: 0.90)
-        let cellBg = RDSThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode) == .dark
+        let cellBg = themeMode.resolve(using: systemScheme) == .dark
         ? Color(white: 0.50)
         : Color.white
-        let textColor = RDSThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode) == .dark
+        let textColor = themeMode.resolve(using: systemScheme) == .dark
         ? Color.white.opacity(0.92)
         : Color.black.opacity(0.9)
-        let tintColor = RDSThemeMode.effectiveScheme(using: systemScheme, themeMode: themeMode) == .dark
+        let tintColor = themeMode.resolve(using: systemScheme) == .dark
         ? Color.white.opacity(0.95)
         : Color.black.opacity(0.95)
         

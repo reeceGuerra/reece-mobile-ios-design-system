@@ -4,6 +4,9 @@
 //
 //  Created by Carlos Lopez on 31/08/25.
 //
+//  - Remove ColorScheme dependency (no scheme parameter).
+//  - Keep export utilities focused on extracting RGBA/HEX from a resolved `Color` (SRP).
+//
 
 #if canImport(UIKit)
 import UIKit
@@ -15,56 +18,47 @@ import AppKit
 
 import SwiftUI
 
-/// Utilities for exporting colors from SwiftUI to HEX strings, and resolving
-/// platform-specific RGBA components (sRGB) respecting Light/Dark scheme.
+/// Utilities to export SwiftUI `Color` values as RGBA or HEX strings.
+///
+/// This utility does **not** decide Light/Dark policy. If you need a specific
+/// look for export, resolve the `Color` beforehand (e.g., using `RDSColorEngine`
+/// with your theme policy) and then pass the resolved `Color` here.
 public enum RDSColorExport {
-
-    /// Returns "#RRGGBB" or "#RRGGBBAA" for a `SwiftUI.Color` by delegating to `RDSColorHex`.
-    ///
-    /// - Parameters:
-    ///   - color: A SwiftUI color (may be dynamic with Light/Dark variants).
-    ///   - scheme: If provided, resolves the color using the given Light/Dark scheme; if `nil`, uses the system setting.
-    ///   - includeAlpha: If `true`, includes the alpha component.
-    /// - Returns: HEX string or `nil` if conversion to sRGB fails.
-    public static func hexString(
-        for color: Color,
-        scheme: ColorScheme? = nil,
-        includeAlpha: Bool = false
-    ) -> String? {
-        return RDSColorHex.string(from: color, scheme: scheme, includeAlpha: includeAlpha)
-    }
-
-    // MARK: - Shared RGBA resolver
-
-    /// Resolves a `SwiftUI.Color` into RGBA components (sRGB), honoring the provided color scheme if specified.
-    /// - Parameters:
-    ///   - color: The input SwiftUI color.
-    ///   - scheme: If provided, forces Light/Dark resolution; otherwise uses current system settings.
-    /// - Returns: `(red, green, blue, alpha)` in `[0, 1]`, or `nil` if conversion fails.
-    internal static func resolvedPlatformColor(
-        from color: Color,
-        scheme: ColorScheme?
-    ) -> (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat)? {
+    
+    // MARK: - RGBA
+    
+    /// Extracts RGBA components (0...1) from a SwiftUI `Color` in sRGB.
+    /// - Parameter color: The already-resolved SwiftUI `Color`.
+    /// - Returns: Tuple `(r, g, b, a)` in `[0, 1]` or `nil` if components cannot be resolved.
+    public static func rgba(from color: Color) -> (r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat)? {
         #if canImport(UIKit)
-        // iOS / tvOS / watchOS
-        let uiBase = UIColor(color)
-        let traits = scheme.map { UITraitCollection(userInterfaceStyle: $0 == .dark ? .dark : .light) }
-        let ui = traits.map { uiBase.resolvedColor(with: $0) } ?? uiBase
-
-        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        // iOS / tvOS / visionOS (UIKit-backed)
+        let ui = UIColor(color)
+        var r: CGFloat = .zero, g: CGFloat = .zero, b: CGFloat = .zero, a: CGFloat = .zero
         guard ui.getRed(&r, green: &g, blue: &b, alpha: &a) else { return nil }
         return (r, g, b, a)
-
-        #elseif canImport(AppKit)
-        // macOS
+        
+        #elseif canImport(AppKit) && !targetEnvironment(macCatalyst)
+        // macOS (AppKit-backed)
         let ns = NSColor(color)
-        // If you need to explicitly emulate Light/Dark on macOS,
-        // map `scheme` to an NSAppearance and resolve with it.
         guard let rgb = ns.usingColorSpace(.sRGB) else { return nil }
         return (rgb.redComponent, rgb.greenComponent, rgb.blueComponent, rgb.alphaComponent)
-
+        
         #else
+        // Other SwiftUI platforms without UIKit/AppKit bridging
         return nil
         #endif
+    }
+    
+    // MARK: - HEX
+    
+    /// Exports a SwiftUI `Color` as a HEX string in sRGB.
+    /// - Parameters:
+    ///   - color: The already-resolved SwiftUI `Color`.
+    ///   - includeAlpha: If `true`, returns `#RRGGBBAA`; otherwise `#RRGGBB`.
+    /// - Returns: HEX string or `nil` if the color cannot be resolved.
+    public static func hex(from color: Color, includeAlpha: Bool = false) -> String? {
+        // Delegate to RDSColorHex to avoid duplicating formatting logic.
+        return RDSColorHex.string(from: color, includeAlpha: includeAlpha)
     }
 }

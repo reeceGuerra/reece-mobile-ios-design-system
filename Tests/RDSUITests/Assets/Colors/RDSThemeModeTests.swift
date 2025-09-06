@@ -36,22 +36,22 @@ final class RDSThemeModeTests: XCTestCase {
     }
 
     func test_effectiveScheme_system_passthrough_light() {
-        let resolved = RDSThemeMode.effectiveScheme(using: .light, themeMode: .system)
+        let resolved = RDSThemeMode.system.resolve(.light)
         XCTAssertEqual(resolved, .light)
     }
 
     func test_effectiveScheme_system_passthrough_dark() {
-        let resolved = RDSThemeMode.effectiveScheme(using: .dark, themeMode: .system)
+        let resolved = RDSThemeMode.system.resolve(.dark)
         XCTAssertEqual(resolved, .dark)
     }
 
     func test_effectiveScheme_forced_light() {
-        let resolved = RDSThemeMode.effectiveScheme(using: .dark, themeMode: .light)
+        let resolved = RDSThemeMode.light.resolve(.dark)
         XCTAssertEqual(resolved, .light)
     }
 
     func test_effectiveScheme_forced_dark() {
-        let resolved = RDSThemeMode.effectiveScheme(using: .light, themeMode: .dark)
+        let resolved = RDSThemeMode.dark.resolve(.light)
         XCTAssertEqual(resolved, .dark)
     }
 

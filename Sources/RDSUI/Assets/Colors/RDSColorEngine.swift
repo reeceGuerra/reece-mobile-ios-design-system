@@ -16,6 +16,7 @@ import SwiftUI
 ///
 /// Conformers decide how to compute the final scheme (e.g., based on a global theme mode,
 /// system appearance, or custom logic). This decouples color resolution from a concrete theme.
+@MainActor
 public protocol RDSColorSchemeProviding: Sendable {
     /// Resolves the effective scheme given the caller's environment `ColorScheme`.
     /// - Parameter viewScheme: The `ColorScheme` from the view environment.
