@@ -59,6 +59,14 @@ jobs:
           swift --version
           xcodebuild -version
 
+      # 👇 Fuerza modo Package: oculta temporalmente el .xcworkspace si existe
+      - name: Temporarily hide workspace (force SPM mode)
+        run: |
+          if [ -d "ReeceDesignSystem.xcworkspace" ]; then
+            mv ReeceDesignSystem.xcworkspace ReeceDesignSystem.xcworkspace.bak
+            echo "Workspace hidden to force SPM build."
+          fi
+
       - name: List SPM schemes (for debugging)
         run: xcodebuild -list
 
