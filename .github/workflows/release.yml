@@ -23,7 +23,6 @@ concurrency:
 env:
   TAG_NAME: ${{ github.ref_type == 'tag' && github.ref_name || github.event.release.tag_name || inputs.tag }}
   WORKSPACE: ReeceDesignSystem.xcworkspace
-  DESTINATION: platform=iOS Simulator,name=iPhone 15
   SDK: iphonesimulator
 
 jobs:
@@ -63,7 +62,7 @@ jobs:
       - name: List schemes (for debugging)
         run: xcodebuild -list -workspace "$WORKSPACE"
 
-      # ✅ Resuelve scheme sin heredoc (evita errores YAML)
+      # Resolve a valid shared scheme from the workspace
       - name: Resolve scheme from workspace
         id: scheme
         run: |
@@ -71,12 +70,44 @@ jobs:
           xcodebuild -list -workspace "$WORKSPACE" -json > schemes.json
           SCHEME_RESOLVED=$(python3 -c "import json; d=json.load(open('schemes.json')); s=d.get('workspace',{}).get('schemes',[]); c=[x for x in s if x.endswith('-Package')] or [x for x in s if ('RDS' in x or 'Reece' in x)] or s; print(c[0] if c else '')")
           if [ -z "$SCHEME_RESOLVED" ]; then
-            echo "::error::No shared schemes found in workspace $WORKSPACE"
-            echo "Found JSON:" && cat schemes.json
+            echo '::error::No shared schemes found in workspace '"$WORKSPACE"
+            echo 'Found JSON:' && cat schemes.json
             exit 1
           fi
           echo "Resolved scheme: $SCHEME_RESOLVED"
           echo "SCHEME=$SCHEME_RESOLVED" >> "$GITHUB_ENV"
+
+      # ✅ Dynamically resolve an available iOS Simulator (OS + UDID) and export DESTINATION
+      - name: Resolve iOS Simulator destination
+        id: resolve-destination
+        run: |
+          set -e
+          xcrun simctl list devices available -j > devices.json
+          python3 - <<'PY'
+import json, os, sys
+data=json.load(open('devices.json'))
+cands=[]
+for runtime, devices in data.get('devices', {}).items():
+    if 'iOS' not in runtime:
+        continue
+    for d in devices:
+        if not d.get('isAvailable', True): 
+            continue
+        name=d.get('name','')
+        if 'iPhone' in name:
+            cands.append((runtime, name, d['udid']))
+if not cands:
+    print('::error::No iOS iPhone simulators available'); sys.exit(1)
+# Prefer newest runtime & a stable model (last after sort by runtime then name)
+cands.sort(key=lambda t: (t[0], t[1]))
+runtime, name, udid = cands[-1]
+osver = runtime.split('.')[-1].replace('iOS-','').replace('-', '.')
+dest = f"platform=iOS Simulator,OS={osver},id={udid}"
+print(f"Resolved simulator: {name} (iOS {osver}) -> {dest}")
+with open(os.environ['GITHUB_ENV'],'a') as f:
+    f.write(f"DESTINATION={dest}\n")
+PY
+          echo "DESTINATION resolved to: $DESTINATION"
 
       - name: Build (iOS Simulator)
         run: |
