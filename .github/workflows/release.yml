@@ -83,31 +83,9 @@ jobs:
         run: |
           set -e
           xcrun simctl list devices available -j > devices.json
-          python3 - <<'PY'
-import json, os, sys
-data=json.load(open('devices.json'))
-cands=[]
-for runtime, devices in data.get('devices', {}).items():
-    if 'iOS' not in runtime:
-        continue
-    for d in devices:
-        if not d.get('isAvailable', True): 
-            continue
-        name=d.get('name','')
-        if 'iPhone' in name:
-            cands.append((runtime, name, d['udid']))
-if not cands:
-    print('::error::No iOS iPhone simulators available'); sys.exit(1)
-# Prefer newest runtime & a stable model (last after sort by runtime then name)
-cands.sort(key=lambda t: (t[0], t[1]))
-runtime, name, udid = cands[-1]
-osver = runtime.split('.')[-1].replace('iOS-','').replace('-', '.')
-dest = f"platform=iOS Simulator,OS={osver},id={udid}"
-print(f"Resolved simulator: {name} (iOS {osver}) -> {dest}")
-with open(os.environ['GITHUB_ENV'],'a') as f:
-    f.write(f"DESTINATION={dest}\n")
-PY
-          echo "DESTINATION resolved to: $DESTINATION"
+          SCHEME_DEST=$(python3 -c "import json, os, sys; d=json.load(open('devices.json')); c=[(r, v.get('name',''), v['udid']) for r,devs in d.get('devices',{}).items() if 'iOS' in r for v in devs if v.get('isAvailable',True) and 'iPhone' in v.get('name','')]; c.sort(key=lambda t:(t[0],t[1])); r,name,udid=c[-1]; osver=r.split('.')[-1].replace('iOS-','').replace('-','.'); dest=f'platform=iOS Simulator,OS={osver},id={udid}'; print(dest)")
+          echo "DESTINATION=$SCHEME_DEST" >> "$GITHUB_ENV"
+          echo "Resolved simulator DESTINATION=$SCHEME_DEST"
 
       - name: Build (iOS Simulator)
         run: |
