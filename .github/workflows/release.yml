@@ -18,15 +18,24 @@ concurrency:
 env:
   # Resolve tag for both push and release events
   TAG_NAME: ${{ github.ref_type == 'tag' && github.ref_name || github.event.release.tag_name }}
+  SCHEME: RDSUI
+  WORKSPACE: ReeceDesignSystem.xcworkspace
+  DESTINATION: platform=iOS Simulator,name=iPhone 15
+  SDK: iphonesimulator
 
 jobs:
   build-test:
     # Run on tag pushes v0.* or on release events whose tag matches v0.*
     if: startsWith(github.ref, 'refs/tags/v0.') || (github.event_name == 'release' && startsWith(github.event.release.tag_name, 'v0.'))
-    name: Build & Test (SwiftPM)
-    runs-on: macos-latest
+    name: Build & Test (Xcode iOS Simulator)
+    runs-on: macos-15
+
     steps:
       - uses: actions/checkout@v4
+
+      # Use Xcode 16.4 (required for your project format / iOS 17 SDK)
+      - name: Select Xcode 16.4
+        run: sudo xcode-select -s "/Applications/Xcode_16.4.app/Contents/Developer"
 
       - name: Cache SwiftPM
         uses: actions/cache@v4
@@ -34,18 +43,42 @@ jobs:
           path: |
             ~/.swiftpm
             ~/Library/Caches/org.swift.swiftpm
+            ~/Library/Developer/Xcode/DerivedData
           key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
           restore-keys: |
             ${{ runner.os }}-spm-
 
-      - name: Swift version
-        run: swift --version
+      - name: Toolchain versions
+        run: |
+          swift --version
+          xcodebuild -version
 
-      - name: Build (release)
-        run: swift build --configuration release
+      - name: List schemes
+        run: xcodebuild -list -workspace "$WORKSPACE"
 
-      - name: Test
-        run: swift test --parallel
+      - name: Build (iOS Simulator)
+        run: |
+          set -eo pipefail
+          xcodebuild \
+            -workspace "$WORKSPACE" \
+            -scheme "$SCHEME" \
+            -destination "$DESTINATION" \
+            -sdk "$SDK" \
+            -configuration Release \
+            -skipPackagePluginValidation \
+            build | xcpretty
+
+      - name: Test (iOS Simulator)
+        run: |
+          set -eo pipefail
+          xcodebuild \
+            -workspace "$WORKSPACE" \
+            -scheme "$SCHEME" \
+            -destination "$DESTINATION" \
+            -sdk "$SDK" \
+            -configuration Release \
+            -skipPackagePluginValidation \
+            test | xcpretty
 
   release:
     needs: build-test
