@@ -14,42 +14,48 @@
 //  - System family has no real italic asset → needsViewItalic should be true.
 //  - Normal slant never asks for view italic.
 //
-
-import XCTest
+import Testing
 import SwiftUI
 @testable import RDSUI
 
-final class RDSFontsMissingAssetTests: XCTestCase {
+@Suite("RDSFonts Missing Assets")
+struct RDSFontsMissingAssetTests {
 
-    func test_systemFamily_italic_requests_viewItalic() {
-        // Given a spec that requests italic
+    @MainActor
+    @Test("System family with italic slant requires view-level italic")
+    func systemItalicRequiresViewItalic() async {
         let spec = RDSTextSpec(
             designFontSizePx: 16,
             pointSizeOverride: nil,
             weight: .regular,
             slant: .italic,
             relativeTo: .body,
-            designLineHeightPx: nil,
-            letterSpacingPercent: nil
+            designLineHeightPx: 24,
+            letterSpacingPercent: 0.0,
+            preferredFamily: nil
         )
-        // When resolving for .system
-        let resolved = RDSFontResolver.resolve(for: spec, family: .system, basePointSize: 16)
+        let base = spec.basePointSize(usingScale: 1.0)
+        let resolved = RDSFontResolver.resolve(for: spec, family: .system, basePointSize: base)
 
-        // Then the DS must mark that the SwiftUI view should apply italic at view level.
-        XCTAssertTrue(resolved.needsViewItalic, "System family has no italic asset; view-level italic is required.")
+        #expect(resolved.needsViewItalic == true)
     }
 
-    func test_systemFamily_normal_does_not_request_viewItalic() {
+    @MainActor
+    @Test("System family with normal slant does not require view-level italic")
+    func systemNormalDoesNotRequireItalic() async {
         let spec = RDSTextSpec(
             designFontSizePx: 16,
             pointSizeOverride: nil,
             weight: .regular,
             slant: .normal,
             relativeTo: .body,
-            designLineHeightPx: nil,
-            letterSpacingPercent: nil
+            designLineHeightPx: 24,
+            letterSpacingPercent: 0.0,
+            preferredFamily: nil
         )
-        let resolved = RDSFontResolver.resolve(for: spec, family: .system, basePointSize: 16)
-        XCTAssertFalse(resolved.needsViewItalic, "Normal slant should not request view-level italic.")
+        let base = spec.basePointSize(usingScale: 1.0)
+        let resolved = RDSFontResolver.resolve(for: spec, family: .system, basePointSize: base)
+
+        #expect(resolved.needsViewItalic == false)
     }
 }
