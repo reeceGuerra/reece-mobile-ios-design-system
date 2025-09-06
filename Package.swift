@@ -16,10 +16,7 @@ let package = Package(
         .target(
             name: "RDSUI",
             path: "Sources/RDSUI",
-            resources: [
-                .process("Icons/RDSIcons.xcassets"),
-                .process("Resources")
-            ],
+            resources: [ .process("Resources") ],
             swiftSettings: [.swiftLanguageMode(.v6)]
         ),
         .testTarget(
