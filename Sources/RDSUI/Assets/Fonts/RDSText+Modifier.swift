@@ -68,7 +68,7 @@ public struct RDSTextModifier: ViewModifier {
 ///   - designScale: factor px→pt (si `nil`, la spec usa 1.0 por defecto).
 /// - Returns: `(font, kerning, extraLineSpacing, needsViewItalic)`.
 @MainActor
-private func _computeTextStyle(spec: RDSTypographySpec,
+internal func _computeTextStyle(spec: RDSTypographySpec,
                                family: RDSFontFamily,
                                designScale: CGFloat?) -> (Font, CGFloat, CGFloat, Bool) {
     // 1) Tamaño base en pt (px→pt)

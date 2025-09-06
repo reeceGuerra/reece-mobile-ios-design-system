@@ -12,30 +12,30 @@ import XCTest
 final class RDSColorHexTests: XCTestCase {
 
     func testHexInvalidLengths() {
-        XCTAssertThrowsError(try HexColorParser.rgba(from: "")) { error in
+        XCTAssertThrowsError(try RDSColorHex.parse("")) { error in
             XCTAssertEqual(error as? HexColorError, .invalidLength(actual: 0))
         }
-        XCTAssertThrowsError(try HexColorParser.rgba(from: "#12")) { error in
+        XCTAssertThrowsError(try RDSColorHex.parse("#12")) { error in
             XCTAssertEqual(error as? HexColorError, .invalidLength(actual: 2))
         }
-        XCTAssertThrowsError(try HexColorParser.rgba(from: "#12345")) { error in
+        XCTAssertThrowsError(try RDSColorHex.parse("#12345")) { error in
             XCTAssertEqual(error as? HexColorError, .invalidLength(actual: 5))
         }
     }
 
     func testHexInvalidScan() {
-        XCTAssertThrowsError(try HexColorParser.rgba(from: "#GGHHII")) { error in
+        XCTAssertThrowsError(try RDSColorHex.parse("#GGHHII")) { error in
             XCTAssertEqual(error as? HexColorError, .invalidScan("GGHHII"))
         }
     }
 
     func testHexValidRGB() throws {
-        let c = try HexColorParser.rgba(from: "#0859A8") // ejemplo
+        let c = try RDSColorHex.parse("#0859A8") // ejemplo
         XCTAssertEqual(c.a, 1.0, accuracy: 0.0001)
     }
 
     func testHexValidRGBA() throws {
-        let c = try HexColorParser.rgba(from: "#0859A8FF")
+        let c = try RDSColorHex.parse("#0859A8FF")
         XCTAssertEqual(c.a, 1.0, accuracy: 0.0001)
     }
 }

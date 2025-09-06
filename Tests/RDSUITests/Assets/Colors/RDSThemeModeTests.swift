@@ -16,57 +16,47 @@
 //  - Ensures effectiveScheme logic (system passthrough vs forced schemes)
 //  - Ensures RDSTheme.mode default and mutability on the main actor
 //
-
-import XCTest
+import Testing
 import SwiftUI
 @testable import RDSUI
 
-final class RDSThemeModeTests: XCTestCase {
+@Suite("RDSThemeMode", .serialized)
+struct RDSThemeModeTests {
 
-    func test_allCases_order_and_count() {
-        // Source order matters for menus; lock it down.
-        XCTAssertEqual(RDSThemeMode.allCases, [.system, .light, .dark])
-        XCTAssertEqual(RDSThemeMode.allCases.count, 3)
+    @Test("Orden y cantidad de casos")
+    func allCasesOrderAndCount() {
+        #expect(RDSThemeMode.allCases == [.system, .light, .dark])
     }
 
-    func test_id_matches_title_for_all_modes() {
+    @Test("id coincide con title")
+    func idMatchesTitle() {
         for mode in RDSThemeMode.allCases {
-            XCTAssertEqual(mode.id, mode.title, "Expected id to equal title for \(mode)")
+            #expect(mode.id == mode.title)
         }
     }
 
-    func test_effectiveScheme_system_passthrough_light() {
-        let resolved = RDSThemeMode.system.resolve(.light)
-        XCTAssertEqual(resolved, .light)
+    @Test("system hace passthrough del scheme")
+    func resolveSystemPassthrough() {
+        #expect(RDSThemeMode.system.resolve(.light) == .light)
+        #expect(RDSThemeMode.system.resolve(.dark) == .dark)
     }
 
-    func test_effectiveScheme_system_passthrough_dark() {
-        let resolved = RDSThemeMode.system.resolve(.dark)
-        XCTAssertEqual(resolved, .dark)
+    @Test("light/dark forzados")
+    func resolveForced() {
+        #expect(RDSThemeMode.light.resolve(.dark) == .light)
+        #expect(RDSThemeMode.dark.resolve(.light) == .dark)
     }
 
-    func test_effectiveScheme_forced_light() {
-        let resolved = RDSThemeMode.light.resolve(.dark)
-        XCTAssertEqual(resolved, .light)
-    }
-
-    func test_effectiveScheme_forced_dark() {
-        let resolved = RDSThemeMode.dark.resolve(.light)
-        XCTAssertEqual(resolved, .dark)
-    }
-
-    /// Touches the @MainActor global to verify default and mutability.
     @MainActor
-    func test_globalTheme_default_is_system_and_is_mutable() {
+    @Test("RDSTheme.mode default y mutabilidad")
+    func globalThemeDefaultAndMutability() async {
         let original = RDSTheme.mode
-        // The documentation says default is `.system`
-        XCTAssertEqual(original, .system)
+        #expect(original == .system)
 
         RDSTheme.mode = .dark
-        XCTAssertEqual(RDSTheme.mode, .dark)
+        #expect(RDSTheme.mode == .dark)
 
-        // Restore so we don't leak state between tests
         RDSTheme.mode = original
-        XCTAssertEqual(RDSTheme.mode, .system)
+        #expect(RDSTheme.mode == .system)
     }
 }

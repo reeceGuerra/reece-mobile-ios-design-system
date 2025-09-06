@@ -13,22 +13,22 @@ final class RDSColorContrastTests: XCTestCase {
     
     // Helper: HEX de un Color (sin alpha)
     private func hex(_ c: Color) -> String {
-        RDSColorExport.hexString(for: c, includeAlpha: false) ?? "NIL"
+        RDSColorExport.hex(from: c) ?? "NIL"
     }
     
     func testPreferredLabelColor_onWhiteBackground_returnsBlack() {
-        let label = RDSColorContrast.onColor(for: Color(hex: "#FFFFFF"))
+        let label = RDSColorContrast.onColor(for: Color("#FFFFFF"))
         XCTAssertEqual(hex(label), "#000000", "Sobre blanco debe escoger negro")
     }
     
     func testPreferredLabelColor_onBlackBackground_returnsWhite() {
-        let label = RDSColorContrast.onColor(for: Color(hex: "#000000"))
+        let label = RDSColorContrast.onColor(for: Color("#000000"))
         XCTAssertEqual(hex(label), "#FFFFFF", "Sobre negro debe escoger blanco")
     }
     
     func testPreferredLabelColor_thresholdOverridesDecision() {
         // Gris medio; por defecto debería dar negro
-        let gray = Color(hex: "#BBBBBB")
+        let gray = Color("#BBBBBB")
         XCTAssertEqual(hex(RDSColorContrast.onColor(for: gray)), "#000000")
         
         // Con threshold alto, forzamos blanco
@@ -38,8 +38,8 @@ final class RDSColorContrastTests: XCTestCase {
     
     func testPreferredLabelColor_ignoresAlphaComponentForContrast() {
         // Mismo color con alpha distinto → mismo label
-        let solid = Color(hex: "#407A26FF")
-        let translucent = Color(hex: "#407A2680")
+        let solid = Color("#407A26FF")
+        let translucent = Color("#407A2680")
         let l1 = RDSColorContrast.onColor(for: solid)
         let l2 = RDSColorContrast.onColor(for: translucent)
         XCTAssertEqual(hex(l1), hex(l2))
@@ -50,7 +50,7 @@ final class RDSColorContrastTests: XCTestCase {
         let samples = ["#407A26", "#024E8E", "#8C44EF", "#FAEAE8", "#ECF2E9"]
         
         for s in samples {
-            let bg = Color(hex: s)
+            let bg = Color(s)
             let label = RDSColorContrast.onColor(for: bg)
             XCTAssertNotEqual(
                 hex(label), s.uppercased(),
@@ -61,7 +61,7 @@ final class RDSColorContrastTests: XCTestCase {
     
     func testPreferredLabelColor_acceptsExplicitScheme() {
         // Un color cualquiera; el objetivo es cubrir la ruta con scheme .light/.dark
-        let bg = Color(hex: "#3E5479")
+        let bg = Color("#3E5479")
         
         let labelDark  = RDSColorContrast.onColor(for: bg, scheme: .dark)
         let labelLight = RDSColorContrast.onColor(for: bg, scheme: .light)

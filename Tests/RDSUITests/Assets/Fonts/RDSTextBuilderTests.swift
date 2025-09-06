@@ -54,8 +54,8 @@ final class RDSTextBuilderTests: XCTestCase {
         let r = _computeTextStyle(spec: spec, family: .system, designScale: 1.0)
 
         // Basic sanity checks on outputs.
-        XCTAssertGreaterThanOrEqual(r.lineSpacing, 0, "Line spacing should not be negative")
-        XCTAssertNotNil(String(describing: r.font))
+        XCTAssertGreaterThanOrEqual(r.2, 0, "Line spacing should not be negative")
+        XCTAssertNotNil(String(describing: r.1))
     }
 
     @MainActor func testCompute_NoLineHeightMultiple() {
@@ -69,6 +69,6 @@ final class RDSTextBuilderTests: XCTestCase {
             letterSpacingPercent: 0.0
         )
         let r = _computeTextStyle(spec: spec, family: .system, designScale: 1.0)
-        XCTAssertEqual(r.lineSpacing, 0, "Expected 0 extra spacing when no line-height multiple is provided.")
+        XCTAssertEqual(r.2, 0, "Expected 0 extra spacing when no line-height multiple is provided.")
     }
 }

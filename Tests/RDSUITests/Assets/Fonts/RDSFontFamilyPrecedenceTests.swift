@@ -34,6 +34,7 @@ final class RDSFontFamilyPrecedenceTests: XCTestCase {
         XCTAssertEqual(spec.preferredFamily, .openSans, "preferredFamily should persist after with(slant:)")
     }
 
+    @MainActor
     func testExplicitFamilyOverridesPreferredAtComputeLevel() {
         // Spec prefiere OpenSans, pero aquí comprobamos que al pedir Roboto
         // el resolver selecciona un PostScript distinto y el cómputo produce un Font.
@@ -66,11 +67,12 @@ final class RDSFontFamilyPrecedenceTests: XCTestCase {
         let resPreferred = _computeTextStyle(spec: spec, family: .openSans, designScale: 1.0)
         let resExplicit  = _computeTextStyle(spec: spec, family: .roboto,   designScale: 1.0)
 
-        XCTAssertNotNil(String(describing: resPreferred.font))
-        XCTAssertNotNil(String(describing: resExplicit.font))
+        XCTAssertNotNil(String(describing: resPreferred.1))
+        XCTAssertNotNil(String(describing: resExplicit.1))
     }
 
 
+    @MainActor
     func testSystemFallbackProducesAFont() {
         let spec = RDSTextSpec(
             designFontSizePx: 14,
@@ -82,6 +84,6 @@ final class RDSFontFamilyPrecedenceTests: XCTestCase {
             preferredFamily: nil
         )
         let res = _computeTextStyle(spec: spec, family: .system, designScale: 1.0)
-        XCTAssertNotNil(String(describing: res.font))
+        XCTAssertNotNil(String(describing: res.1))
     }
 }
