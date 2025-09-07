@@ -32,6 +32,12 @@ struct AppRootView: View {
                     Section("Assets") {
                         NavigationLink("Colors", value: RDSRoute.home)
                         NavigationLink("Fonts", value: RDSRoute.fontsview)
+                        NavigationLink("Icons", value: RDSRoute.iconsView)
+                    }
+                    .listRowBackground(cellBg)
+                    
+                    Section("Components") {
+                        NavigationLink("Buttons", value: RDSRoute.buttonsView)
                     }
                     .listRowBackground(cellBg)
                 }
@@ -76,6 +82,16 @@ struct AppRootView: View {
                         }
                     case let .fontDetail(font):
                         FontDetailView(font: font)
+                    case .iconsView:
+                        IconsView() { tapped in
+                            router.push(.iconsGalerryView(iconCategory: tapped))
+                        }
+                    case let .iconsGalerryView(iconCategory):
+                        IconsGalleryView(category: iconCategory)
+                    case .buttonsView:
+                        ButtonsView()
+                    case let .buttonDetailView(variant):
+                        ButtonDetailView(variant: variant)
                     }
                 }
         }

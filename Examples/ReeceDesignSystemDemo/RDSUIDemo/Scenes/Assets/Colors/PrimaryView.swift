@@ -54,7 +54,7 @@ struct PrimaryView: View {
             .padding()
         }
         .applyThemedBackground()
-        .rdsNavigationBar(title: "Primary Family", trailing: {
+        .rdsNavigationBar(title: "Colors - Primary", trailing: {
             RDSThemeMenuView()
         })
     }

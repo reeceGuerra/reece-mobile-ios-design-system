@@ -7,6 +7,7 @@
 
 
 import SwiftUI
+import RDSUI
 
 /// Rutas de la demo.
 enum RDSRoute: Hashable {
@@ -17,6 +18,10 @@ enum RDSRoute: Hashable {
     case colorDetail(name: String, hex: String)
     case fontsview
     case fontDetail(font: DemoFontFamily)
+    case iconsView
+    case iconsGalerryView(iconCategory: RDSIconCategory)
+    case buttonsView
+    case buttonDetailView(variant: RDSButtonVariant)
 }
 
 /// Router observable con un `NavigationPath` compartido.

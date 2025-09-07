@@ -91,7 +91,7 @@ struct SecondaryView: View {
             .padding()
         }
         .applyThemedBackground()
-        .rdsNavigationBar(title: "Secondary Family", trailing: {
+        .rdsNavigationBar(title: "Colors - Secondary", trailing: {
             RDSThemeMenuView()
         })
     }

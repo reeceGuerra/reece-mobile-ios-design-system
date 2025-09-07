@@ -99,7 +99,7 @@ struct SupportView: View {
             .padding()
         }
         .applyThemedBackground()
-        .rdsNavigationBar(title: "Support Familty", trailing: {
+        .rdsNavigationBar(title: "Colors - Support", trailing: {
             RDSThemeMenuView()
         })
     }
