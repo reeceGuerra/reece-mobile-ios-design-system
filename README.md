@@ -242,7 +242,7 @@ Showcases:
 
 ### Preview
 
-![Demo Preview](docs/demo.gif)
+![Demo Preview](https://reeceGuerra.github.io/reece-mobile-ios-design-system/demo/RDSUI1.gif)
 
 ---
 
