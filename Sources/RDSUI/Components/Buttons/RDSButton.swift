@@ -177,6 +177,37 @@ internal struct RDSPressAwareButtonStyle: ButtonStyle {
         )
     }
     
+    // MARK: - Testable mapping helper
+    
+    /// Computes the effective visual state for the button skin.
+    ///
+    /// This helper is **pure** and marked `internal` so it can be validated from
+    /// unit tests via `@testable import RDSUI`, without requiring UI hosting.
+    ///
+    /// - Parameters:
+    ///   - externalState: The externally provided `RDSButtonState`.
+    ///   - isPressed: Indicates if the control is currently pressed.
+    ///   - isHovered: Indicates if the pointer is over the control (macOS only).
+    ///   - isFocused: Indicates if the control has keyboard focus (macOS only).
+    ///   - isInteractive: If `false`, interaction flags are ignored (e.g., disabled/loading).
+    /// - Returns: `.highlighted` when `externalState == .normal` and at least one
+    ///            interaction flag applies for the current platform; otherwise `externalState`.
+    internal static func mapEffectiveState(
+        externalState: RDSButtonState,
+        isPressed: Bool,
+        isHovered: Bool,
+        isFocused: Bool,
+        isInteractive: Bool
+    ) -> RDSButtonState {
+        guard externalState == .normal, isInteractive else { return externalState }
+        #if os(macOS)
+        if isPressed || isHovered || isFocused { return .highlighted }
+        return .normal
+        #else
+        return isPressed ? .highlighted : .normal
+        #endif
+    }
+    
     // MARK: - Internal Render View (tracks hover/focus on macOS)
     
     @MainActor
@@ -198,7 +229,7 @@ internal struct RDSPressAwareButtonStyle: ButtonStyle {
         #endif
         
         var body: some View {
-            let effective = effectiveState(
+            let effective = RDSPressAwareButtonStyle.mapEffectiveState(
                 externalState: state,
                 isPressed: configuration.isPressed,
                 isHovered: isHoveredOnCurrentPlatform,
@@ -226,7 +257,6 @@ internal struct RDSPressAwareButtonStyle: ButtonStyle {
                 .animation(.easeInOut(duration: 0.12),
                            value: configuration.isPressed || isHoveredOnCurrentPlatform || isFocusedOnCurrentPlatform)
             
-            // Wrap in AnyView to reconcile conditional modifiers by platform.
             #if os(macOS)
             return AnyView(
                 base
@@ -266,30 +296,5 @@ internal struct RDSPressAwareButtonStyle: ButtonStyle {
             return false
             #endif
         }
-        
-        // MARK: - State mapping
-        
-        /// Computes the effective visual state for the button skin.
-        ///
-        /// - Parameters:
-        ///   - externalState: The externally provided `RDSButtonState`.
-        ///   - isPressed: A Boolean that indicates if the control is currently pressed.
-        ///   - isHovered: A Boolean that indicates if the pointer is over the control (macOS).
-        ///   - isFocused: A Boolean that indicates if the control has keyboard focus (macOS).
-        ///   - isInteractive: If `false`, hover/focus are ignored (disabled/loading).
-        /// - Returns: `.highlighted` when `externalState == .normal` and any of the interaction
-        ///            flags is `true`; otherwise returns `externalState`.
-        private func effectiveState(
-            externalState: RDSButtonState,
-            isPressed: Bool,
-            isHovered: Bool,
-            isFocused: Bool,
-            isInteractive: Bool
-        ) -> RDSButtonState {
-            guard externalState == .normal, isInteractive else { return externalState }
-            if isPressed || isHovered || isFocused { return .highlighted }
-            return .normal
-        }
     }
 }
-
