@@ -4,10 +4,10 @@
     {
       "identity" : "reece-mobile-ios-design-system",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/reeceGuerra/reece-mobile-ios-design-system.git",
+      "location" : "https://github.com/reeceGuerra/reece-mobile-ios-design-system",
       "state" : {
-        "revision" : "a046d74ee2bb7d759aaa8c9d5ea8d293949a1045",
-        "version" : "0.6.10"
+        "branch" : "main",
+        "revision" : "5fed05dbda59d926e1077eee4fe096a8a536f7fc"
       }
     }
   ],
