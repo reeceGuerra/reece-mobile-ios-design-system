@@ -7,35 +7,97 @@
 
 import SwiftUI
 
-// MARK: - Palette Provider
+// MARK: - Button Providers (Contracts)
 
-/// Provides palettes for a given button configuration.
-///
-/// Conform to this protocol to customize the look of ``RDSButton`` without
-/// modifying the view itself. Typical implementations map design tokens
-/// (e.g., from `RDSColors`) to concrete SwiftUI colors.
-@MainActor
-public protocol RDSButtonPaletteProvider {
-    /// Resolves a palette for the specified configuration.
+/**
+ A palette that describes the visual skin of the button for a given configuration.
+
+ Providers must return a palette that is **pure** with respect to the input parameters:
+ same (variant, type, state) → same output, without side effects.
+
+ Notes:
+ - The decision to render `.highlighted` while pressing/hovering/focusing is handled
+   by the `ButtonStyle` (interaction layer), not by the provider. Providers only map
+   (variant, type, *effective* state) to colors and underline flags.
+ */
+public struct RDSButtonPalette {
+    /// Background color of the button surface.
+    public let backgroundColor: Color
+    /// Border color of the button surface.
+    public let borderColor: Color
+    /// Foreground color used for text and icons.
+    public let selectionColor: Color
+    /// Whether the text should be underlined (typically for TextLink types).
+    public let underline: Bool
+
+    /// Creates a palette instance.
     /// - Parameters:
-    ///   - variant: Visual variant (e.g., `.primary`, `.secondary`, `.alternative`).
-    ///   - type: Visual type inside the variant (e.g., `.default`, `.textLink`).
-    ///   - state: External control state.
-    /// - Returns: A resolved ``RDSButtonPalette``.
-    func palette(for variant: RDSButtonVariant,
-                 type: RDSButtonType,
-                 state: RDSButtonState) -> RDSButtonPalette
+    ///   - backgroundColor: Background color.
+    ///   - borderColor: Border color.
+    ///   - selectionColor: Foreground color for text/icon.
+    ///   - underline: Whether the text is underlined.
+    public init(
+        backgroundColor: Color,
+        borderColor: Color,
+        selectionColor: Color,
+        underline: Bool
+    ) {
+        self.backgroundColor = backgroundColor
+        self.borderColor = borderColor
+        self.selectionColor = selectionColor
+        self.underline = underline
+    }
 }
 
-// MARK: - Typography Provider
+/**
+ Provides button palettes for any (variant, type, state) combination.
 
-/// Provides text style tokens and scale behavior for button sizes.
-///
-/// Conform to this protocol to connect your typography system to `RDSButton`.
+ Implementations are expected to be **stateless** or behave as pure functions with
+ respect to input parameters. If they need environmental information (e.g., color
+ scheme), it should be passed at initialization and **not** mutated during rendering.
+ */
+public protocol RDSButtonPaletteProvider {
+    /**
+     Resolves the effective palette (colors and underline) for the given configuration.
+
+     - Parameters:
+       - variant: The visual variant, e.g. `.primary`, `.secondary`, `.alternative`.
+       - type: The inner type within the variant, e.g. `.default`, `.textLink`.
+       - state: The **effective** visual state, already decided by the interaction layer
+                (e.g., normal/highlighted/disabled/confirmed). Providers must **not**
+                inspect gestures; they only map this value to tokens.
+     - Returns: A `RDSButtonPalette` describing background, border, selection and underline.
+     */
+    @MainActor
+    func palette(
+        for variant: RDSButtonVariant,
+        type: RDSButtonType,
+        state: RDSButtonState
+    ) -> RDSButtonPalette
+}
+
+/**
+ Provides typography tokens for each fixed button size.
+
+ Implementations typically map `RDSButtonSize` to a text style token and a minimum
+ scale factor so titles can shrink gracefully within fixed widths.
+ */
 public protocol RDSButtonTypographyProvider {
-    /// Returns the text style token to use for a given size.
-    func textStyleToken(for size: RDSButtonSize) -> RDSTextStyleToken
-    
-    /// Returns a minimum scale factor to mitigate truncation on fixed widths.
+    /**
+     Resolves the text style token (font, size, weight, letter spacing) used by the title.
+
+     - Parameter size: The fixed size of the button.
+     - Returns: A text style token compatible with the design system.
+     */
+    @MainActor
+    func textStyleToken(for size: RDSButtonSize) -> ReeceTextStyleToken
+
+    /**
+     Resolves the minimum scale factor applied to the title.
+
+     - Parameter size: The fixed size of the button.
+     - Returns: A factor in `(0, 1]` used by `minimumScaleFactor(_:)` to prevent truncation.
+     */
+    @MainActor
     func minimumScaleFactor(for size: RDSButtonSize) -> CGFloat
 }
