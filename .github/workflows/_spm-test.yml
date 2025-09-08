@@ -86,7 +86,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: coverage
+          publish_dir: public
           keep_files: true
 
       - name: Compute coverage and generate endpoint (xccov)
@@ -104,7 +104,8 @@ jobs:
           # Map to shield color using a python one-liner (avoid YAML heredocs)
           COLOR=$(python3 -c 'p=float("'"$PCT"'");print("brightgreen" if p>=90 else "green" if p>=80 else "yellow" if p>=60 else "red")')
           mkdir -p coverage
-          cat > coverage/endpoint.json <<EOF
+          mkdir -p public/coverage
+          cat > public/coverage/endpoint.json <<EOF
           {
             "schemaVersion": 1,
             "label": "coverage",
@@ -118,6 +119,6 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: coverage
+          publish_dir: public
           keep_files: true
 
