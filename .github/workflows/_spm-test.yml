@@ -80,30 +80,29 @@ jobs:
             -skipPackagePluginValidation \
             test | xcpretty
 
+
+      - name: Publish coverage to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: coverage
+          keep_files: true
+
       - name: Compute coverage and generate endpoint (xccov)
         id: cov
         shell: bash
         run: |
           set -euo pipefail
-          # Use the explicit result bundle produced by the previous step
           if [ ! -d "TestResults.xcresult" ]; then
             echo "::error::TestResults.xcresult not found."; exit 1
           fi
+          # Extract percentage (float with 2 decimals)
           PCT=$(xcrun xccov view --report --json "TestResults.xcresult" | python3 -c 'import sys,json; print(round(json.load(sys.stdin).get("lineCoverage",0)*100,2))')
           echo "pct=${PCT}" >> "$GITHUB_OUTPUT"
           echo "Coverage: ${PCT}%"
-          # Map percentage to shield color
-          COLOR=red
-          python3 - <<'PY'
-import os,math
-p=float(os.environ.get("PCT","0"))
-if p>=90: c="brightgreen"
-elif p>=80: c="green"
-elif p>=60: c="yellow"
-else: c="red"
-open("coverage_color.txt","w").write(c)
-PY
-          COLOR=$(cat coverage_color.txt)
+          # Map to shield color using a python one-liner (avoid YAML heredocs)
+          COLOR=$(python3 -c 'p=float("'"$PCT"'");print("brightgreen" if p>=90 else "green" if p>=80 else "yellow" if p>=60 else "red")')
           mkdir -p coverage
           cat > coverage/endpoint.json <<EOF
           {
