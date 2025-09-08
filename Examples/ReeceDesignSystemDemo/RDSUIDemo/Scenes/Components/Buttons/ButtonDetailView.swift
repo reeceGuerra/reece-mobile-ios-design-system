@@ -101,7 +101,7 @@ struct ButtonDetailView: View {
             }
             .background(background)
         }
-        .rdsNavigationBar(title: "Buttons - \(variant)", trailing: {
+        .rdsNavigationBar(title: "Buttons - \("\(variant)".capitalized)", trailing: {
             RDSThemeMenuView()
         })
     }
