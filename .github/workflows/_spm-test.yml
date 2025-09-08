@@ -76,39 +76,41 @@ jobs:
             -sdk "$SDK" \
             -configuration Debug \
             -enableCodeCoverage YES \
+            -resultBundlePath TestResults.xcresult \
             -skipPackagePluginValidation \
             test | xcpretty
 
-      - name: Compute coverage percentage (xccov)
+      - name: Compute coverage and generate endpoint (xccov)
         id: cov
+        shell: bash
         run: |
-          set -e
-          # Find latest .xcresult from DerivedData
-          XCRESULT=$(ls -t ~/Library/Developer/Xcode/DerivedData/*/Logs/Test/*.xcresult | head -n1 || true)
-          if [ -z "$XCRESULT" ]; then
-            echo "No .xcresult found"; exit 1
+          set -euo pipefail
+          # Use the explicit result bundle produced by the previous step
+          if [ ! -d "TestResults.xcresult" ]; then
+            echo "::error::TestResults.xcresult not found."; exit 1
           fi
-          echo "Using xcresult: $XCRESULT"
-          # xccov returns a JSON with "lineCoverage": 0.86
-          PCT=$(xcrun xccov view --report --json "$XCRESULT" | python3 - <<'PY'
-import sys, json
-data=json.load(sys.stdin)
-pct = round(float(data.get("lineCoverage", 0))*100, 2)
-print(pct)
-PY
-)
+          PCT=$(xcrun xccov view --report --json "TestResults.xcresult" | python3 -c 'import sys,json; print(round(json.load(sys.stdin).get("lineCoverage",0)*100,2))')
           echo "pct=${PCT}" >> "$GITHUB_OUTPUT"
           echo "Coverage: ${PCT}%"
-
-      - name: Generate Shields endpoint.json
-        run: |
+          # Map percentage to shield color
+          COLOR=red
+          python3 - <<'PY'
+import os,math
+p=float(os.environ.get("PCT","0"))
+if p>=90: c="brightgreen"
+elif p>=80: c="green"
+elif p>=60: c="yellow"
+else: c="red"
+open("coverage_color.txt","w").write(c)
+PY
+          COLOR=$(cat coverage_color.txt)
           mkdir -p coverage
           cat > coverage/endpoint.json <<EOF
           {
             "schemaVersion": 1,
             "label": "coverage",
-            "message": "${{ steps.cov.outputs.pct }}%",
-            "color": "${{ steps.cov.outputs.pct >= 90 && 'brightgreen' || (steps.cov.outputs.pct >= 80 && 'green' || (steps.cov.outputs.pct >= 60 && 'yellow' || 'red')) }}"
+            "message": "${PCT}%",
+            "color": "${COLOR}"
           }
           EOF
 
