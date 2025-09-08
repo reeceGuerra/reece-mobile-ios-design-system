@@ -43,6 +43,9 @@ struct IconsGalleryView: View {
                 .padding()
             }
             .background(background)
+            .rdsNavigationBar(title: "Icons - \(category.rawValue.capitalized)", trailing: {
+                RDSThemeMenuView()
+            })
         }
     }
 }
