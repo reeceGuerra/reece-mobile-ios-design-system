@@ -161,82 +161,52 @@ internal struct RDSPressAwareButtonStyle: ButtonStyle {
     
     // MARK: - ButtonStyle
     
-    /// Builds the visual body for the button.
+    /// Builds the visual body for the button using shared renderers from
+    /// `RDSButton.Layout.swift` to ensure a single source of truth (SRP/DRY).
+    ///
     /// - Parameter configuration: Provides the press-state via `isPressed`.
     /// - Returns: A view representing the complete button surface.
     func makeBody(configuration: Configuration) -> some View {
-        let dimensions = RDSButton.dimensions(for: size) // fixed metrics from layout helper
-        let effectiveState: RDSButtonState = {
-            guard state == .normal else { return state }
-            return configuration.isPressed ? .highlighted : .normal
-        }()
+        let effectiveState = effectiveState(
+            externalState: state,
+            isPressed: configuration.isPressed
+        )
         
-        let palette = paletteProvider.palette(for: variant, type: type, state: effectiveState)
+        let palette = paletteProvider.palette(
+            for: variant,
+            type: type,
+            state: effectiveState
+        )
         
-        // Build the label (text + optional icon) mirroring RDSButton.Layout logic.
-        let label = Group {
-            HStack(spacing: 0) {
-                if state == .loading {
-                    ProgressView()
-                        .progressViewStyle(.circular)
-                        .tint(palette.selectionColor)
-                } else {
-                    if size == .iconLeft, let icon {
-                        icon
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 20, height: 20)
-                            .foregroundStyle(palette.selectionColor)
-                            .accessibilityHidden(true)
-                        Spacer().frame(width: 12)
-                    }
-                    
-                    Text(title)
-                        .rdsTextStyle(typographyProvider.textStyleToken(for: size))
-                        .minimumScaleFactor(typographyProvider.minimumScaleFactor(for: size))
-                        .foregroundStyle(palette.selectionColor)
-                        .underline(palette.underline)
-                        .lineLimit(1)
-                    
-                    if size == .iconRight, let icon {
-                        Spacer().frame(width: 12)
-                        icon
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 20, height: 20)
-                            .foregroundStyle(palette.selectionColor)
-                            .accessibilityHidden(true)
-                    }
-                }
-            }
-            .padding(.vertical, 8)
-            .padding(.horizontal, 24)
-            .accessibilityElement(children: .combine)
-            .accessibilityAddTraits(.isButton)
-        }
+        // Reuse shared renderers: label (spinner/text/icon) + surface (bg/border/clip/opacity)
+        let label = RDSButton.buildLabel(
+            title: title,
+            icon: icon,
+            size: size,
+            state: state, // spinner/line-limit driven by external state (not by pressed)
+            palette: palette,
+            typographyProvider: typographyProvider
+        )
         
-        return label
-            .frame(width: dimensions.width, height: dimensions.height, alignment: .center)
-            .background(palette.backgroundColor)
-            .overlay(
-                RoundedRectangle(cornerRadius: 2, style: .continuous)
-                    .stroke(palette.borderColor, lineWidth: 1)
-            )
-            .clipShape(RoundedRectangle(cornerRadius: 2, style: .continuous))
-            .contentShape(RoundedRectangle(cornerRadius: 2, style: .continuous))
+        return RDSButton
+            .buildSurface(label, size: size, state: state, palette: palette)
             .animation(.easeInOut(duration: 0.12), value: configuration.isPressed)
-            .opacity(opacity(for: state))
     }
     
     // MARK: - Helpers
     
-    /// Computes an opacity for the outer surface based on the external state.
-    /// - Parameter state: The external `RDSButtonState`.
-    /// - Returns: An opacity value in the range `[0, 1]`.
-    private func opacity(for state: RDSButtonState) -> CGFloat {
-        switch state {
-        case .disabled: return 0.7
-        default:        return 1.0
-        }
+    /// Computes the effective visual state for the button skin.
+    ///
+    /// - Parameters:
+    ///   - externalState: The externally provided `RDSButtonState`.
+    ///   - isPressed: A Boolean that indicates if the control is currently pressed.
+    /// - Returns: `.highlighted` when `externalState == .normal` and `isPressed == true`;
+    ///            otherwise returns `externalState`.
+    private func effectiveState(
+        externalState: RDSButtonState,
+        isPressed: Bool
+    ) -> RDSButtonState {
+        guard externalState == .normal else { return externalState }
+        return isPressed ? .highlighted : .normal
     }
 }
