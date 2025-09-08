@@ -78,3 +78,45 @@ jobs:
             -enableCodeCoverage YES \
             -skipPackagePluginValidation \
             test | xcpretty
+
+      - name: Compute coverage percentage (xccov)
+        id: cov
+        run: |
+          set -e
+          # Find latest .xcresult from DerivedData
+          XCRESULT=$(ls -t ~/Library/Developer/Xcode/DerivedData/*/Logs/Test/*.xcresult | head -n1 || true)
+          if [ -z "$XCRESULT" ]; then
+            echo "No .xcresult found"; exit 1
+          fi
+          echo "Using xcresult: $XCRESULT"
+          # xccov returns a JSON with "lineCoverage": 0.86
+          PCT=$(xcrun xccov view --report --json "$XCRESULT" | python3 - <<'PY'
+import sys, json
+data=json.load(sys.stdin)
+pct = round(float(data.get("lineCoverage", 0))*100, 2)
+print(pct)
+PY
+)
+          echo "pct=${PCT}" >> "$GITHUB_OUTPUT"
+          echo "Coverage: ${PCT}%"
+
+      - name: Generate Shields endpoint.json
+        run: |
+          mkdir -p coverage
+          cat > coverage/endpoint.json <<EOF
+          {
+            "schemaVersion": 1,
+            "label": "coverage",
+            "message": "${{ steps.cov.outputs.pct }}%",
+            "color": "${{ steps.cov.outputs.pct >= 90 && 'brightgreen' || (steps.cov.outputs.pct >= 80 && 'green' || (steps.cov.outputs.pct >= 60 && 'yellow' || 'red')) }}"
+          }
+          EOF
+
+      - name: Publish coverage to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: coverage
+          keep_files: true
+
