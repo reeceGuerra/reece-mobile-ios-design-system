@@ -20,7 +20,8 @@ import SwiftUI
    by the `ButtonStyle` (interaction layer), not by the provider. Providers only map
    (variant, type, *effective* state) to colors and underline flags.
  */
-public struct RDSButtonPalette {
+@MainActor
+public struct RDSButtonPalette: Equatable {
     /// Background color of the button surface.
     public let backgroundColor: Color
     /// Border color of the button surface.
@@ -56,6 +57,7 @@ public struct RDSButtonPalette {
  respect to input parameters. If they need environmental information (e.g., color
  scheme), it should be passed at initialization and **not** mutated during rendering.
  */
+@MainActor
 public protocol RDSButtonPaletteProvider {
     /**
      Resolves the effective palette (colors and underline) for the given configuration.
@@ -68,7 +70,6 @@ public protocol RDSButtonPaletteProvider {
                 inspect gestures; they only map this value to tokens.
      - Returns: A `RDSButtonPalette` describing background, border, selection and underline.
      */
-    @MainActor
     func palette(
         for variant: RDSButtonVariant,
         type: RDSButtonType,
@@ -82,6 +83,7 @@ public protocol RDSButtonPaletteProvider {
  Implementations typically map `RDSButtonSize` to a text style token and a minimum
  scale factor so titles can shrink gracefully within fixed widths.
  */
+@MainActor
 public protocol RDSButtonTypographyProvider {
     /**
      Resolves the text style token (font, size, weight, letter spacing) used by the title.
@@ -89,8 +91,7 @@ public protocol RDSButtonTypographyProvider {
      - Parameter size: The fixed size of the button.
      - Returns: A text style token compatible with the design system.
      */
-    @MainActor
-    func textStyleToken(for size: RDSButtonSize) -> ReeceTextStyleToken
+    func textStyleToken(for size: RDSButtonSize) -> RDSTextStyleToken
 
     /**
      Resolves the minimum scale factor applied to the title.
@@ -98,6 +99,5 @@ public protocol RDSButtonTypographyProvider {
      - Parameter size: The fixed size of the button.
      - Returns: A factor in `(0, 1]` used by `minimumScaleFactor(_:)` to prevent truncation.
      */
-    @MainActor
     func minimumScaleFactor(for size: RDSButtonSize) -> CGFloat
 }

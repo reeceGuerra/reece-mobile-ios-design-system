@@ -71,38 +71,3 @@ public enum RDSButtonState: Equatable {
     /// Positive acknowledgment state (e.g., success after an action).
     case confirmed
 }
-
-// MARK: - Palette
-
-/// Resolved colors and text decoration for a button configuration.
-///
-/// Instances are typically created by ``RDSButtonPaletteProvider`` implementations
-/// (e.g., `RDSButtonTokens`) based on `variant`, `type`, `state`, and color scheme.
-public struct RDSButtonPalette: Equatable {
-    /// Background fill color.
-    public let backgroundColor: Color
-    /// 1pt border color.
-    public let borderColor: Color
-    /// Color applied to text, icon, and spinner (when loading).
-    public let selectionColor: Color
-    /// Whether the title text is underlined (used by certain text/link styles).
-    public let underline: Bool
-    
-    /// Creates a palette value.
-    /// - Parameters:
-    ///   - backgroundColor: Color for the button background.
-    ///   - borderColor: Color for the 1pt border stroke.
-    ///   - selectionColor: Color for text and icon (and spinner tint in `loading`).
-    ///   - underline: Whether the title is underlined.
-    public init(
-        backgroundColor: Color,
-        borderColor: Color,
-        selectionColor: Color,
-        underline: Bool
-    ) {
-        self.backgroundColor = backgroundColor
-        self.borderColor = borderColor
-        self.selectionColor = selectionColor
-        self.underline = underline
-    }
-}
