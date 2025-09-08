@@ -18,21 +18,27 @@ extension RDSButton {
     @ViewBuilder
     internal func content(palette: RDSButtonPalette) -> some View {
         HStack(spacing: 0) {
-            if size == .iconLeft, let icon {
-                iconView(icon, color: palette.selectionColor)
-                Spacer().frame(width: 12)
-            }
-            
-            Text(title)
-                .rdsTextStyle(typographyProvider.textStyleToken(for: size))
-                .minimumScaleFactor(typographyProvider.minimumScaleFactor(for: size))
-                .foregroundStyle(palette.selectionColor)
-                .underline(palette.underline)
-                .lineLimit(1)
-            
-            if size == .iconRight, let icon {
-                Spacer().frame(width: 12)
-                iconView(icon, color: palette.selectionColor)
+            if state == .loading {
+                ProgressView()
+                    .progressViewStyle(.circular)
+                    .tint(palette.selectionColor)
+            } else {
+                if size == .iconLeft, let icon {
+                    iconView(icon, color: palette.selectionColor)
+                    Spacer().frame(width: 12)
+                }
+                
+                Text(title)
+                    .rdsTextStyle(typographyProvider.textStyleToken(for: size))
+                    .minimumScaleFactor(typographyProvider.minimumScaleFactor(for: size))
+                    .foregroundStyle(palette.selectionColor)
+                    .underline(palette.underline)
+                    .lineLimit(1)
+                
+                if size == .iconRight, let icon {
+                    Spacer().frame(width: 12)
+                    iconView(icon, color: palette.selectionColor)
+                }
             }
         }
         .padding(.vertical, 8)
